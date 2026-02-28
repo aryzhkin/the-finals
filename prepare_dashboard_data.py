@@ -186,7 +186,15 @@ def main():
             r["playtime_bracket"] = get_playtime_bracket(hours)
             recomputed += 1
         print(f"  {recomputed:,} reviews recomputed with playtime_at_review")
+        # Count updated reviews (timestamp_updated != timestamp_created)
+        updated_count = sum(
+            1 for r in full_reviews
+            if r.get("timestamp_updated", 0) != r.get("timestamp_created", 0)
+            and r.get("timestamp_updated", 0) > 0
+        )
+        print(f"  {updated_count:,} reviews were updated ({round(updated_count / len(full_reviews) * 100, 1)}%)")
     else:
+        updated_count = 0
         print("  WARNING: reviews_ai_classified.json not found, using existing playtime brackets")
 
     # Load patch notes
@@ -197,6 +205,13 @@ def main():
             pn = json.load(f)
             patch_notes_data = pn.get("patches", pn) if isinstance(pn, dict) else pn
         print(f"  {len(patch_notes_data)} patches loaded")
+
+    # Load confidence stats
+    confidence = {}
+    if os.path.exists("stage1_stats.json"):
+        with open("stage1_stats.json", encoding="utf-8") as f:
+            stage1 = json.load(f)
+            confidence = stage1.get("confidence", {})
 
     # -----------------------------------------------------------------------
     # 1. Overview stats
@@ -209,6 +224,8 @@ def main():
         "positive": len(pos),
         "negative": len(neg),
         "languages": len(set(r["language"] for r in reviews)),
+        "updated": updated_count,
+        "confidence": confidence,
     }
 
     # -----------------------------------------------------------------------
@@ -580,6 +597,10 @@ def main():
         all_complaints = Counter()
         all_suggestions = Counter()
         all_praise = Counter()
+        # Vote-weighted counters (sum of votes_up per issue)
+        weighted_complaints = Counter()
+        weighted_suggestions = Counter()
+        weighted_praise = Counter()
 
         # Per-season issue counts
         season_issues = defaultdict(lambda: {
@@ -596,12 +617,16 @@ def main():
         total_issues_count = 0
         reviews_with_issues = 0
 
-        for r in issues_data:
+        for i, r in enumerate(issues_data):
             issues = r.get("issues", [])
             if not issues:
                 continue
             reviews_with_issues += 1
             season = get_season(r["timestamp"])
+            # Get votes_up from full reviews (1:1 indexed)
+            votes_up = 0
+            if full_reviews and i < len(full_reviews):
+                votes_up = int(full_reviews[i].get("votes_up", 0))
 
             for iss in issues:
                 text = iss.get("text", "")
@@ -610,12 +635,15 @@ def main():
 
                 if itype == "complaint":
                     all_complaints[text] += 1
+                    weighted_complaints[text] += votes_up
                     season_issues[season]["complaints"][text] += 1
                 elif itype == "suggestion":
                     all_suggestions[text] += 1
+                    weighted_suggestions[text] += votes_up
                     season_issues[season]["suggestions"][text] += 1
                 elif itype == "praise":
                     all_praise[text] += 1
+                    weighted_praise[text] += votes_up
                     season_issues[season]["praise"][text] += 1
 
                 for entity in iss.get("entities", []):
@@ -623,14 +651,15 @@ def main():
                     ent_issues[entity][itype][text] += 1
                     ent_issues_season[entity][itype][text][season] += 1
 
-        # Top issues (overall)
+        # Top issues (overall) — include both count and vote-weighted count
+        def issue_list(counter, weighted_counter, n):
+            return [{"text": t, "count": c, "weighted": weighted_counter.get(t, 0)}
+                    for t, c in counter.most_common(n)]
+
         top_issues = {
-            "complaints": [{"text": t, "count": c}
-                           for t, c in all_complaints.most_common(50)],
-            "suggestions": [{"text": t, "count": c}
-                            for t, c in all_suggestions.most_common(30)],
-            "praise": [{"text": t, "count": c}
-                       for t, c in all_praise.most_common(30)],
+            "complaints": issue_list(all_complaints, weighted_complaints, 50),
+            "suggestions": issue_list(all_suggestions, weighted_suggestions, 30),
+            "praise": issue_list(all_praise, weighted_praise, 30),
         }
 
         # Issues by season (top 20 per type per season)
@@ -1029,6 +1058,18 @@ def main():
         # Patch notes
         "patch_notes": patch_notes_out,
         "patch_impact": patch_impact,
+        # SteamCharts avg concurrent players (monthly) — source: steamcharts.com
+        "player_count": {
+            "2023-12": 242399, "2024-01": 116913, "2024-02": 49060,
+            "2024-03": 48226, "2024-04": 27273, "2024-05": 20910,
+            "2024-06": 31623, "2024-07": 16720, "2024-08": 16929,
+            "2024-09": 29264, "2024-10": 24975, "2024-11": 21731,
+            "2024-12": 23431, "2025-01": 18121, "2025-02": 19499,
+            "2025-03": 27295, "2025-04": 20271, "2025-05": 19849,
+            "2025-06": 28835, "2025-07": 19426, "2025-08": 25801,
+            "2025-09": 32758, "2025-10": 24326, "2025-11": 16742,
+            "2025-12": 12835,
+        },
     }
 
     with open("docs/dashboard_data.json", "w", encoding="utf-8") as f:

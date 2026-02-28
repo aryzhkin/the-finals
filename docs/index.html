@@ -160,6 +160,7 @@ details .details-content { padding: 0 16px 12px; }
     <p id="overview-subtitle"></p>
     <div class="metrics" id="overview-metrics"></div>
     <div class="info-box" id="overview-delta"></div>
+    <div id="overview-confidence" style="margin:8px 0;font-size:13px"></div>
     <div class="grid-2" id="overview-trends"></div>
     <div class="caption" id="overview-trends-caption"></div>
     <hr>
@@ -360,6 +361,9 @@ details .details-content { padding: 0 16px 12px; }
       <div class="pill-group" id="ci-pt-pills"></div>
     </div>
     <div id="ci-pt-hint"></div>
+    <div class="controls">
+      <label><input type="checkbox" id="ci-weight-toggle"> Weight by helpfulness votes</label>
+    </div>
     <h2>Top Pain Points</h2>
     <div class="chart" id="chart-ci-complaints"></div>
     <hr>
@@ -907,6 +911,14 @@ function renderOverview() {
     el('overview-delta').innerHTML = `<strong>Latest season:</strong> ${curr} &mdash; <strong>${currApp}%</strong> approval (${arrow} vs ${prev})`;
   }
 
+  // Confidence badge
+  const conf = ov.confidence || {};
+  if (conf.high) {
+    const highPct = pct(conf.high, ov.total);
+    const lowPct = pct((conf.low || 0) + (conf.none || 0), ov.total);
+    el('overview-confidence').innerHTML = `<span style="color:var(--text-muted)" title="AI classification confidence breakdown: ${fmt(conf.high)} high, ${fmt(conf.medium || 0)} medium, ${fmt(conf.low || 0)} low, ${fmt(conf.none || 0)} unscored">&#x1F4CA; AI confidence: <strong>${highPct}%</strong> high, <strong>${lowPct}%</strong> low/unscored &mdash; <a href="#about" style="color:var(--accent)">methodology</a></span>`;
+  }
+
   // Trends
   const trends = DATA.trends || {};
   if (trends.trending || trends.fixed) {
@@ -997,15 +1009,34 @@ function renderOverview() {
   const mNeg = months.map(m => DATA.monthly_timeline[m].negative);
   const mTotal = mPos.map((p, i) => p + mNeg[i]);
   const mTotalMax = Math.max(...mTotal);
-  Plotly.newPlot('chart-monthly-timeline', [
-    { type: 'bar', x: months, y: mPos, name: 'Positive', marker: { color: POS } },
-    { type: 'bar', x: months, y: mNeg, name: 'Negative', marker: { color: NEG },
+  // Player count overlay from SteamCharts
+  const pc = DATA.player_count || {};
+  const pcMonths = months.filter(m => pc[m]);
+  const pcVals = pcMonths.map(m => pc[m]);
+  const hasPC = pcVals.length > 0;
+
+  const traces = [
+    { type: 'bar', x: months, y: mPos, name: 'Positive Reviews', marker: { color: POS } },
+    { type: 'bar', x: months, y: mNeg, name: 'Negative Reviews', marker: { color: NEG },
       text: mTotal.map(v => v >= 1000 ? (v/1000).toFixed(1) + 'k' : String(v)),
       textposition: 'outside', cliponaxis: false, textfont: { size: 10 } },
-  ], makeLayout({ barmode: 'stack', height: 420, margin: { l: 50, r: 0, t: 20, b: 40 },
+  ];
+  const layoutExtra = {
+    barmode: 'stack', height: 420, margin: { l: 50, r: hasPC ? 60 : 0, t: 20, b: 40 },
     legend: { orientation: 'h', yanchor: 'bottom', y: 1.02 },
     xaxis: { dtick: 'M1', tickformat: '%b %Y', title: 'Month' },
-    yaxis: { range: [0, mTotalMax * 1.12], title: 'Reviews' }, dragmode: 'zoom' }), PLOT_CFG);
+    yaxis: { range: [0, mTotalMax * 1.12], title: 'Reviews' }, dragmode: 'zoom',
+  };
+  if (hasPC) {
+    traces.push({
+      type: 'scatter', mode: 'lines+markers', x: pcMonths, y: pcVals,
+      name: 'Avg Players (SteamCharts)', yaxis: 'y2',
+      line: { color: BLUE, width: 2 }, marker: { size: 5 },
+      hovertemplate: '%{x}: %{y:,} avg players<extra></extra>',
+    });
+    layoutExtra.yaxis2 = { title: 'Avg Players', overlaying: 'y', side: 'right', showgrid: false, rangemode: 'tozero' };
+  }
+  Plotly.newPlot('chart-monthly-timeline', traces, makeLayout(layoutExtra), PLOT_CFG);
 }
 
 // =====================================================================
@@ -2208,6 +2239,8 @@ function renderCommunityInsights() {
     ptBox.appendChild(pill);
   });
 
+  el('ci-weight-toggle').onchange = () => updateCI();
+
   updateCI();
 }
 
@@ -2270,6 +2303,15 @@ function updateCI() {
   suggestions = applyPtFilter(suggestions, ciPtFilter, ciSeasons);
   praise = applyPtFilter(praise, ciPtFilter, ciSeasons);
 
+  // Vote-weighted mode: re-sort by weighted count (sum of votes_up)
+  const useWeighted = el('ci-weight-toggle') && el('ci-weight-toggle').checked;
+  if (useWeighted && ciSeasons.size === 0 && ciPtFilter.size === 0) {
+    const reweight = arr => [...arr].sort((a, b) => (b.weighted || 0) - (a.weighted || 0));
+    complaints = reweight(complaints);
+    suggestions = reweight(suggestions);
+    praise = reweight(praise);
+  }
+
   // Hint text
   const hintEl = el('ci-pt-hint');
   if (ciPtFilter.size > 0) {
@@ -2279,10 +2321,12 @@ function updateCI() {
   }
 
   // Top complaints bar
+  const valKey = useWeighted && ciSeasons.size === 0 && ciPtFilter.size === 0 ? 'weighted' : 'count';
+  const valLabel = valKey === 'weighted' ? 'votes' : 'mentions';
   const cSlice = complaints.slice(0, 25);
   if (cSlice.length) {
     const cNames = cSlice.map(c => c.text).reverse();
-    const cVals = cSlice.map(c => c.count).reverse();
+    const cVals = cSlice.map(c => c[valKey] || c.count).reverse();
     Plotly.newPlot('chart-ci-complaints', [{
       type: 'bar', orientation: 'h', x: cVals, y: cNames,
       marker: { color: NEG }, text: cVals.map(v => '  ' + fmt(v)), textposition: 'outside', cliponaxis: false,
@@ -2299,7 +2343,7 @@ function updateCI() {
   const sSlice = suggestions.slice(0, 15);
   if (sSlice.length) {
     const sNames = sSlice.map(c => c.text).reverse();
-    const sVals = sSlice.map(c => c.count).reverse();
+    const sVals = sSlice.map(c => c[valKey] || c.count).reverse();
     Plotly.newPlot('chart-ci-suggestions', [{
       type: 'bar', orientation: 'h', x: sVals, y: sNames,
       marker: { color: ORANGE }, text: sVals.map(v => '  ' + fmt(v)), textposition: 'outside', cliponaxis: false,
@@ -2316,7 +2360,7 @@ function updateCI() {
   const pSlice = praise.slice(0, 15);
   if (pSlice.length) {
     const pNames = pSlice.map(c => c.text).reverse();
-    const pVals = pSlice.map(c => c.count).reverse();
+    const pVals = pSlice.map(c => c[valKey] || c.count).reverse();
     Plotly.newPlot('chart-ci-praise', [{
       type: 'bar', orientation: 'h', x: pVals, y: pNames,
       marker: { color: POS }, text: pVals.map(v => '  ' + fmt(v)), textposition: 'outside', cliponaxis: false,
@@ -3205,7 +3249,7 @@ function renderAbout() {
   el('about-data').innerHTML = `
     <ul style="color:var(--text-muted);font-size:15px;line-height:1.8;padding-left:20px">
       <li><strong>Source:</strong> Steam Store Reviews API</li>
-      <li><strong>Total reviews:</strong> ${fmt(DATA.overview.total)}</li>
+      <li><strong>Total reviews:</strong> ${fmt(DATA.overview.total)} (${fmt(DATA.overview.updated || 0)} updated after initial post, ${pct(DATA.overview.updated || 0, DATA.overview.total)}%)</li>
       <li><strong>Languages:</strong> ${DATA.overview.languages}</li>
       <li><strong>Period:</strong> Dec 2023 (launch) &mdash; Feb 2026</li>
       ${is.total_issues ? `<li><strong>Issues extracted:</strong> ${fmt(is.total_issues)} (${fmt(is.total_complaints)} complaints, ${fmt(is.total_suggestions)} suggestions, ${fmt(is.total_praise)} praise)</li>` : ''}

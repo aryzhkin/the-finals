@@ -1,0 +1,9 @@
+# THE FINALS Steam Reviews Analysis Pipeline
+# Python 3.10+
+
+# AI classification & issue extraction (OpenAI-compatible API client)
+openai>=1.0.0
+
+# All other imports (json, os, ast, re, csv, time, sys, argparse,
+# collections, datetime, concurrent.futures, threading, urllib)
+# are Python standard library — no additional packages needed.
