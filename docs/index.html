@@ -147,6 +147,8 @@ details .details-content { padding: 0 16px 12px; }
   <div id="nav-buttons"></div>
   <hr>
   <div class="stats" id="sidebar-stats"></div>
+  <hr>
+  <button id="btn-share" style="width:100%;padding:8px;background:var(--card-bg);border:1px solid var(--border);color:var(--text);border-radius:6px;cursor:pointer;font-size:13px" title="Copy shareable link to clipboard">&#x1F517; Copy Link</button>
 </nav>
 
 <!-- Main content -->
@@ -217,6 +219,7 @@ details .details-content { padding: 0 16px 12px; }
     </div>
     <div id="season-rank-changes"></div>
     <div id="season-top-issues"></div>
+    <div id="season-diff-section"></div>
     <hr>
     <h2>Recurring Problems</h2>
     <p>Complaints that persist across multiple seasons &mdash; not a one-time spike but a systemic issue.</p>
@@ -234,6 +237,11 @@ details .details-content { padding: 0 16px 12px; }
     <div class="chart" id="chart-pj-heat-neg"></div>
     <h2>Positive Categories by Playtime</h2>
     <div class="chart" id="chart-pj-heat-pos"></div>
+    <hr>
+    <h2>Sentiment by Season &amp; Playtime Cohort</h2>
+    <p class="caption">Approval rate (%) for each season × playtime combination. Reveals whether newcomers vs veterans experience the game differently in each season.</p>
+    <div class="chart" id="chart-pj-cohort"></div>
+    <div id="pj-cohort-details"></div>
   </div>
 
   <!-- Category Deep-Dive -->
@@ -378,6 +386,7 @@ details .details-content { padding: 0 16px 12px; }
     </div>
     <h3 id="et-entity-title"></h3>
     <div class="chart" id="chart-et-seasons"></div>
+    <div class="chart" id="chart-et-ratio"></div>
     <div id="et-related-issues"></div>
   </div>
 
@@ -385,6 +394,9 @@ details .details-content { padding: 0 16px 12px; }
   <div class="page" id="page-patch-notes">
     <h1>Patch Notes &amp; Community Reaction</h1>
     <p>Season-opening patch notes parsed from <a href="https://www.thefinals.wiki/wiki/Main_Page" target="_blank" style="color:var(--accent)">THE FINALS Wiki</a>. See what was changed and how complaints shifted in response.</p>
+    <div id="pn-impact-summary"></div>
+    <hr>
+    <h2>Entity Timeline</h2>
     <div class="controls">
       <label>Entity Timeline:</label>
       <select id="pn-entity-select"><option value="">Select weapon / gadget / ability...</option></select>
@@ -577,6 +589,30 @@ function makeLayout(extra) {
   return result;
 }
 
+// Auto-add export buttons to Plotly charts
+const _origPlotlyNewPlot = Plotly.newPlot.bind(Plotly);
+Plotly.newPlot = function(gd, ...args) {
+  const result = _origPlotlyNewPlot(gd, ...args);
+  const id = typeof gd === 'string' ? gd : gd.id;
+  if (id) setTimeout(() => addExportBtn(id), 50);
+  return result;
+};
+
+function addExportBtn(chartId) {
+  const chart = el(chartId);
+  if (!chart || chart.querySelector('.export-png')) return;
+  const btn = document.createElement('button');
+  btn.className = 'export-png';
+  btn.innerHTML = '&#x1F4F7;';
+  btn.title = 'Download as PNG';
+  btn.style.cssText = 'position:absolute;top:4px;right:4px;background:rgba(30,30,30,0.8);border:1px solid var(--border);color:var(--text-muted);border-radius:4px;cursor:pointer;font-size:14px;padding:2px 6px;z-index:10;opacity:0;transition:opacity 0.2s';
+  btn.onclick = (e) => { e.stopPropagation(); Plotly.downloadImage(chart, { format: 'png', width: 1200, height: 600, filename: 'the-finals-' + chartId }); };
+  chart.style.position = 'relative';
+  chart.appendChild(btn);
+  chart.addEventListener('mouseenter', () => btn.style.opacity = '1');
+  chart.addEventListener('mouseleave', () => btn.style.opacity = '0');
+}
+
 function barH(cats, vals, color, opts = {}) {
   const textVals = opts.textSuffix ? vals.map(v => '  ' + v + opts.textSuffix) : undefined;
   return [{
@@ -587,22 +623,74 @@ function barH(cats, vals, color, opts = {}) {
 }
 
 // =====================================================================
-// Navigation
+// Navigation & URL hash params
 // =====================================================================
 let currentPage = 'overview';
 const rendered = new Set();
+let hashParams = {};   // current hash params {key: value}
 
-function navigateTo(pageId) {
+function parseHash(hash) {
+  const raw = hash.replace(/^#/, '');
+  const qIdx = raw.indexOf('?');
+  const pageId = qIdx >= 0 ? raw.slice(0, qIdx) : raw;
+  const params = {};
+  if (qIdx >= 0) {
+    raw.slice(qIdx + 1).split('&').forEach(pair => {
+      const [k, v] = pair.split('=').map(decodeURIComponent);
+      if (k) params[k] = v || '';
+    });
+  }
+  return { pageId, params };
+}
+
+function buildHash(pageId, params) {
+  const qs = Object.entries(params || {}).filter(([,v]) => v).map(([k,v]) => encodeURIComponent(k) + '=' + encodeURIComponent(v)).join('&');
+  return qs ? pageId + '?' + qs : pageId;
+}
+
+function setHashParams(params) {
+  hashParams = Object.assign({}, params);
+  history.replaceState(null, '', '#' + buildHash(currentPage, hashParams));
+}
+
+function navigateTo(pageId, params) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   el('page-' + pageId).classList.add('active');
   document.querySelector(`.nav-btn[data-page="${pageId}"]`)?.classList.add('active');
   currentPage = pageId;
+  hashParams = params || {};
   if (!rendered.has(pageId)) {
     rendered.add(pageId);
     renderPage(pageId);
   }
-  window.location.hash = pageId;
+  window.location.hash = buildHash(pageId, hashParams);
+  applyHashParams(pageId, hashParams);
+}
+
+function applyHashParams(pageId, params) {
+  if (!params || !Object.keys(params).length) return;
+  setTimeout(() => {
+    if (pageId === 'entity-tracker' && params.entity) {
+      const sel = el('et-entity-select');
+      if (sel) { sel.value = params.entity; showEntityDetails(params.entity); }
+    } else if (pageId === 'patch-notes' && params.entity) {
+      const sel = el('pn-entity-select');
+      if (sel) { sel.value = params.entity; sel.dispatchEvent(new Event('change')); }
+    } else if (pageId === 'season-health' && params.season) {
+      const seasonName = 'Season ' + params.season.replace('S', '');
+      const pills = el('season-pills');
+      if (pills) {
+        pills.querySelectorAll('.pill').forEach(p => {
+          p.classList.toggle('active', p.textContent === params.season);
+        });
+        showSeasonDetails(seasonName);
+      }
+    } else if (pageId === 'review-explorer') {
+      if (params.category) navigateToExplorer({ category: params.category });
+      if (params.issue) navigateToExplorer({ issue: params.issue });
+    }
+  }, 150);
 }
 
 function initNav() {
@@ -815,10 +903,14 @@ function renderOverview() {
     };
     const ps = trends.prev_season || '';
     const cs = trends.curr_season || '';
+    const trendingAll = trends.trending || [];
+    const fixedAll = trends.fixed || [];
     let html = `<div><h3>Trending Complaints <span class="caption">(${ps} \u2192 ${cs})</span></h3>`;
-    html += renderTrendBlock((trends.trending || []).slice(0, 3), 'text-neg');
+    html += renderTrendBlock(trendingAll.slice(0, 5), 'text-neg');
+    if (trendingAll.length > 5) html += `<details style="margin-top:4px"><summary class="caption" style="cursor:pointer">Show all ${trendingAll.length}...</summary>` + renderTrendBlock(trendingAll.slice(5), 'text-neg') + '</details>';
     html += `</div><div><h3>Improving <span class="caption">(${ps} \u2192 ${cs})</span></h3>`;
-    html += renderTrendBlock((trends.fixed || []).slice(0, 3), 'text-pos');
+    html += renderTrendBlock(fixedAll.slice(0, 5), 'text-pos');
+    if (fixedAll.length > 5) html += `<details style="margin-top:4px"><summary class="caption" style="cursor:pointer">Show all ${fixedAll.length}...</summary>` + renderTrendBlock(fixedAll.slice(5), 'text-pos') + '</details>';
     html += '</div>';
     el('overview-trends').innerHTML = html;
     el('overview-trends-caption').textContent = '';
@@ -1030,6 +1122,42 @@ function showSeasonDetails(season) {
 
   // Season-specific issues from Stage 2 (with playtime filter)
   renderSeasonTopIssues(season);
+
+  // Season diff — what issues changed
+  const diffDiv = el('season-diff-section');
+  const diff = (DATA.season_diffs || {})[season];
+  if (diff && diff.prev) {
+    let dhtml = `<hr><h3>Issue Diff: ${diff.prev} &rarr; ${season}</h3>`;
+    dhtml += '<div class="grid-3" style="gap:24px">';
+    // New issues
+    dhtml += '<div><h4 class="text-neg" style="margin-top:0">New Issues</h4>';
+    (diff.new_issues || []).slice(0, 10).forEach(it => {
+      dhtml += `<p style="font-size:13px;cursor:pointer" data-nav-issue="${escHtml(it.text)}"><u>${escHtml(it.text)}</u> <strong>(${fmt(it.count)})</strong></p>`;
+    });
+    if (!(diff.new_issues || []).length) dhtml += '<p class="caption">None</p>';
+    dhtml += '</div>';
+    // Gone issues
+    dhtml += '<div><h4 class="text-pos" style="margin-top:0">Gone Issues</h4>';
+    (diff.gone_issues || []).slice(0, 10).forEach(it => {
+      dhtml += `<p style="font-size:13px;cursor:pointer" data-nav-issue="${escHtml(it.text)}"><u>${escHtml(it.text)}</u> <span class="caption">(was ${fmt(it.prev_count)})</span></p>`;
+    });
+    if (!(diff.gone_issues || []).length) dhtml += '<p class="caption">None</p>';
+    dhtml += '</div>';
+    // Biggest movers
+    dhtml += '<div><h4 style="margin-top:0;color:' + ORANGE + '">Biggest Movers</h4>';
+    const movers = [...(diff.movers_up || []).slice(0, 5), ...(diff.movers_down || []).slice(0, 5)];
+    movers.sort((a, b) => Math.abs(b.delta_pct) - Math.abs(a.delta_pct));
+    movers.slice(0, 10).forEach(it => {
+      const arrow = it.delta_pct > 0 ? '&#x25B2;' : '&#x25BC;';
+      const color = it.delta_pct > 0 ? NEG : POS;
+      dhtml += `<p style="font-size:13px;cursor:pointer" data-nav-issue="${escHtml(it.text)}"><u>${escHtml(it.text)}</u> <span style="color:${color};font-weight:600">${arrow} ${Math.abs(it.delta_pct)}%</span> <span class="caption">(${fmt(it.prev)}&rarr;${fmt(it.curr)})</span></p>`;
+    });
+    if (!movers.length) dhtml += '<p class="caption">None</p>';
+    dhtml += '</div></div>';
+    diffDiv.innerHTML = dhtml;
+  } else {
+    diffDiv.innerHTML = '';
+  }
 }
 
 function renderSeasonCatBars(season) {
@@ -1144,6 +1272,63 @@ function renderPlayerJourney() {
   // Heatmaps
   renderHeatmap('chart-pj-heat-neg', DATA.cat_playtime_neg, brackets, pt, 'negative', 'Reds');
   renderHeatmap('chart-pj-heat-pos', DATA.cat_playtime_pos, brackets, pt, 'positive', 'Greens');
+
+  // Cohort heatmap: season × playtime → approval rate
+  const cohort = DATA.cohort_data || {};
+  const BRACKET_SHORT = {};
+  brackets.forEach(b => { BRACKET_SHORT[b] = b.split(' (')[0]; });
+  const cohortSeasons = REAL_SEASONS.filter(s => cohort[s] && Object.keys(cohort[s]).length);
+  if (cohortSeasons.length) {
+    const zData = [], textData = [];
+    const yLabels = brackets.map(b => BRACKET_SHORT[b]);
+    brackets.forEach(br => {
+      const row = [], textRow = [];
+      cohortSeasons.forEach(s => {
+        const cell = (cohort[s] || {})[br];
+        if (cell) {
+          row.push(cell.approval);
+          textRow.push(`${cell.approval}%\n(${fmt(cell.total)})`);
+        } else {
+          row.push(null);
+          textRow.push('');
+        }
+      });
+      zData.push(row);
+      textData.push(textRow);
+    });
+
+    Plotly.newPlot('chart-pj-cohort', [{
+      type: 'heatmap', z: zData, x: cohortSeasons.map(s => s.replace('Season ', 'S')),
+      y: yLabels, colorscale: [[0, NEG], [0.5, '#f1c40f'], [1, POS]],
+      zmin: 40, zmax: 100,
+      text: textData, texttemplate: '%{text}', textfont: { size: 10 }, showscale: true,
+      colorbar: { title: 'Approval %', ticksuffix: '%' },
+      hovertemplate: '%{y} in %{x}: %{z}% approval<extra></extra>',
+    }], makeLayout({ height: 380, margin: { l: 0, r: 80, t: 10, b: 40 }, yaxis: { automargin: true } }), PLOT_CFG);
+
+    // Click handler: show top complaints for clicked cell
+    el('chart-pj-cohort').on('plotly_click', d => {
+      const pt = d.points[0];
+      if (!pt) return;
+      const seasonFull = cohortSeasons[pt.x];
+      const bracket = brackets[pt.y];
+      const cell = (cohort[seasonFull] || {})[bracket];
+      if (!cell) return;
+      const topNeg = cell.top_neg || {};
+      let dhtml = `<h4 style="margin:12px 0 8px">Top complaints: ${BRACKET_SHORT[bracket]} in ${seasonFull}</h4>`;
+      const entries = Object.entries(topNeg).sort((a, b) => b[1] - a[1]);
+      if (entries.length) {
+        dhtml += '<ul style="margin:0;padding-left:20px">';
+        entries.forEach(([cat, count]) => {
+          dhtml += `<li style="font-size:13px;cursor:pointer" data-nav-category="${escHtml(cat)}"><u>${escHtml(cat)}</u> (${fmt(count)})</li>`;
+        });
+        dhtml += '</ul>';
+      } else {
+        dhtml += '<p class="caption">No complaints in this cohort</p>';
+      }
+      el('pj-cohort-details').innerHTML = dhtml;
+    });
+  }
 }
 
 function renderHeatmap(chartId, catData, brackets, pt, sentiment, colorscale) {
@@ -2403,6 +2588,7 @@ function showEntityDetails(entity) {
   const et = DATA.entity_tracking || {};
   const ed = et[entity];
   if (!ed) return;
+  if (currentPage === 'entity-tracker') setHashParams({ entity });
 
   el('et-entity-title').textContent = `"${entity}" mentions across seasons`;
 
@@ -2424,6 +2610,43 @@ function showEntityDetails(entity) {
     barmode: 'stack', height: 400, margin: { l: 50, r: 0, t: 10, b: 30 },
     legend: { orientation: 'h', yanchor: 'bottom', y: 1.02 },
   }), PLOT_CFG);
+
+  // Sentiment trajectory: complaint ratio line chart
+  const ratioSeasons = [];
+  const ratioVals = [];
+  seasons.forEach(s => {
+    const c = (byS[s] || {}).complaint || 0;
+    const p = (byS[s] || {}).praise || 0;
+    if (c + p > 0) {
+      ratioSeasons.push(s);
+      ratioVals.push(Math.round(c / (c + p) * 1000) / 10);
+    }
+  });
+  if (ratioSeasons.length >= 2) {
+    const ratioColors = ratioVals.map(v => v > 70 ? NEG : v > 40 ? ORANGE : POS);
+    Plotly.newPlot('chart-et-ratio', [{
+      type: 'scatter', mode: 'lines+markers', x: ratioSeasons, y: ratioVals,
+      marker: { color: ratioColors, size: 10 },
+      line: { color: '#888', width: 2 },
+      hovertemplate: '%{x}: %{y}% complaints<extra></extra>',
+    }], makeLayout({
+      height: 250, margin: { l: 50, r: 20, t: 30, b: 30 },
+      yaxis: { title: 'Complaint Ratio %', range: [0, 100] },
+      annotations: [{ x: 0.5, y: 1.08, xref: 'paper', yref: 'paper', showarrow: false,
+        text: '<b>Sentiment Trajectory</b> — % of mentions that are complaints (lower = healthier)',
+        font: { size: 12 } }],
+    }), PLOT_CFG);
+    // Trend arrow in title
+    const last = ratioVals[ratioVals.length - 1];
+    const prev = ratioVals[ratioVals.length - 2];
+    const diff = Math.round((last - prev) * 10) / 10;
+    const arrow = diff > 2 ? ` <span style="color:${NEG}">&#x25B2; ${diff}pp</span>` :
+                  diff < -2 ? ` <span style="color:${POS}">&#x25BC; ${Math.abs(diff)}pp</span>` : '';
+    el('et-entity-title').innerHTML = `"${escHtml(entity)}" mentions across seasons${arrow}`;
+  } else {
+    Plotly.purge('chart-et-ratio');
+    el('chart-et-ratio').innerHTML = '';
+  }
 
   // "What Players Say" section using entity-specific issues
   const entIssues = ed.issues || {};
@@ -2490,6 +2713,47 @@ function renderPatchNotes() {
     pillContainer.appendChild(pill);
   });
   showPatchDetails(pnSeason);
+
+  // Patch Impact Summary table
+  const impact = DATA.patch_impact || [];
+  if (impact.length) {
+    const sorted = [...impact].filter(r => r.before > 0 || r.after > 0).sort((a, b) => {
+      if (a.delta_pct === null && b.delta_pct === null) return 0;
+      if (a.delta_pct === null) return 1;
+      if (b.delta_pct === null) return -1;
+      return a.delta_pct - b.delta_pct;
+    });
+    let ihtml = '<h2>Patch Impact Summary</h2>';
+    ihtml += '<p class="caption">How entity complaints changed after balance patches. "Before" = previous season, "After" = patch season.</p>';
+    ihtml += '<table style="width:100%;font-size:13px"><thead><tr><th style="text-align:left">Season</th><th style="text-align:left">Entity</th><th style="text-align:left">Change</th><th style="text-align:right">Before</th><th style="text-align:right">After</th><th style="text-align:right">Delta</th><th style="text-align:left">Verdict</th></tr></thead><tbody>';
+    sorted.forEach(r => {
+      const isNerf = r.type.includes('nerf');
+      const isBuff = r.type.includes('buff');
+      const typeLabel = r.type.replace(/_/g, ' ');
+      const typeColor = isBuff ? POS : isNerf ? NEG : ORANGE;
+      let verdict = '', verdictColor = '';
+      if (r.delta_pct !== null) {
+        if (r.delta_pct <= -20) { verdict = 'Effective'; verdictColor = POS; }
+        else if (r.delta_pct <= -5) { verdict = 'Partial'; verdictColor = '#f1c40f'; }
+        else if (r.delta_pct <= 5) { verdict = 'No effect'; verdictColor = 'var(--text-muted)'; }
+        else { verdict = 'Backfired'; verdictColor = NEG; }
+      } else { verdict = '—'; verdictColor = 'var(--text-muted)'; }
+      const deltaStr = r.delta_pct !== null ? `${r.delta_pct > 0 ? '+' : ''}${r.delta_pct}%` : '—';
+      const deltaColor = r.delta_pct !== null ? (r.delta_pct <= 0 ? POS : NEG) : 'var(--text-muted)';
+      ihtml += `<tr>
+        <td>${escHtml(r.season)}</td>
+        <td style="cursor:pointer;text-decoration:underline" data-nav-entity="${escHtml(r.entity)}">${escHtml(r.entity)}</td>
+        <td><span style="color:${typeColor};font-size:12px">${typeLabel}</span></td>
+        <td style="text-align:right">${fmt(r.before)}</td>
+        <td style="text-align:right">${fmt(r.after)}</td>
+        <td style="text-align:right;color:${deltaColor};font-weight:600">${deltaStr}</td>
+        <td><span style="color:${verdictColor};font-weight:600;font-size:12px">${verdict}</span></td>
+      </tr>`;
+    });
+    ihtml += '</tbody></table>';
+    ihtml += '<p class="caption" style="margin-top:8px;font-style:italic">Correlation does not imply causation. Many factors affect complaint volume beyond patches.</p>';
+    el('pn-impact-summary').innerHTML = ihtml;
+  }
 
   // Entity selector
   buildPatchEntitySelector();
@@ -2742,7 +3006,7 @@ function showPatchEntityTimeline(entityKey, patchList) {
 // Find entity in tracking data (exact match first, then fuzzy)
 function navigateToPatchEntity(entityKey) {
   rendered.delete('patch-notes');
-  navigateTo('patch-notes');
+  navigateTo('patch-notes', { entity: entityKey });
   setTimeout(() => {
     const sel = el('pn-entity-select');
     if (sel) {
@@ -2945,6 +3209,18 @@ async function init() {
   statsHtml += `<br><strong>${DATA.overview.languages}</strong> languages<br><strong>${numSeasons}</strong> seasons`;
   el('sidebar-stats').innerHTML = statsHtml;
 
+  // Share button
+  el('btn-share').onclick = () => {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url).then(() => {
+      const btn = el('btn-share');
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.innerHTML = '&#x1F517; Copy Link'; }, 2000);
+    }).catch(() => {
+      prompt('Copy this link:', window.location.href);
+    });
+  };
+
   // Init nav
   initNav();
 
@@ -2952,15 +3228,15 @@ async function init() {
   el('loading').style.display = 'none';
 
   // Navigate to page from hash or default
-  const hash = window.location.hash.slice(1);
-  const validPage = PAGES.find(p => p.id === hash);
-  navigateTo(validPage ? hash : 'overview');
+  const { pageId: initPage, params: initParams } = parseHash(window.location.hash);
+  const validPage = PAGES.find(p => p.id === initPage);
+  navigateTo(validPage ? initPage : 'overview', validPage ? initParams : {});
 }
 
 window.addEventListener('hashchange', () => {
-  const hash = window.location.hash.slice(1);
-  const validPage = PAGES.find(p => p.id === hash);
-  if (validPage && hash !== currentPage) navigateTo(hash);
+  const { pageId, params } = parseHash(window.location.hash);
+  const validPage = PAGES.find(p => p.id === pageId);
+  if (validPage && pageId !== currentPage) navigateTo(pageId, params);
 });
 
 init();

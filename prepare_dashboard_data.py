@@ -351,6 +351,34 @@ def main():
             cat_playtime_pos[c][r["playtime_bracket"]] += 1
 
     # -----------------------------------------------------------------------
+    # 6b. Cohort data: season × playtime → approval + top categories
+    # -----------------------------------------------------------------------
+    cohort_raw = defaultdict(lambda: defaultdict(lambda: {
+        "positive": 0, "negative": 0, "neg_cats": Counter()
+    }))
+    for r in reviews:
+        cohort_raw[r["season"]][r["playtime_bracket"]]["positive" if r["sentiment"] == "positive" else "negative"] += 1
+        if r["sentiment"] == "negative":
+            for c in r["categories"]:
+                cohort_raw[r["season"]][r["playtime_bracket"]]["neg_cats"][c] += 1
+
+    cohort_data = {}
+    for season in cohort_raw:
+        cohort_data[season] = {}
+        for bracket in cohort_raw[season]:
+            d = cohort_raw[season][bracket]
+            total = d["positive"] + d["negative"]
+            if total < 5:
+                continue
+            cohort_data[season][bracket] = {
+                "total": total,
+                "positive": d["positive"],
+                "negative": d["negative"],
+                "approval": round(d["positive"] / total * 100, 1),
+                "top_neg": dict(d["neg_cats"].most_common(5)),
+            }
+
+    # -----------------------------------------------------------------------
     # 7. Regional data (top languages)
     # -----------------------------------------------------------------------
     lang_data = defaultdict(lambda: {"positive": 0, "negative": 0,
@@ -493,8 +521,8 @@ def main():
                 "delta": round(delta, 1),
             })
         deltas.sort(key=lambda x: x["delta"], reverse=True)
-        trending = [d for d in deltas[:5] if d["delta"] > 0]
-        fixed = [d for d in deltas[-5:][::-1] if d["delta"] < 0]
+        trending = [d for d in deltas[:15] if d["delta"] > 0]
+        fixed = [d for d in deltas[-15:][::-1] if d["delta"] < 0]
 
         # Attach top Stage 2 specific issues per trending/fixed category
         # Uses issues_by_season from Stage 2 (computed later, so we defer)
@@ -616,6 +644,49 @@ def main():
                            for t, c in counters["praise"].most_common(15)],
             }
 
+        # Season-to-season issue diffs
+        season_diffs = {}
+        for i in range(1, len(real_seasons_ordered)):
+            prev_s = real_seasons_ordered[i - 1]
+            curr_s = real_seasons_ordered[i]
+            prev_c = season_issues.get(prev_s, {})
+            curr_c = season_issues.get(curr_s, {})
+            prev_complaints = prev_c.get("complaints", Counter()) if isinstance(prev_c, dict) else Counter()
+            curr_complaints = curr_c.get("complaints", Counter()) if isinstance(curr_c, dict) else Counter()
+
+            new_issues = []
+            gone_issues = []
+            movers_up = []
+            movers_down = []
+
+            all_texts = set(prev_complaints) | set(curr_complaints)
+            for text in all_texts:
+                pc = prev_complaints.get(text, 0)
+                cc = curr_complaints.get(text, 0)
+                if pc == 0 and cc >= 5:
+                    new_issues.append({"text": text, "count": cc})
+                elif cc == 0 and pc >= 5:
+                    gone_issues.append({"text": text, "prev_count": pc})
+                elif pc >= 5 and cc >= 5:
+                    delta_pct = round((cc - pc) / pc * 100)
+                    if delta_pct >= 50:
+                        movers_up.append({"text": text, "prev": pc, "curr": cc, "delta_pct": delta_pct})
+                    elif delta_pct <= -50:
+                        movers_down.append({"text": text, "prev": pc, "curr": cc, "delta_pct": delta_pct})
+
+            new_issues.sort(key=lambda x: x["count"], reverse=True)
+            gone_issues.sort(key=lambda x: x["prev_count"], reverse=True)
+            movers_up.sort(key=lambda x: x["delta_pct"], reverse=True)
+            movers_down.sort(key=lambda x: x["delta_pct"])
+
+            season_diffs[curr_s] = {
+                "prev": prev_s,
+                "new_issues": new_issues[:15],
+                "gone_issues": gone_issues[:15],
+                "movers_up": movers_up[:10],
+                "movers_down": movers_down[:10],
+            }
+
         # Entity tracking (top entities by total mentions)
         ent_totals = {e: sum(sum(c.values()) for c in seasons.values())
                       for e, seasons in ent_season.items()}
@@ -722,6 +793,46 @@ def main():
                 "new_content": patch.get("new_content", []),
                 "bug_fixes": patch.get("bug_fixes", []),
             })
+
+    # -----------------------------------------------------------------------
+    # 14b. Patch impact — pre/post season complaint comparison per entity
+    # -----------------------------------------------------------------------
+    patch_impact = []
+    if patch_notes_data and entity_tracking:
+        # Build entity name lookup (same fuzzy logic as frontend findEntity)
+        et_keys = list(entity_tracking.keys())
+        def find_entity(item_name):
+            if item_name in entity_tracking:
+                return item_name
+            for k in et_keys:
+                if k.startswith(item_name) or item_name.startswith(k):
+                    return k
+            return None
+
+        for patch in patch_notes_data:
+            season_code = patch.get("season", "")  # e.g. "S3"
+            season_num = season_code.replace("S", "")
+            season_name = "Season " + season_num  # e.g. "Season 3"
+            prev_num = int(season_num) - 1 if season_num.isdigit() else None
+            prev_name = "Season " + str(prev_num) if prev_num and prev_num >= 0 else None
+
+            for change in patch.get("balance_changes", []):
+                entity_key = find_entity(change.get("item", ""))
+                if not entity_key:
+                    continue
+                by_s = entity_tracking[entity_key].get("by_season", {})
+                after = (by_s.get(season_name, {}) or {}).get("complaint", 0)
+                before = (by_s.get(prev_name, {}) or {}).get("complaint", 0) if prev_name else 0
+                delta_pct = round((after - before) / before * 100) if before > 0 else None
+                patch_impact.append({
+                    "season": season_code,
+                    "entity": entity_key,
+                    "type": change.get("type", ""),
+                    "details": change.get("details", ""),
+                    "before": before,
+                    "after": after,
+                    "delta_pct": delta_pct,
+                })
 
     # -----------------------------------------------------------------------
     # 15. Issue samples — real review texts for each issue in category_issues
@@ -900,11 +1011,13 @@ def main():
         "cat_playtime_pos": {k: dict(v) for k, v in cat_playtime_pos.items()},
         "cat_season_pt_neg": {cat: {s: dict(brs) for s, brs in seasons.items()} for cat, seasons in cat_season_pt_neg.items()},
         "cat_season_pt_pos": {cat: {s: dict(brs) for s, brs in seasons.items()} for cat, seasons in cat_season_pt_pos.items()},
+        "cohort_data": cohort_data,
         "regional": regional,
         "top_reviews": top_reviews,
         "recurring_problems": recurring,
         "comparisons": comparisons,
         "trends": trends_data,
+        "season_diffs": season_diffs if issues_data else {},
         "regional_deviation": regional_deviation,
         # Stage 2 data
         "top_issues": top_issues,
@@ -916,6 +1029,7 @@ def main():
         "issue_playtime_by_season": issue_playtime_by_season if issues_data and category_issues else {},
         # Patch notes
         "patch_notes": patch_notes_out,
+        "patch_impact": patch_impact,
     }
 
     with open("docs/dashboard_data.json", "w", encoding="utf-8") as f:
