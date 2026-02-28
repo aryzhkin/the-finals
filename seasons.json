@@ -1,0 +1,12 @@
+[
+  {"season": "Season 0 (Beta)", "start": "2023-03-07", "end": "2023-11-05"},
+  {"season": "Season 1",        "start": "2023-12-07", "end": "2024-03-14"},
+  {"season": "Season 2",        "start": "2024-03-14", "end": "2024-06-13"},
+  {"season": "Season 3",        "start": "2024-06-13", "end": "2024-09-26"},
+  {"season": "Season 4",        "start": "2024-09-26", "end": "2024-12-12"},
+  {"season": "Season 5",        "start": "2024-12-12", "end": "2025-03-20"},
+  {"season": "Season 6",        "start": "2025-03-20", "end": "2025-06-11"},
+  {"season": "Season 7",        "start": "2025-06-12", "end": "2025-09-10"},
+  {"season": "Season 8",        "start": "2025-09-10", "end": "2025-12-10"},
+  {"season": "Season 9",        "start": "2025-12-10", "end": "2026-03-25"}
+]

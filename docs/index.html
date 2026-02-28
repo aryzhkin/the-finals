@@ -1,0 +1,1774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE FINALS - Review Analytics</title>
+<link rel="icon" href="https://cdn.cloudflare.steamstatic.com/steam/apps/2073850/capsule_231x87.jpg">
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<style>
+:root {
+  --bg: #0e1117;
+  --sidebar-bg: #262730;
+  --card-bg: #1e1e2e;
+  --text: #fafafa;
+  --text-muted: #a0a0b0;
+  --border: #3a3a4a;
+  --accent: #3498db;
+  --pos: #2ecc71;
+  --neg: #e74c3c;
+  --orange: #e67e22;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Source Sans Pro", -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; }
+
+/* Sidebar */
+.sidebar { width: 260px; min-width: 260px; background: var(--sidebar-bg); padding: 24px 16px; display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; overflow-y: auto; z-index: 100; }
+.sidebar h2 { font-size: 22px; margin-bottom: 2px; }
+.sidebar .caption { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; }
+.sidebar hr { border: none; border-top: 1px solid var(--border); margin: 12px 0; }
+.sidebar .stats { font-size: 13px; color: var(--text-muted); line-height: 1.8; }
+.sidebar .stats strong { color: var(--text); }
+.nav-btn { display: block; width: 100%; text-align: left; background: none; border: none; color: var(--text-muted); padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 14px; margin: 1px 0; transition: all 0.15s; }
+.nav-btn:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+.nav-btn.active { background: rgba(255,255,255,0.1); color: var(--text); font-weight: 600; }
+
+/* Main */
+.main { margin-left: 260px; flex: 1; padding: 32px 40px; max-width: 1400px; min-width: 0; }
+.page { display: none; }
+.page.active { display: block; }
+
+/* Typography */
+h1 { font-size: 28px; margin-bottom: 8px; }
+h2 { font-size: 22px; margin: 24px 0 12px; }
+h3 { font-size: 18px; margin: 16px 0 8px; }
+p, .text { font-size: 15px; line-height: 1.6; color: var(--text-muted); margin-bottom: 12px; }
+.caption { font-size: 12px; color: var(--text-muted); }
+hr { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+/* Metrics row */
+.metrics { display: flex; gap: 16px; margin: 16px 0; flex-wrap: wrap; }
+.metric { background: var(--card-bg); border-radius: 8px; padding: 16px 20px; flex: 1; min-width: 140px; }
+.metric .label { font-size: 13px; color: var(--text-muted); margin-bottom: 4px; }
+.metric .value { font-size: 24px; font-weight: 700; }
+.metric .delta { font-size: 13px; margin-top: 2px; }
+
+/* Info box */
+.info-box { background: rgba(52, 152, 219, 0.1); border-left: 4px solid var(--accent); padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 12px 0; font-size: 14px; }
+
+/* Grid */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.grid-23 { display: grid; grid-template-columns: 2fr 2fr 3fr; gap: 16px; }
+
+/* Controls */
+.controls { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; align-items: center; }
+.controls label { font-size: 13px; color: var(--text-muted); margin-right: 4px; }
+.btn-group { display: flex; gap: 0; }
+.btn-group .btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--text-muted); padding: 6px 14px; cursor: pointer; font-size: 13px; transition: all 0.15s; }
+.btn-group .btn:first-child { border-radius: 6px 0 0 6px; }
+.btn-group .btn:last-child { border-radius: 0 6px 6px 0; }
+.btn-group .btn.active { background: var(--accent); border-color: var(--accent); color: white; }
+.btn-group .btn:hover:not(.active) { background: rgba(255,255,255,0.05); }
+select { background: var(--card-bg); border: 1px solid var(--border); color: var(--text); padding: 6px 12px; border-radius: 6px; font-size: 13px; max-width: 300px; }
+input[type="text"] { background: var(--card-bg); border: 1px solid var(--border); color: var(--text); padding: 6px 12px; border-radius: 6px; font-size: 13px; width: 200px; }
+
+/* Pill radio buttons (horizontal) */
+.pill-group { display: flex; gap: 4px; flex-wrap: wrap; margin: 8px 0; }
+.pill-group .pill { background: var(--card-bg); border: 1px solid var(--border); color: var(--text-muted); padding: 5px 12px; border-radius: 16px; cursor: pointer; font-size: 12px; transition: all 0.15s; white-space: nowrap; }
+.pill-group .pill.active { background: var(--accent); border-color: var(--accent); color: white; }
+.pill-group .pill:hover:not(.active) { background: rgba(255,255,255,0.08); }
+
+/* Table */
+table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0; }
+th { background: var(--card-bg); padding: 8px 12px; text-align: left; border-bottom: 2px solid var(--border); font-weight: 600; }
+td { padding: 8px 12px; border-bottom: 1px solid var(--border); }
+tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* Expander */
+details { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; margin: 8px 0; }
+details summary { padding: 10px 16px; cursor: pointer; font-size: 14px; user-select: none; }
+details summary:hover { background: rgba(255,255,255,0.03); }
+details .details-content { padding: 0 16px 12px; }
+
+/* Review cards */
+.review-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; margin: 8px 0; }
+.review-header { font-size: 13px; color: var(--text-muted); margin-bottom: 6px; }
+.review-text { font-family: monospace; font-size: 13px; white-space: pre-wrap; word-break: break-word; max-height: 300px; overflow-y: auto; line-height: 1.5; }
+.review-cats { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+
+/* Tag cloud */
+.tag-cloud { text-align: center; line-height: 2.4; padding: 20px; }
+.tag-cloud span { display: inline-block; padding: 4px 8px; cursor: default; }
+
+/* Colors */
+.text-pos { color: var(--pos); }
+.text-neg { color: var(--neg); }
+.text-orange { color: var(--orange); }
+
+/* Chart container */
+.chart { margin: 12px 0; }
+
+/* Loading */
+#loading { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 9999; font-size: 18px; }
+
+/* Mobile */
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; padding: 16px; }
+  .grid-2, .grid-3, .grid-23 { grid-template-columns: 1fr; }
+  .metrics { flex-direction: column; }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* Plotly overrides */
+.js-plotly-plot .plotly .modebar { top: 4px !important; right: 4px !important; }
+</style>
+</head>
+<body>
+
+<div id="loading">Loading dashboard data...</div>
+
+<!-- Sidebar -->
+<nav class="sidebar">
+  <h2>THE FINALS</h2>
+  <div class="caption">Steam Review Analytics</div>
+  <hr>
+  <div id="nav-buttons"></div>
+  <hr>
+  <div class="stats" id="sidebar-stats"></div>
+</nav>
+
+<!-- Main content -->
+<div class="main">
+
+  <!-- Overview -->
+  <div class="page" id="page-overview">
+    <h1>THE FINALS - Review Analytics Dashboard</h1>
+    <p id="overview-subtitle"></p>
+    <div class="metrics" id="overview-metrics"></div>
+    <div class="info-box" id="overview-delta"></div>
+    <div class="grid-2" id="overview-trends"></div>
+    <div class="caption" id="overview-trends-caption"></div>
+    <hr>
+    <div class="grid-2" style="align-items:start">
+      <div>
+        <h2 style="margin-top:0">Top Negative Reasons</h2>
+        <div class="chart" id="chart-neg-cats"></div>
+        <div class="caption" id="neg-unclassified"></div>
+      </div>
+      <div>
+        <h2 style="margin-top:0">Top Positive Reasons</h2>
+        <div class="chart" id="chart-pos-cats"></div>
+        <div class="caption" id="pos-unclassified"></div>
+      </div>
+    </div>
+    <hr>
+    <div id="overview-top-issues"></div>
+    <hr>
+    <h2>Review Volume Over Time</h2>
+    <div class="chart" id="chart-monthly-timeline"></div>
+  </div>
+
+  <!-- Season Health -->
+  <div class="page" id="page-season-health">
+    <h1>Season Health Barometer</h1>
+    <p>Season 0 (Beta) is not shown &mdash; the game was in closed beta (Mar&ndash;Nov 2023). <strong>Off-season</strong> = reviews posted in gaps between seasons.</p>
+    <div class="chart" id="chart-season-dual"></div>
+    <hr>
+    <div class="controls">
+      <label>Select season:</label>
+      <div class="pill-group" id="season-pills"></div>
+    </div>
+    <div class="metrics" id="season-metrics"></div>
+    <div class="grid-2">
+      <div>
+        <h3>Top Complaints</h3>
+        <div class="chart" id="chart-season-neg"></div>
+      </div>
+      <div>
+        <h3>Top Praise</h3>
+        <div class="chart" id="chart-season-pos"></div>
+      </div>
+    </div>
+    <div id="season-rank-changes"></div>
+    <div id="season-top-issues"></div>
+    <hr>
+    <h2>Recurring Problems</h2>
+    <p>Complaints that persist across multiple seasons &mdash; not a one-time spike but a systemic issue.</p>
+    <div class="chart" id="chart-recurring"></div>
+  </div>
+
+  <!-- Player Journey -->
+  <div class="page" id="page-player-journey">
+    <h1>Player Journey &mdash; How Sentiment Changes With Playtime</h1>
+    <div class="chart" id="chart-pj-sentiment"></div>
+    <div class="chart" id="chart-pj-volume"></div>
+    <hr>
+    <h2>Negative Categories by Playtime</h2>
+    <p class="caption">Color intensity shows how each category's share changes across playtime brackets (normalized per row). Numbers are actual % of reviews in that bracket.</p>
+    <div class="chart" id="chart-pj-heat-neg"></div>
+    <h2>Positive Categories by Playtime</h2>
+    <div class="chart" id="chart-pj-heat-pos"></div>
+  </div>
+
+  <!-- Category Deep-Dive -->
+  <div class="page" id="page-category-deep-dive">
+    <h1>Category Deep-Dive</h1>
+    <div class="controls">
+      <label>Sentiment:</label>
+      <div class="btn-group" id="dd-sentiment-btns"></div>
+    </div>
+    <div class="controls">
+      <label>Category:</label>
+      <div class="pill-group" id="dd-cat-pills"></div>
+    </div>
+    <h3 id="dd-title"></h3>
+    <div class="chart" id="chart-dd-seasons"></div>
+    <h3 id="dd-title2"></h3>
+    <div class="chart" id="chart-dd-playtime"></div>
+    <div id="dd-related-issues"></div>
+  </div>
+
+  <!-- Review Bombing -->
+  <div class="page" id="page-review-bombing">
+    <h1>Review Bombing Detection</h1>
+    <p>Days and weeks with unusual spikes in negative reviews.</p>
+    <div class="controls">
+      <label>Granularity:</label>
+      <div class="btn-group" id="rb-gran-btns">
+        <button class="btn active" data-val="daily">Daily</button>
+        <button class="btn" data-val="weekly">Weekly</button>
+      </div>
+    </div>
+    <div class="chart" id="chart-rb-volume"></div>
+    <h2 id="rb-ratio-title">Daily Negative Ratio</h2>
+    <div class="chart" id="chart-rb-ratio"></div>
+    <h2>Worst Days (highest negative ratio, min 20 reviews)</h2>
+    <div id="rb-worst-table"></div>
+  </div>
+
+  <!-- Regional Analysis -->
+  <div class="page" id="page-regional-analysis">
+    <h1>Regional Analysis</h1>
+    <div class="chart" id="chart-reg-approval"></div>
+    <div class="chart" id="chart-reg-volume"></div>
+    <hr>
+    <div class="controls">
+      <label>Select language:</label>
+      <select id="reg-lang-select"></select>
+    </div>
+    <div class="metrics" id="reg-metrics"></div>
+    <div class="grid-2">
+      <div>
+        <h3>Top Complaints</h3>
+        <div class="chart" id="chart-reg-neg"></div>
+      </div>
+      <div>
+        <h3>Top Praise</h3>
+        <div class="chart" id="chart-reg-pos"></div>
+      </div>
+    </div>
+    <div id="reg-deviation-section">
+      <hr>
+      <h2>Deviation from Global Average</h2>
+      <p class="caption">How this region's complaint distribution differs from the overall average. Only significant deviations (&gt;3%) are shown.</p>
+      <div class="chart" id="chart-reg-deviation"></div>
+    </div>
+  </div>
+
+  <!-- Praise vs Complaints -->
+  <div class="page" id="page-praise-vs-complaints">
+    <h1>Same Topic &mdash; Praised vs Complained</h1>
+    <p>The same game aspects get both love and hate. We paired related negative and positive categories to show the contrast. <em>Sorted by total combined mentions &mdash; biggest topics first.</em></p>
+    <div class="controls">
+      <label>Season:</label>
+      <div class="pill-group" id="pvc-season-pills"></div>
+    </div>
+    <div id="pvc-topics"></div>
+    <div class="chart" id="chart-pvc-comparison"></div>
+  </div>
+
+  <!-- Top Reviews -->
+  <div class="page" id="page-top-reviews">
+    <h1>Top Reviews</h1>
+    <div class="controls">
+      <label>Season:</label>
+      <div class="pill-group" id="tr-season-pills"></div>
+      <input type="text" id="tr-search" placeholder="Search in reviews...">
+    </div>
+    <div class="controls">
+      <div class="btn-group" id="tr-tab-btns">
+        <button class="btn active" data-val="helpful">Most Helpful</button>
+        <button class="btn" data-val="funny">Most Funny</button>
+      </div>
+      <button class="btn" id="tr-random-btn" style="margin-left:12px;border-radius:6px;border:1px solid var(--border);background:var(--card-bg);color:var(--text-muted);padding:6px 14px;cursor:pointer;font-size:13px">Random Funny Review</button>
+    </div>
+    <div id="tr-random-card"></div>
+    <div id="tr-reviews-list"></div>
+  </div>
+
+  <!-- Community Insights (Stage 2 AI) -->
+  <div class="page" id="page-community-insights">
+    <h1>Community Insights</h1>
+    <p>Specific issues extracted from reviews using AI (Gemini 2.5 Flash Lite). Unlike broad categories, these are granular &mdash; exact complaints, suggestions, and praise points.</p>
+    <div class="metrics" id="ci-metrics"></div>
+    <div class="controls">
+      <label>Season:</label>
+      <div class="pill-group" id="ci-season-pills"></div>
+    </div>
+    <h2>Top Pain Points</h2>
+    <div class="chart" id="chart-ci-complaints"></div>
+    <hr>
+    <div class="grid-2">
+      <div>
+        <h2>Top Requests</h2>
+        <div class="chart" id="chart-ci-suggestions"></div>
+      </div>
+      <div>
+        <h2>What Players Love</h2>
+        <div class="chart" id="chart-ci-praise"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Entity Tracker -->
+  <div class="page" id="page-entity-tracker">
+    <h1>Entity Tracker</h1>
+    <p>Track how specific weapons, gadgets, abilities, and game modes are discussed across seasons. Mentions are extracted from reviews by AI.</p>
+    <h2>Most Discussed Entities</h2>
+    <div class="chart" id="chart-et-top"></div>
+    <hr>
+    <div class="controls">
+      <label>Entity:</label>
+      <select id="et-entity-select"></select>
+    </div>
+    <h3 id="et-entity-title"></h3>
+    <div class="chart" id="chart-et-seasons"></div>
+    <div id="et-related-issues"></div>
+  </div>
+
+  <!-- Patch Notes -->
+  <div class="page" id="page-patch-notes">
+    <h1>Patch Notes &amp; Community Reaction</h1>
+    <p>Season-opening patch notes parsed from <a href="https://www.thefinals.wiki/wiki/Main_Page" target="_blank" style="color:var(--accent)">THE FINALS Wiki</a>. See what was changed and how complaints shifted in response.</p>
+    <div class="controls">
+      <label>Season:</label>
+      <div class="pill-group" id="pn-season-pills"></div>
+    </div>
+    <div id="pn-content"></div>
+  </div>
+
+  <!-- Word Cloud -->
+  <div class="page" id="page-word-cloud">
+    <h1>Category Cloud</h1>
+    <p>Visual overview of all review categories. Size = frequency, color = sentiment (red = complaint, green = praise).</p>
+    <div class="controls">
+      <label>Season:</label>
+      <div class="pill-group" id="wc-season-pills"></div>
+    </div>
+    <div class="tag-cloud" id="wc-cloud"></div>
+    <div class="grid-2" style="margin-top:12px">
+      <div class="text-neg">Red = Negative categories</div>
+      <div class="text-pos">Green = Positive categories</div>
+    </div>
+    <details style="margin-top:16px">
+      <summary>Show all categories as table</summary>
+      <div class="details-content" id="wc-table"></div>
+    </details>
+  </div>
+
+  <!-- About -->
+  <div class="page" id="page-about">
+    <h1>About This Dashboard</h1>
+    <h2>What is this?</h2>
+    <p>An independent, community-facing analytics dashboard built from <strong>all</strong> Steam reviews for <a href="https://store.steampowered.com/app/2073850/THE_FINALS/" target="_blank" style="color:var(--accent)">THE FINALS</a> &mdash; Embark Studios' free-to-play FPS.</p>
+    <h2>Data Source</h2>
+    <div id="about-data"></div>
+    <h2>Analysis Pipeline</h2>
+    <p>A two-stage AI pipeline processes every review:</p>
+    <ul style="color:var(--text-muted);font-size:15px;line-height:1.8;padding-left:20px">
+      <li><strong>Stage 1 &mdash; Category Classification:</strong> Each review is classified into 42 categories (30 negative, 12 positive) using AI. Covers all 15 languages. 245,636 of 247,453 reviews classified (99.3%). Cost: $3.30</li>
+      <li><strong>Stage 2 &mdash; Issue Extraction:</strong> Specific complaints, suggestions, and praise extracted from each review with game entity normalization. 440,481 issues extracted (avg 1.78 per review). Cost: $6.00</li>
+      <li><strong>Post-processing:</strong> Issue texts normalized to merge duplicates (prefix/suffix synonym groups, context-dependent mapping). Patch notes from 9 seasons parsed for correlation.</li>
+    </ul>
+    <p><strong>Model:</strong> <code style="background:var(--card-bg);padding:2px 6px;border-radius:4px">google/gemini-2.5-flash-lite</code> via <a href="https://ppq.ai" target="_blank" style="color:var(--accent)">PayPerQ</a>. Total AI cost: <strong>$9.30</strong> for all 247K reviews.</p>
+    <h2>Game Data Credits</h2>
+    <p>Game entity data (weapons, abilities, gadgets, maps) and patch notes sourced from <a href="https://www.thefinals.wiki/wiki/Main_Page" target="_blank" style="color:var(--accent)">THE FINALS Wiki</a>. Thank you to all wiki contributors!</p>
+    <h2>Limitations</h2>
+    <ul style="color:var(--text-muted);font-size:15px;line-height:1.8;padding-left:20px">
+      <li><strong>AI is imperfect</strong> &mdash; sarcasm, context, and nuance can be missed</li>
+      <li><strong>~0.7% unclassified</strong> &mdash; very short or empty reviews</li>
+      <li><strong>Issue extraction coverage:</strong> 86% of reviews yielded extractable issues</li>
+      <li><strong>Season assignment</strong> uses review creation date, not update date</li>
+      <li><strong>Entity normalization</strong> may miss unusual spellings or slang</li>
+    </ul>
+    <h2>Tech Stack</h2>
+    <ul style="color:var(--text-muted);font-size:15px;line-height:1.8;padding-left:20px">
+      <li><strong>Data:</strong> Python, Steam API</li>
+      <li><strong>AI:</strong> Gemini 2.5 Flash Lite via PayPerQ API ($9.30 total)</li>
+      <li><strong>Dashboard:</strong> Static HTML + Plotly.js</li>
+      <li><strong>Hosting:</strong> GitHub Pages (CDN)</li>
+    </ul>
+    <h2>Author</h2>
+    <p style="font-size:16px"><strong>[VSRAT] ANDRUHA</strong></p>
+  </div>
+
+</div>
+
+<script>
+// =====================================================================
+// Globals
+// =====================================================================
+let DATA = null;
+const POS = '#2ecc71', NEG = '#e74c3c', ORANGE = '#e67e22', BLUE = '#3498db';
+const GRID_STYLE = { gridcolor: 'rgba(255,255,255,0.07)', gridwidth: 1, zeroline: false };
+const PLOT_LAYOUT = { paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)', font: { color: '#fafafa', size: 12 }, margin: { l: 0, r: 0, t: 10, b: 0 }, xaxis: GRID_STYLE, yaxis: GRID_STYLE };
+const PLOT_CFG = { responsive: true, displayModeBar: false };
+let REAL_SEASONS = [];
+let SEASON_ORDER = [];
+
+const PAGES = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'community-insights', label: 'Community Insights' },
+  { id: 'entity-tracker', label: 'Entity Tracker' },
+  { id: 'season-health', label: 'Season Health' },
+  { id: 'patch-notes', label: 'Patch Notes' },
+  { id: 'player-journey', label: 'Player Journey' },
+  { id: 'category-deep-dive', label: 'Category Deep-Dive' },
+  { id: 'review-bombing', label: 'Review Bombing' },
+  { id: 'regional-analysis', label: 'Regional Analysis' },
+  { id: 'praise-vs-complaints', label: 'Praise vs Complaints' },
+  { id: 'top-reviews', label: 'Top Reviews' },
+  { id: 'word-cloud', label: 'Word Cloud' },
+  { id: 'about', label: 'About' },
+];
+
+// =====================================================================
+// Utilities
+// =====================================================================
+function fmt(n) { return n.toLocaleString('en-US'); }
+function pct(a, b) { return b ? Math.round(a / b * 1000) / 10 : 0; }
+function el(id) { return document.getElementById(id); }
+function cleanText(t) { return t.replace(/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]/g, ''); }
+function escHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+function makeLayout(extra) {
+  const base = JSON.parse(JSON.stringify(PLOT_LAYOUT));
+  if (!extra) return base;
+  const result = Object.assign({}, base, extra);
+  // Deep-merge axis objects so grid style is preserved
+  ['xaxis', 'yaxis', 'yaxis2'].forEach(ax => {
+    if (extra[ax]) result[ax] = Object.assign({}, GRID_STYLE, extra[ax]);
+  });
+  if (!extra.xaxis) result.xaxis = Object.assign({}, GRID_STYLE);
+  if (!extra.yaxis) result.yaxis = Object.assign({}, GRID_STYLE);
+  return result;
+}
+
+function barH(cats, vals, color, opts = {}) {
+  const textVals = opts.textSuffix ? vals.map(v => '  ' + v + opts.textSuffix) : undefined;
+  return [{
+    type: 'bar', orientation: 'h', x: vals, y: cats,
+    marker: { color },
+    text: textVals, textposition: 'outside', cliponaxis: false,
+  }];
+}
+
+// =====================================================================
+// Navigation
+// =====================================================================
+let currentPage = 'overview';
+const rendered = new Set();
+
+function navigateTo(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  el('page-' + pageId).classList.add('active');
+  document.querySelector(`.nav-btn[data-page="${pageId}"]`)?.classList.add('active');
+  currentPage = pageId;
+  if (!rendered.has(pageId)) {
+    rendered.add(pageId);
+    renderPage(pageId);
+  }
+  window.location.hash = pageId;
+}
+
+function initNav() {
+  const container = el('nav-buttons');
+  PAGES.forEach(p => {
+    const btn = document.createElement('button');
+    btn.className = 'nav-btn';
+    btn.dataset.page = p.id;
+    btn.textContent = p.label;
+    btn.onclick = () => navigateTo(p.id);
+    container.appendChild(btn);
+  });
+}
+
+// =====================================================================
+// Page renderers
+// =====================================================================
+function renderPage(pageId) {
+  switch(pageId) {
+    case 'overview': renderOverview(); break;
+    case 'community-insights': renderCommunityInsights(); break;
+    case 'entity-tracker': renderEntityTracker(); break;
+    case 'season-health': renderSeasonHealth(); break;
+    case 'patch-notes': renderPatchNotes(); break;
+    case 'player-journey': renderPlayerJourney(); break;
+    case 'category-deep-dive': renderCategoryDeepDive(); break;
+    case 'review-bombing': renderReviewBombing(); break;
+    case 'regional-analysis': renderRegionalAnalysis(); break;
+    case 'praise-vs-complaints': renderPraiseVsComplaints(); break;
+    case 'top-reviews': renderTopReviews(); break;
+    case 'word-cloud': renderWordCloud(); break;
+    case 'about': renderAbout(); break;
+  }
+}
+
+// =====================================================================
+// Overview
+// =====================================================================
+function renderOverview() {
+  const ov = DATA.overview;
+  const posPct = pct(ov.positive, ov.total);
+  const negPct = pct(ov.negative, ov.total);
+
+  el('overview-subtitle').innerHTML = `Analysis of <strong>${fmt(ov.total)}</strong> Steam reviews across all languages and seasons.`;
+
+  el('overview-metrics').innerHTML = `
+    <div class="metric"><div class="label">Total Reviews</div><div class="value">${fmt(ov.total)}</div></div>
+    <div class="metric"><div class="label">Positive</div><div class="value text-pos">${fmt(ov.positive)} (${posPct}%)</div></div>
+    <div class="metric"><div class="label">Negative</div><div class="value text-neg">${fmt(ov.negative)} (${negPct}%)</div></div>
+    <div class="metric"><div class="label">Languages</div><div class="value">${ov.languages}</div></div>
+  `;
+
+  // Season delta
+  if (REAL_SEASONS.length >= 2) {
+    const curr = REAL_SEASONS[REAL_SEASONS.length - 1];
+    const prev = REAL_SEASONS[REAL_SEASONS.length - 2];
+    const currApp = DATA.season_health[curr].approval;
+    const prevApp = DATA.season_health[prev].approval;
+    const delta = Math.round((currApp - prevApp) * 10) / 10;
+    const arrow = delta > 0 ? `<span class="text-pos">+${delta}%</span>` : `<span class="text-neg">${delta}%</span>`;
+    el('overview-delta').innerHTML = `<strong>Latest season:</strong> ${curr} &mdash; <strong>${currApp}%</strong> approval (${arrow} vs ${prev})`;
+  }
+
+  // Trends
+  const trends = DATA.trends || {};
+  if (trends.trending || trends.fixed) {
+    const renderTrendBlock = (items, labelClass) => {
+      let out = '';
+      items.forEach(t => {
+        const sign = t.delta > 0 ? '+' : '';
+        out += `<div style="margin-bottom:12px">`;
+        out += `<p class="${labelClass}" style="font-size:14px;font-weight:600;margin:0">`;
+        out += `${t.category} &mdash; ${t.prev_pct}% &rarr; ${t.curr_pct}% (${sign}${t.delta}%)</p>`;
+        if (t.top_issues && t.top_issues.length) {
+          out += `<ul style="margin:4px 0 0 18px;padding:0;list-style:disc;opacity:0.85">`;
+          t.top_issues.forEach(iss => {
+            out += `<li style="font-size:13px">${iss.text} <span class="caption">(${fmt(iss.count)})</span></li>`;
+          });
+          out += `</ul>`;
+        }
+        out += `</div>`;
+      });
+      return out;
+    };
+    let html = '<div><h3>Trending Complaints <span class="caption">(growing)</span></h3>';
+    html += renderTrendBlock((trends.trending || []).slice(0, 3), 'text-neg');
+    html += '</div><div><h3>Improving <span class="caption">(declining complaints)</span></h3>';
+    html += renderTrendBlock((trends.fixed || []).slice(0, 3), 'text-pos');
+    html += '</div>';
+    el('overview-trends').innerHTML = html;
+    el('overview-trends-caption').textContent = `Comparing ${trends.prev_season || ''} \u2192 ${trends.curr_season || ''}`;
+  }
+
+  // Negative categories bar
+  const nr = DATA.category_rankings.negative;
+  const negCats = Object.entries(nr.categories).slice(0, 15);
+  const negNames = negCats.map(c => c[0]).reverse();
+  const negCounts = negCats.map(c => c[1]).reverse();
+  const negPcts = negCounts.map(c => pct(c, nr.total));
+  Plotly.newPlot('chart-neg-cats', [{
+    type: 'bar', orientation: 'h', x: negCounts, y: negNames,
+    marker: { color: NEG }, text: negPcts.map(p => '  ' + p + '%'), textposition: 'outside',
+    cliponaxis: false,
+  }], makeLayout({ height: 500, margin: { l: 0, r: 40, t: 10, b: 0 }, yaxis: { autorange: true, automargin: true, ticksuffix: '  ' }, xaxis: { range: [0, Math.max(...negCounts) * 1.15] } }), PLOT_CFG);
+  el('neg-unclassified').textContent = `Unclassified: ${fmt(nr.unclassified)} / ${fmt(nr.total)} (${pct(nr.unclassified, nr.total)}%) \u2014 short reviews, memes, or off-topic content`;
+
+  // Positive categories bar
+  const pr = DATA.category_rankings.positive;
+  const posCats = Object.entries(pr.categories).slice(0, 15);
+  const posNames = posCats.map(c => c[0]).reverse();
+  const posCounts = posCats.map(c => c[1]).reverse();
+  const posPcts = posCounts.map(c => pct(c, pr.total));
+  Plotly.newPlot('chart-pos-cats', [{
+    type: 'bar', orientation: 'h', x: posCounts, y: posNames,
+    marker: { color: POS }, text: posPcts.map(p => '  ' + p + '%'), textposition: 'outside',
+    cliponaxis: false,
+  }], makeLayout({ height: 500, margin: { l: 0, r: 40, t: 10, b: 0 }, yaxis: { autorange: true, automargin: true, ticksuffix: '  ' }, xaxis: { range: [0, Math.max(...posCounts) * 1.15] } }), PLOT_CFG);
+  el('pos-unclassified').textContent = `Unclassified: ${fmt(pr.unclassified)} / ${fmt(pr.total)} (${pct(pr.unclassified, pr.total)}%) \u2014 short reviews, memes, or off-topic content`;
+
+  // Top specific issues summary (from Stage 2 AI)
+  const ti = DATA.top_issues || {};
+  if (ti.complaints && ti.complaints.length) {
+    let tiHtml = '<h2>Top Specific Issues (AI-extracted)</h2><div class="grid-3">';
+    tiHtml += '<div><h3 class="text-neg">Pain Points</h3>';
+    (ti.complaints || []).slice(0, 5).forEach((c, i) => {
+      tiHtml += `<p style="font-size:14px">${i + 1}. ${escHtml(c.text)} <strong>(${fmt(c.count)})</strong></p>`;
+    });
+    tiHtml += '</div><div><h3 class="text-orange">Top Requests</h3>';
+    (ti.suggestions || []).slice(0, 5).forEach((c, i) => {
+      tiHtml += `<p style="font-size:14px">${i + 1}. ${escHtml(c.text)} <strong>(${fmt(c.count)})</strong></p>`;
+    });
+    tiHtml += '</div><div><h3 class="text-pos">What Players Love</h3>';
+    (ti.praise || []).slice(1, 6).forEach((c, i) => {  // skip "fun and addictive" (too dominant)
+      tiHtml += `<p style="font-size:14px">${i + 1}. ${escHtml(c.text)} <strong>(${fmt(c.count)})</strong></p>`;
+    });
+    tiHtml += '</div></div>';
+    el('overview-top-issues').innerHTML = tiHtml;
+  }
+
+  // Monthly timeline
+  const months = Object.keys(DATA.monthly_timeline).sort();
+  const mPos = months.map(m => DATA.monthly_timeline[m].positive);
+  const mNeg = months.map(m => DATA.monthly_timeline[m].negative);
+  const mTotal = mPos.map((p, i) => p + mNeg[i]);
+  const mTotalMax = Math.max(...mTotal);
+  Plotly.newPlot('chart-monthly-timeline', [
+    { type: 'bar', x: months, y: mPos, name: 'Positive', marker: { color: POS } },
+    { type: 'bar', x: months, y: mNeg, name: 'Negative', marker: { color: NEG },
+      text: mTotal.map(v => v >= 1000 ? (v/1000).toFixed(1) + 'k' : String(v)),
+      textposition: 'outside', cliponaxis: false, textfont: { size: 10 } },
+  ], makeLayout({ barmode: 'stack', height: 420, margin: { l: 50, r: 0, t: 20, b: 40 },
+    legend: { orientation: 'h', yanchor: 'bottom', y: 1.02 },
+    xaxis: { dtick: 'M1', tickformat: '%b %Y', title: 'Month' },
+    yaxis: { range: [0, mTotalMax * 1.12], title: 'Reviews' } }), PLOT_CFG);
+}
+
+// =====================================================================
+// Season Health
+// =====================================================================
+function renderSeasonHealth() {
+  const available = [...REAL_SEASONS];
+  if (DATA.season_health['Off-season']) available.push('Off-season');
+
+  // Dual-axis chart
+  const sNames = REAL_SEASONS;
+  const sPos = sNames.map(s => DATA.season_health[s].positive);
+  const sNeg = sNames.map(s => DATA.season_health[s].negative);
+  const sApp = sNames.map(s => DATA.season_health[s].approval);
+
+  const sTotal = sPos.map((p, i) => p + sNeg[i]);
+  const sTotalMax = Math.max(...sTotal);
+  Plotly.newPlot('chart-season-dual', [
+    { type: 'bar', x: sNames, y: sPos, name: 'Positive', marker: { color: POS }, opacity: 0.5 },
+    { type: 'bar', x: sNames, y: sNeg, name: 'Negative', marker: { color: NEG }, opacity: 0.5,
+      text: sTotal.map(v => v >= 1000 ? (v/1000).toFixed(1) + 'k' : String(v)),
+      textposition: 'outside', cliponaxis: false, textfont: { size: 10 } },
+    { type: 'scatter', x: sNames, y: sApp, mode: 'lines+markers+text', text: sApp.map(a => a + '%'), textposition: 'top center',
+      line: { color: BLUE, width: 3 }, marker: { size: 10 }, name: 'Approval %', yaxis: 'y2' },
+  ], makeLayout({
+    barmode: 'stack', height: 470,
+    legend: { orientation: 'h', yanchor: 'bottom', y: 1.02 },
+    margin: { l: 50, r: 50, t: 10, b: 30 },
+    yaxis: { title: 'Review Count', range: [0, sTotalMax * 1.15] },
+    yaxis2: { title: 'Approval %', overlaying: 'y', side: 'right', range: [0, 100] },
+  }), PLOT_CFG);
+
+  // Season pills
+  const pillContainer = el('season-pills');
+  available.forEach(s => {
+    const pill = document.createElement('span');
+    pill.className = 'pill' + (s === available[0] ? ' active' : '');
+    pill.textContent = s;
+    pill.onclick = () => {
+      pillContainer.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      showSeasonDetails(s);
+    };
+    pillContainer.appendChild(pill);
+  });
+
+  showSeasonDetails(available[0]);
+
+  // Recurring problems
+  const rec = DATA.recurring_problems;
+  const recSorted = Object.entries(rec).sort((a, b) => b[1] - a[1]);
+  const recVals = recSorted.map(r => r[1]).reverse();
+  Plotly.newPlot('chart-recurring', [{
+    type: 'bar', orientation: 'h',
+    x: recVals, y: recSorted.map(r => r[0]).reverse(),
+    marker: { color: ORANGE }, text: recVals.map(v => '  ' + v), textposition: 'outside', cliponaxis: false,
+  }], makeLayout({ height: 400, margin: { l: 0, r: 40, t: 10, b: 0 }, xaxis: { dtick: 1, range: [0, Math.max(...recVals) * 1.15] }, yaxis: { autorange: true, automargin: true, ticksuffix: '  ' } }), PLOT_CFG);
+}
+
+function showSeasonDetails(season) {
+  const sh = DATA.season_health[season];
+  const selIdx = REAL_SEASONS.indexOf(season);
+  let deltaStr = '';
+  if (selIdx > 0) {
+    const prevApp = DATA.season_health[REAL_SEASONS[selIdx - 1]].approval;
+    const d = Math.round((sh.approval - prevApp) * 10) / 10;
+    deltaStr = ` (${d > 0 ? '+' : ''}${d}% vs ${REAL_SEASONS[selIdx - 1]})`;
+  }
+
+  el('season-metrics').innerHTML = `
+    <div class="metric"><div class="label">Total Reviews</div><div class="value">${fmt(sh.total)}</div></div>
+    <div class="metric"><div class="label">Approval Rate</div><div class="value">${sh.approval}%${deltaStr}</div></div>
+    <div class="metric"><div class="label">Negative Reviews</div><div class="value text-neg">${fmt(sh.negative)}</div></div>
+  `;
+
+  // Top complaints
+  if (sh.top_negative && Object.keys(sh.top_negative).length) {
+    const entries = Object.entries(sh.top_negative);
+    const negVals = entries.map(e => e[1]).reverse();
+    Plotly.newPlot('chart-season-neg', [{
+      type: 'bar', orientation: 'h',
+      x: negVals, y: entries.map(e => e[0]).reverse(),
+      marker: { color: NEG }, text: negVals.map(v => '  ' + v), textposition: 'outside', cliponaxis: false,
+    }], makeLayout({ height: 350, margin: { l: 0, r: 40, t: 10, b: 0 }, yaxis: { autorange: true, automargin: true, ticksuffix: '  ' }, xaxis: { range: [0, Math.max(...negVals) * 1.15] } }), PLOT_CFG);
+  } else {
+    el('chart-season-neg').innerHTML = '<p class="caption">No classified complaints</p>';
+  }
+
+  // Top praise
+  if (sh.top_positive && Object.keys(sh.top_positive).length) {
+    const entries = Object.entries(sh.top_positive);
+    const posVals = entries.map(e => e[1]).reverse();
+    Plotly.newPlot('chart-season-pos', [{
+      type: 'bar', orientation: 'h',
+      x: posVals, y: entries.map(e => e[0]).reverse(),
+      marker: { color: POS }, text: posVals.map(v => '  ' + v), textposition: 'outside', cliponaxis: false,
+    }], makeLayout({ height: 350, margin: { l: 0, r: 40, t: 10, b: 0 }, yaxis: { autorange: true, automargin: true, ticksuffix: '  ' }, xaxis: { range: [0, Math.max(...posVals) * 1.15] } }), PLOT_CFG);
+  } else {
+    el('chart-season-pos').innerHTML = '<p class="caption">No classified praise</p>';
+  }
+
+  // Rank changes table
+  const rcDiv = el('season-rank-changes');
+  if (selIdx > 0) {
+    const prevSeason = REAL_SEASONS[selIdx - 1];
+    const prevSh = DATA.season_health[prevSeason];
+    const currNeg = sh.all_negative || {};
+    const prevNeg = prevSh.all_negative || {};
+    const currTotal = sh.negative || 1;
+    const prevTotal = prevSh.negative || 1;
+    const currRanked = Object.keys(currNeg);
+    const prevRanked = Object.keys(prevNeg);
+
+    let rows = '';
+    currRanked.slice(0, 10).forEach(cat => {
+      const currPct = Math.round((currNeg[cat] || 0) / currTotal * 1000) / 10;
+      const prevPct = Math.round((prevNeg[cat] || 0) / prevTotal * 1000) / 10;
+      const currRank = currRanked.indexOf(cat) + 1;
+      const prevRank = prevRanked.indexOf(cat) >= 0 ? prevRanked.indexOf(cat) + 1 : '-';
+      const change = Math.round((currPct - prevPct) * 10) / 10;
+      const changeClass = change > 0 ? 'text-neg' : change < 0 ? 'text-pos' : '';
+      rows += `<tr><td>${escHtml(cat)}</td><td>${currRank}</td><td>${prevRank}</td><td>${currPct}%</td><td>${prevPct}%</td><td class="${changeClass}">${change > 0 ? '+' : ''}${change}%</td></tr>`;
+    });
+
+    rcDiv.innerHTML = `<hr><h3>Category Rank Changes vs ${prevSeason}</h3>
+    <table><thead><tr><th>Category</th><th>Rank (${season})</th><th>Rank (${prevSeason})</th><th>% (${season})</th><th>% (${prevSeason})</th><th>Change</th></tr></thead><tbody>${rows}</tbody></table>`;
+  } else {
+    rcDiv.innerHTML = '';
+  }
+
+  // Season-specific issues from Stage 2
+  const sIssues = (DATA.issues_by_season || {})[season] || {};
+  const sComplaints = sIssues.complaints || [];
+  const sSuggestions = sIssues.suggestions || [];
+  const stiDiv = el('season-top-issues');
+  if (sComplaints.length || sSuggestions.length) {
+    let stiHtml = '<hr><h3>Top Specific Issues (AI-extracted)</h3><div class="grid-2"><div>';
+    stiHtml += '<h3 class="text-neg" style="margin-top:0">Pain Points</h3>';
+    sComplaints.slice(0, 8).forEach((c, i) => {
+      stiHtml += `<p style="font-size:13px">${i + 1}. ${escHtml(c.text)} <strong>(${fmt(c.count)})</strong></p>`;
+    });
+    stiHtml += '</div><div><h3 class="text-orange" style="margin-top:0">Top Requests</h3>';
+    sSuggestions.slice(0, 8).forEach((c, i) => {
+      stiHtml += `<p style="font-size:13px">${i + 1}. ${escHtml(c.text)} <strong>(${fmt(c.count)})</strong></p>`;
+    });
+    stiHtml += '</div></div>';
+    stiDiv.innerHTML = stiHtml;
+  } else {
+    stiDiv.innerHTML = '';
+  }
+}
+
+// =====================================================================
+// Player Journey
+// =====================================================================
+function renderPlayerJourney() {
+  const brackets = DATA.playtime_order;
+  const pt = DATA.playtime_data;
+  const brLabels = brackets;
+  const posApp = brackets.map(b => pt[b].approval);
+  const negApp = brackets.map(b => Math.round((100 - pt[b].approval) * 10) / 10);
+  const totals = brackets.map(b => pt[b].total);
+  const posC = brackets.map(b => pt[b].positive);
+  const negC = brackets.map(b => pt[b].negative);
+
+  // Find biggest drop
+  let dropIdx = -1, dropVal = 0;
+  for (let i = 1; i < posApp.length; i++) {
+    const diff = posApp[i] - posApp[i - 1];
+    if (diff < dropVal) { dropVal = diff; dropIdx = i; }
+  }
+  const annotations = dropIdx >= 0 ? [{
+    x: brLabels[dropIdx], y: posApp[dropIdx],
+    text: `Biggest drop: ${dropVal > 0 ? '+' : ''}${Math.round(dropVal * 10) / 10}%`,
+    showarrow: true, arrowhead: 2, arrowcolor: NEG, font: { color: NEG, size: 11 }, yshift: 20,
+  }] : [];
+
+  Plotly.newPlot('chart-pj-sentiment', [
+    { type: 'scatter', x: brLabels, y: posApp, mode: 'lines+markers+text', text: posApp.map(v => v + '%'), textposition: 'top center',
+      customdata: totals, hovertemplate: '%{y}% positive<br>%{customdata:,} reviews<extra></extra>',
+      line: { color: POS, width: 3 }, marker: { size: 12 }, name: 'Positive %' },
+    { type: 'scatter', x: brLabels, y: negApp, mode: 'lines+markers+text', text: negApp.map(v => v + '%'), textposition: 'bottom center',
+      customdata: totals, hovertemplate: '%{y}% negative<br>%{customdata:,} reviews<extra></extra>',
+      line: { color: NEG, width: 3 }, marker: { size: 12 }, name: 'Negative %' },
+  ], makeLayout({ height: 420, margin: { l: 50, r: 0, t: 10, b: 60 }, yaxis: { range: [0, 100], title: '% of reviews' }, legend: { orientation: 'h', yanchor: 'bottom', y: 1.02 }, annotations }), PLOT_CFG);
+
+  // Volume
+  Plotly.newPlot('chart-pj-volume', [
+    { type: 'bar', x: brLabels, y: posC, name: 'Positive', marker: { color: POS }, text: posC.map(fmt), textposition: 'inside' },
+    { type: 'bar', x: brLabels, y: negC, name: 'Negative', marker: { color: NEG }, text: negC.map(fmt), textposition: 'inside' },
+  ], makeLayout({ barmode: 'stack', height: 320, margin: { l: 50, r: 0, t: 10, b: 60 }, legend: { orientation: 'h', yanchor: 'bottom', y: 1.02 } }), PLOT_CFG);
+
+  // Heatmaps
+  renderHeatmap('chart-pj-heat-neg', DATA.cat_playtime_neg, brackets, pt, 'negative', 'Reds');
+  renderHeatmap('chart-pj-heat-pos', DATA.cat_playtime_pos, brackets, pt, 'positive', 'Greens');
+}
+
+function renderHeatmap(chartId, catData, brackets, pt, sentiment, colorscale) {
+  const catsAll = Object.keys(DATA.category_rankings[sentiment].categories).slice(0, 12);
+  const heatData = [];
+  const heatText = [];
+
+  catsAll.forEach(cat => {
+    const row = [], textRow = [];
+    brackets.forEach(br => {
+      const count = (catData[cat] || {})[br] || 0;
+      const totalBr = pt[br][sentiment] || 1;
+      const val = Math.round(count / totalBr * 1000) / 10;
+      row.push(val);
+      textRow.push(val + '%');
+    });
+    heatData.push(row);
+    heatText.push(textRow);
+  });
+
+  // Per-row normalization for color
+  const normData = heatData.map(row => {
+    const mx = Math.max(...row) || 1;
+    return row.map(v => v / mx);
+  });
+
+  Plotly.newPlot(chartId, [{
+    type: 'heatmap', z: normData, x: brackets.map(b => b.split(' (')[0]), y: catsAll,
+    colorscale, text: heatText, texttemplate: '%{text}', textfont: { size: 10 }, showscale: false,
+  }], makeLayout({ height: 470, margin: { l: 0, r: 0, t: 10, b: 60 }, yaxis: { automargin: true } }), PLOT_CFG);
+}
+
+// =====================================================================
+// Category Deep-Dive
+// =====================================================================
+let ddSentiment = 'negative';
+let ddCategory = '';
+
+function renderCategoryDeepDive() {
+  // Sentiment buttons
+  const btnContainer = el('dd-sentiment-btns');
+  ['Negative', 'Positive'].forEach(s => {
+    const btn = document.createElement('button');
+    btn.className = 'btn' + (s.toLowerCase() === ddSentiment ? ' active' : '');
+    btn.textContent = s;
+    btn.onclick = () => {
+      ddSentiment = s.toLowerCase();
+      btnContainer.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      ddCategory = '';
+      buildDDCatPills();
+      updateDDCharts();
+    };
+    btnContainer.appendChild(btn);
+  });
+  buildDDCatPills();
+  updateDDCharts();
+}
+
+function buildDDCatPills() {
+  const container = el('dd-cat-pills');
+  container.innerHTML = '';
+  const cats = Object.keys(DATA.category_rankings[ddSentiment].categories);
+  if (!ddCategory || !cats.includes(ddCategory)) ddCategory = cats[0];
+  cats.forEach(cat => {
+    const pill = document.createElement('span');
+    pill.className = 'pill' + (cat === ddCategory ? ' active' : '');
+    pill.textContent = cat;
+    pill.onclick = () => {
+      ddCategory = cat;
+      container.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      updateDDCharts();
+    };
+    container.appendChild(pill);
+  });
+}
+
+function updateDDCharts() {
+  const key = ddSentiment;
+  const cat = ddCategory;
+  const catKey = key === 'negative' ? 'all_negative' : 'all_positive';
+  const color = key === 'negative' ? NEG : POS;
+
+  el('dd-title').textContent = `"${cat}" across seasons`;
+  el('dd-title2').textContent = `"${cat}" by playtime`;
+
+  // Across seasons
+  const seasonPcts = [], seasonCounts = [];
+  REAL_SEASONS.forEach(s => {
+    const sh = DATA.season_health[s];
+    const count = (sh[catKey] || {})[cat] || 0;
+    const total = sh[key] || 1;
+    seasonCounts.push(count);
+    seasonPcts.push(Math.round(count / total * 1000) / 10);
+  });
+
+  Plotly.newPlot('chart-dd-seasons', [
+    { type: 'bar', x: REAL_SEASONS, y: seasonPcts, marker: { color, opacity: 0.6 }, name: '% per season',
+      text: seasonPcts.map(p => p + '%'), textposition: 'outside', cliponaxis: false },
+    { type: 'scatter', x: REAL_SEASONS, y: seasonPcts, mode: 'lines+markers',
+      line: { color, width: 2 }, marker: { size: 8 }, name: 'Trend' },
+  ], makeLayout({ height: 370, margin: { l: 50, r: 0, t: 10, b: 30 }, showlegend: false }), PLOT_CFG);
+
+  // By playtime
+  const brackets = DATA.playtime_order;
+  const ptSource = key === 'negative' ? DATA.cat_playtime_neg : DATA.cat_playtime_pos;
+  const ptPcts = brackets.map(br => {
+    const count = (ptSource[cat] || {})[br] || 0;
+    const total = DATA.playtime_data[br][key] || 1;
+    return Math.round(count / total * 1000) / 10;
+  });
+  const ptLabels = brackets.map(b => b.split(' (')[0]);
+
+  Plotly.newPlot('chart-dd-playtime', [{
+    type: 'bar', x: ptLabels, y: ptPcts,
+    marker: { color }, text: ptPcts.map(p => p + '%'), textposition: 'outside', cliponaxis: false,
+  }], makeLayout({ height: 370, margin: { l: 50, r: 0, t: 10, b: 60 } }), PLOT_CFG);
+
+  // Related specific issues from Stage 2
+  const relIssues = (DATA.category_issues || {})[cat] || [];
+  if (relIssues.length) {
+    let riHtml = `<hr><h3>Specific Issues in "${cat}"</h3>`;
+    riHtml += '<p class="caption">Granular issues extracted by AI from reviews in this category.</p>';
+    riHtml += '<table><thead><tr><th>Issue</th><th>Mentions</th></tr></thead><tbody>';
+    relIssues.forEach(r => {
+      riHtml += `<tr><td>${escHtml(r.text)}</td><td>${fmt(r.count)}</td></tr>`;
+    });
+    riHtml += '</tbody></table>';
+    el('dd-related-issues').innerHTML = riHtml;
+  } else {
+    el('dd-related-issues').innerHTML = '';
+  }
+}
+
+// =====================================================================
+// Review Bombing
+// =====================================================================
+let rbGranularity = 'daily';
+
+function renderReviewBombing() {
+  // Granularity buttons
+  el('rb-gran-btns').querySelectorAll('.btn').forEach(btn => {
+    btn.onclick = () => {
+      rbGranularity = btn.dataset.val;
+      el('rb-gran-btns').querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      updateRBCharts();
+    };
+  });
+  updateRBCharts();
+
+  // Worst days table
+  const daily = DATA.daily_timeline;
+  const days = Object.keys(daily).sort();
+  const worstRows = days.map(d => {
+    const total = daily[d].positive + daily[d].negative;
+    return { date: d, season: daily[d].season || '', pos: daily[d].positive, neg: daily[d].negative, total, negPct: total >= 20 ? Math.round(daily[d].negative / total * 1000) / 10 : 0 };
+  }).filter(r => r.total >= 20).sort((a, b) => b.negPct - a.negPct).slice(0, 15);
+
+  let tbl = '<table><thead><tr><th>Date</th><th>Season</th><th>Positive</th><th>Negative</th><th>Total</th><th>Neg %</th></tr></thead><tbody>';
+  worstRows.forEach(r => {
+    tbl += `<tr><td>${r.date}</td><td>${escHtml(r.season)}</td><td>${r.pos}</td><td>${r.neg}</td><td>${r.total}</td><td class="text-neg">${r.negPct}%</td></tr>`;
+  });
+  tbl += '</tbody></table>';
+  el('rb-worst-table').innerHTML = tbl;
+}
+
+function updateRBCharts() {
+  const daily = DATA.daily_timeline;
+  const days = Object.keys(daily).sort();
+
+  let plotDates, plotPos, plotNeg, plotNegPct;
+
+  if (rbGranularity === 'weekly') {
+    // Aggregate by week
+    const weeks = {};
+    days.forEach(d => {
+      const dt = new Date(d);
+      const mon = new Date(dt);
+      mon.setDate(mon.getDate() - ((mon.getDay() + 6) % 7)); // Monday
+      const key = mon.toISOString().slice(0, 10);
+      if (!weeks[key]) weeks[key] = { pos: 0, neg: 0 };
+      weeks[key].pos += daily[d].positive;
+      weeks[key].neg += daily[d].negative;
+    });
+    const wkeys = Object.keys(weeks).sort();
+    plotDates = wkeys;
+    plotPos = wkeys.map(k => weeks[k].pos);
+    plotNeg = wkeys.map(k => weeks[k].neg);
+    plotNegPct = wkeys.map(k => {
+      const t = weeks[k].pos + weeks[k].neg;
+      return t ? Math.round(weeks[k].neg / t * 1000) / 10 : 0;
+    });
+    el('rb-ratio-title').textContent = 'Weekly Negative Ratio';
+  } else {
+    plotDates = days;
+    plotPos = days.map(d => daily[d].positive);
+    plotNeg = days.map(d => daily[d].negative);
+    plotNegPct = days.map(d => {
+      const t = daily[d].positive + daily[d].negative;
+      return t ? Math.round(daily[d].negative / t * 1000) / 10 : 0;
+    });
+    el('rb-ratio-title').textContent = 'Daily Negative Ratio';
+  }
+
+  // Season markers
+  const shapes = [], annotations = [];
+  DATA.seasons_meta.forEach(s => {
+    shapes.push({ type: 'line', x0: s.start, x1: s.start, y0: 0, y1: 1, yref: 'paper', line: { color: 'gray', width: 1, dash: 'dot' } });
+    annotations.push({ x: s.start, y: 1, yref: 'paper', text: s.season, showarrow: false, font: { size: 9, color: 'gray' }, yshift: 10 });
+  });
+
+  Plotly.newPlot('chart-rb-volume', [
+    { type: 'bar', x: plotDates, y: plotPos, name: 'Positive', marker: { color: POS }, opacity: 0.6 },
+    { type: 'bar', x: plotDates, y: plotNeg, name: 'Negative', marker: { color: NEG }, opacity: 0.8 },
+  ], makeLayout({ barmode: 'stack', height: 420, margin: { l: 50, r: 0, t: 30, b: 30 }, legend: { orientation: 'h', yanchor: 'bottom', y: 1.02 }, shapes, annotations }), PLOT_CFG);
+
+  // Neg % ratio
+  const traces2 = [{ type: 'scatter', x: plotDates, y: plotNegPct, mode: 'lines', line: { color: NEG, width: 1 }, name: rbGranularity === 'daily' ? 'Daily Neg %' : 'Weekly Neg %' }];
+  if (rbGranularity === 'daily') {
+    // 7-day rolling average
+    const rolling = plotNegPct.map((_, i) => {
+      const start = Math.max(0, i - 3);
+      const end = Math.min(plotNegPct.length, i + 4);
+      const slice = plotNegPct.slice(start, end);
+      return Math.round(slice.reduce((a, b) => a + b, 0) / slice.length * 10) / 10;
+    });
+    traces2.push({ type: 'scatter', x: plotDates, y: rolling, mode: 'lines', line: { color: '#f39c12', width: 2 }, name: '7-day avg' });
+  }
+  Plotly.newPlot('chart-rb-ratio', traces2, makeLayout({ height: 320, margin: { l: 50, r: 0, t: 10, b: 30 }, yaxis: { title: 'Negative %' }, legend: { orientation: 'h', yanchor: 'bottom', y: 1.02 } }), PLOT_CFG);
+}
+
+// =====================================================================
+// Regional Analysis
+// =====================================================================
+function renderRegionalAnalysis() {
+  const regional = DATA.regional;
+  const langs = Object.entries(regional).sort((a, b) => b[1].total - a[1].total);
+  const top20 = langs.slice(0, 20);
+
+  // Approval chart
+  const byApproval = [...top20].sort((a, b) => b[1].approval - a[1].approval);
+  Plotly.newPlot('chart-reg-approval', [{
+    type: 'bar', x: byApproval.map(l => l[0]), y: byApproval.map(l => l[1].approval),
+    marker: { color: byApproval.map(l => l[1].approval), colorscale: [[0, NEG], [0.5, ORANGE], [1, POS]], cmin: 50, cmax: 100 },
+    text: byApproval.map(l => l[1].approval + '%'), textposition: 'outside',
+    customdata: byApproval.map(l => [l[1].total, l[1].positive, l[1].negative]),
+    hovertemplate: '%{x}<br>Approval: %{y}%<br>Total: %{customdata[0]:,}<extra></extra>',
+  }], makeLayout({ height: 420, margin: { l: 50, r: 0, t: 10, b: 40 }, yaxis: { range: [0, 110] }, cliponaxis: false }), PLOT_CFG);
+
+  // Volume chart
+  const regTotals = top20.map(l => l[1].positive + l[1].negative);
+  const regTotalMax = Math.max(...regTotals);
+  Plotly.newPlot('chart-reg-volume', [
+    { type: 'bar', x: top20.map(l => l[0]), y: top20.map(l => l[1].positive), name: 'Positive', marker: { color: POS } },
+    { type: 'bar', x: top20.map(l => l[0]), y: top20.map(l => l[1].negative), name: 'Negative', marker: { color: NEG },
+      text: regTotals.map(v => v >= 1000 ? (v/1000).toFixed(1) + 'k' : String(v)),
+      textposition: 'outside', cliponaxis: false, textfont: { size: 10 } },
+  ], makeLayout({ barmode: 'stack', height: 320, margin: { l: 50, r: 0, t: 10, b: 40 }, legend: { orientation: 'h', yanchor: 'bottom', y: 1.02 }, yaxis: { range: [0, regTotalMax * 1.12] } }), PLOT_CFG);
+
+  // Language selector
+  const sel = el('reg-lang-select');
+  langs.forEach(([lang]) => {
+    const opt = document.createElement('option');
+    opt.value = lang;
+    opt.textContent = lang;
+    sel.appendChild(opt);
+  });
+  sel.onchange = () => showRegLangDetails(sel.value);
+  showRegLangDetails(langs[0][0]);
+}
+
+function showRegLangDetails(lang) {
+  const ld = DATA.regional[lang];
+  if (!ld) return;
+
+  el('reg-metrics').innerHTML = `
+    <div class="metric"><div class="label">Total</div><div class="value">${fmt(ld.total)}</div></div>
+    <div class="metric"><div class="label">Approval</div><div class="value">${ld.approval}%</div></div>
+    <div class="metric"><div class="label">Negative</div><div class="value text-neg">${fmt(ld.negative)}</div></div>
+  `;
+
+  if (ld.top_negative && Object.keys(ld.top_negative).length) {
+    const e = Object.entries(ld.top_negative);
+    const rnVals = e.map(x => x[1]).reverse();
+    Plotly.newPlot('chart-reg-neg', [{
+      type: 'bar', orientation: 'h', x: rnVals, y: e.map(x => x[0]).reverse(),
+      marker: { color: NEG }, text: rnVals.map(v => '  ' + v), textposition: 'outside', cliponaxis: false,
+    }], makeLayout({ height: 250, margin: { l: 0, r: 40, t: 10, b: 0 }, yaxis: { autorange: true, automargin: true, ticksuffix: '  ' }, xaxis: { range: [0, Math.max(...rnVals) * 1.15] } }), PLOT_CFG);
+  } else el('chart-reg-neg').innerHTML = '';
+
+  if (ld.top_positive && Object.keys(ld.top_positive).length) {
+    const e = Object.entries(ld.top_positive);
+    const rpVals = e.map(x => x[1]).reverse();
+    Plotly.newPlot('chart-reg-pos', [{
+      type: 'bar', orientation: 'h', x: rpVals, y: e.map(x => x[0]).reverse(),
+      marker: { color: POS }, text: rpVals.map(v => '  ' + v), textposition: 'outside', cliponaxis: false,
+    }], makeLayout({ height: 250, margin: { l: 0, r: 40, t: 10, b: 0 }, yaxis: { autorange: true, automargin: true, ticksuffix: '  ' }, xaxis: { range: [0, Math.max(...rpVals) * 1.15] } }), PLOT_CFG);
+  } else el('chart-reg-pos').innerHTML = '';
+
+  // Deviation
+  const devSection = el('reg-deviation-section');
+  const regDev = (DATA.regional_deviation || {})[lang] || {};
+  if (Object.keys(regDev).length) {
+    devSection.style.display = '';
+    const sorted = Object.entries(regDev).sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]));
+    Plotly.newPlot('chart-reg-deviation', [{
+      type: 'bar', orientation: 'h',
+      x: sorted.map(d => d[1]).reverse(), y: sorted.map(d => d[0]).reverse(),
+      marker: { color: sorted.map(d => d[1] > 0 ? NEG : POS).reverse() },
+      text: sorted.map(d => '  ' + (d[1] > 0 ? '+' : '') + d[1] + '%').reverse(), textposition: 'outside', cliponaxis: false,
+    }], makeLayout({ height: Math.max(200, sorted.length * 35), margin: { l: 0, r: 50, t: 10, b: 0 }, yaxis: { autorange: true, automargin: true, ticksuffix: '  ' }, xaxis: { title: 'Deviation from global avg (%)' } }), PLOT_CFG);
+  } else {
+    devSection.style.display = 'none';
+  }
+}
+
+// =====================================================================
+// Praise vs Complaints
+// =====================================================================
+let pvcSeason = 'All Seasons';
+
+function renderPraiseVsComplaints() {
+  const pillContainer = el('pvc-season-pills');
+  const opts = ['All Seasons', ...REAL_SEASONS];
+  opts.forEach(s => {
+    const pill = document.createElement('span');
+    pill.className = 'pill' + (s === pvcSeason ? ' active' : '');
+    pill.textContent = s;
+    pill.onclick = () => {
+      pvcSeason = s;
+      pillContainer.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      updatePVC();
+    };
+    pillContainer.appendChild(pill);
+  });
+  updatePVC();
+}
+
+function updatePVC() {
+  const comps = DATA.comparisons;
+
+  function getCombined(topic) {
+    const d = comps[topic];
+    if (pvcSeason === 'All Seasons') return d.neg_count + d.pos_count;
+    const sd = (d.by_season || {})[pvcSeason] || {};
+    return (sd.neg_count || 0) + (sd.pos_count || 0);
+  }
+
+  const sortedTopics = Object.keys(comps).sort((a, b) => getCombined(b) - getCombined(a));
+
+  // Topic cards
+  let html = '';
+  sortedTopics.forEach((topic, idx) => {
+    const d = comps[topic];
+    let negCount, posCount, negPctVal, posPctVal;
+    if (pvcSeason === 'All Seasons') {
+      negCount = d.neg_count; posCount = d.pos_count; negPctVal = d.neg_pct; posPctVal = d.pos_pct;
+    } else {
+      const sd = (d.by_season || {})[pvcSeason] || {};
+      negCount = sd.neg_count || 0; posCount = sd.pos_count || 0;
+      negPctVal = sd.neg_pct || 0; posPctVal = sd.pos_pct || 0;
+    }
+
+    html += `<h3>${idx + 1}. ${escHtml(topic)}</h3>`;
+    html += `<div class="grid-23">`;
+    html += `<div>
+      <p style="font-size:14px"><strong>Complaint:</strong> ${escHtml(d.neg_category)}</p>
+      <p class="text-neg" style="font-size:14px"><strong>${fmt(negCount)}</strong> mentions (${negPctVal}% of negative)</p>
+      ${d.neg_examples ? `<details><summary>Show examples</summary><div class="details-content">${renderExamples(d.neg_examples)}</div></details>` : ''}
+    </div>`;
+    html += `<div>
+      <p style="font-size:14px"><strong>Praise:</strong> ${escHtml(d.pos_category)}</p>
+      <p class="text-pos" style="font-size:14px"><strong>${fmt(posCount)}</strong> mentions (${posPctVal}% of positive)</p>
+      ${d.pos_examples ? `<details><summary>Show examples</summary><div class="details-content">${renderExamples(d.pos_examples)}</div></details>` : ''}
+    </div>`;
+    html += `<div class="chart" id="chart-pvc-spark-${idx}"></div>`;
+    html += `</div><hr>`;
+  });
+  el('pvc-topics').innerHTML = html;
+
+  // Render sparklines
+  sortedTopics.forEach((topic, idx) => {
+    const d = comps[topic];
+    const byS = d.by_season || {};
+    const sparkNeg = REAL_SEASONS.map(s => (byS[s] || {}).neg_pct || 0);
+    const sparkPos = REAL_SEASONS.map(s => (byS[s] || {}).pos_pct || 0);
+    Plotly.newPlot(`chart-pvc-spark-${idx}`, [
+      { type: 'scatter', x: REAL_SEASONS, y: sparkNeg, mode: 'lines+markers', line: { color: NEG, width: 2 }, marker: { size: 5 }, name: 'Complaints %' },
+      { type: 'scatter', x: REAL_SEASONS, y: sparkPos, mode: 'lines+markers', line: { color: POS, width: 2 }, marker: { size: 5 }, name: 'Praise %' },
+    ], makeLayout({ height: 120, margin: { l: 30, r: 0, t: 5, b: 5 }, showlegend: false, xaxis: { showticklabels: false }, yaxis: { showticklabels: true, title: '' } }), PLOT_CFG);
+  });
+
+  // Comparison bar chart
+  let negPcts, posPcts;
+  if (pvcSeason === 'All Seasons') {
+    negPcts = sortedTopics.map(t => comps[t].neg_pct);
+    posPcts = sortedTopics.map(t => comps[t].pos_pct);
+  } else {
+    negPcts = sortedTopics.map(t => ((comps[t].by_season || {})[pvcSeason] || {}).neg_pct || 0);
+    posPcts = sortedTopics.map(t => ((comps[t].by_season || {})[pvcSeason] || {}).pos_pct || 0);
+  }
+  const labels = sortedTopics.map((t, i) => `${i + 1}. ${t}`);
+  Plotly.newPlot('chart-pvc-comparison', [
+    { type: 'bar', x: labels, y: negPcts, name: 'Complaints %', marker: { color: NEG } },
+    { type: 'bar', x: labels, y: posPcts, name: 'Praise %', marker: { color: POS } },
+  ], makeLayout({ barmode: 'group', height: 420, margin: { l: 50, r: 0, t: 10, b: 60 }, yaxis: { title: '% of reviews' }, legend: { orientation: 'h', yanchor: 'bottom', y: 1.02 } }), PLOT_CFG);
+}
+
+function renderExamples(examples) {
+  return examples.map((ex, j) =>
+    `<div class="review-card">
+      <div class="review-header">#${j + 1} | ${ex.votes_up} upvotes | ${Math.round(ex.hours)}h | ${escHtml(ex.language)} | ${escHtml(ex.season)}</div>
+      <div class="review-text">${escHtml(cleanText(ex.text))}</div>
+    </div>`
+  ).join('');
+}
+
+// =====================================================================
+// Top Reviews
+// =====================================================================
+let trSeason = 'All Seasons';
+let trTab = 'helpful';
+
+function renderTopReviews() {
+  // Season pills
+  const pillContainer = el('tr-season-pills');
+  const opts = ['All Seasons', ...REAL_SEASONS, 'Off-season'];
+  opts.forEach(s => {
+    const pill = document.createElement('span');
+    pill.className = 'pill' + (s === trSeason ? ' active' : '');
+    pill.textContent = s;
+    pill.onclick = () => {
+      trSeason = s;
+      pillContainer.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      updateTR();
+    };
+    pillContainer.appendChild(pill);
+  });
+
+  // Tab buttons
+  el('tr-tab-btns').querySelectorAll('.btn').forEach(btn => {
+    btn.onclick = () => {
+      trTab = btn.dataset.val;
+      el('tr-tab-btns').querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      updateTR();
+    };
+  });
+
+  // Search
+  el('tr-search').oninput = () => updateTR();
+
+  // Random button
+  el('tr-random-btn').onclick = () => {
+    const pool = filterBySeason(DATA.top_reviews.most_funny, trSeason);
+    if (pool.length) {
+      const rr = pool[Math.floor(Math.random() * pool.length)];
+      const sc = rr.sentiment === 'positive' ? 'text-pos' : 'text-neg';
+      const si = rr.sentiment === 'positive' ? '+' : '-';
+      el('tr-random-card').innerHTML = `
+        <div class="review-card" style="border-left:3px solid ${rr.sentiment === 'positive' ? POS : NEG}">
+          <div class="review-header"><strong>Random pick</strong> | ${rr.votes_funny} funny | ${Math.round(rr.hours)}h | ${escHtml(rr.language)} | ${escHtml(rr.season)} | <span class="${sc}">${si}</span></div>
+          <div class="review-text">${escHtml(cleanText(rr.text))}</div>
+        </div>`;
+    }
+  };
+
+  updateTR();
+}
+
+function filterBySeason(reviews, season) {
+  return season === 'All Seasons' ? reviews : reviews.filter(r => r.season === season);
+}
+
+function filterBySearch(reviews, query) {
+  if (!query) return reviews;
+  const q = query.toLowerCase();
+  return reviews.filter(r => r.text.toLowerCase().includes(q));
+}
+
+function updateTR() {
+  const query = el('tr-search').value;
+  const source = trTab === 'helpful' ? DATA.top_reviews.most_helpful : DATA.top_reviews.most_funny;
+  const filtered = filterBySearch(filterBySeason(source, trSeason), query);
+  const limit = 50;
+
+  if (!filtered.length) {
+    el('tr-reviews-list').innerHTML = '<div class="info-box">No reviews matching your filters</div>';
+    return;
+  }
+
+  const sortField = trTab === 'helpful' ? 'votes_up' : 'votes_funny';
+  const sortLabel = trTab === 'helpful' ? 'upvotes' : 'funny';
+
+  let html = '';
+  filtered.slice(0, limit).forEach((r, i) => {
+    const sc = r.sentiment === 'positive' ? 'text-pos' : 'text-neg';
+    const si = r.sentiment === 'positive' ? '+' : '-';
+    const borderColor = r.sentiment === 'positive' ? POS : NEG;
+    html += `<details style="border-left:3px solid ${borderColor}">
+      <summary>#${i + 1} | ${r[sortField]} ${sortLabel} | ${Math.round(r.hours)}h | ${escHtml(r.language)} | ${escHtml(r.season)} | <span class="${sc}">${si}</span></summary>
+      <div class="details-content">
+        <div class="review-text">${escHtml(cleanText(r.text))}</div>
+        ${r.categories && r.categories.length ? `<div class="review-cats">Categories: ${r.categories.join(', ')}</div>` : ''}
+      </div>
+    </details>`;
+  });
+  if (filtered.length > limit) html += `<p class="caption">Showing ${limit} of ${filtered.length} reviews</p>`;
+  el('tr-reviews-list').innerHTML = html;
+}
+
+// =====================================================================
+// Word Cloud
+// =====================================================================
+let wcSeason = 'All Seasons';
+
+function renderWordCloud() {
+  const pillContainer = el('wc-season-pills');
+  const opts = ['All Seasons', ...REAL_SEASONS];
+  opts.forEach(s => {
+    const pill = document.createElement('span');
+    pill.className = 'pill' + (s === wcSeason ? ' active' : '');
+    pill.textContent = s;
+    pill.onclick = () => {
+      wcSeason = s;
+      pillContainer.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      updateWC();
+    };
+    pillContainer.appendChild(pill);
+  });
+  updateWC();
+}
+
+function updateWC() {
+  let negCounts, posCounts;
+  if (wcSeason === 'All Seasons') {
+    negCounts = DATA.category_rankings.negative.categories;
+    posCounts = DATA.category_rankings.positive.categories;
+  } else {
+    const sh = DATA.season_health[wcSeason] || {};
+    negCounts = sh.all_negative || {};
+    posCounts = sh.all_positive || {};
+  }
+
+  const items = [];
+  Object.entries(negCounts).forEach(([cat, count]) => items.push({ category: cat, count, sentiment: 'negative' }));
+  Object.entries(posCounts).forEach(([cat, count]) => items.push({ category: cat, count, sentiment: 'positive' }));
+  items.sort((a, b) => b.count - a.count);
+
+  if (!items.length) {
+    el('wc-cloud').innerHTML = '<p class="caption">No data for this season</p>';
+    el('wc-table').innerHTML = '';
+    return;
+  }
+
+  const maxCount = items[0].count;
+  const minSize = 14, maxSize = 56;
+  let cloudHtml = '';
+  items.forEach(item => {
+    const ratio = maxCount ? item.count / maxCount : 0;
+    const size = Math.round(minSize + ratio * (maxSize - minSize));
+    const color = item.sentiment === 'negative' ? NEG : POS;
+    const weight = ratio > 0.3 ? 'bold' : 'normal';
+    cloudHtml += `<span title="${item.category}: ${fmt(item.count)} mentions" style="font-size:${size}px;color:${color};font-weight:${weight}">${escHtml(item.category)}</span> `;
+  });
+  el('wc-cloud').innerHTML = cloudHtml;
+
+  // Table
+  let tbl = '<table><thead><tr><th>Category</th><th>Mentions</th><th>Sentiment</th></tr></thead><tbody>';
+  items.forEach(item => {
+    const sc = item.sentiment === 'negative' ? 'text-neg' : 'text-pos';
+    tbl += `<tr><td>${escHtml(item.category)}</td><td>${fmt(item.count)}</td><td class="${sc}">${item.sentiment}</td></tr>`;
+  });
+  tbl += '</tbody></table>';
+  el('wc-table').innerHTML = tbl;
+}
+
+// =====================================================================
+// Community Insights (Stage 2 AI)
+// =====================================================================
+let ciSeason = 'All Seasons';
+
+function renderCommunityInsights() {
+  if (!DATA.top_issues || !DATA.top_issues.complaints) {
+    el('ci-metrics').innerHTML = '<div class="info-box">Stage 2 AI data not available</div>';
+    return;
+  }
+
+  const stats = DATA.issue_stats || {};
+  el('ci-metrics').innerHTML = `
+    <div class="metric"><div class="label">Total Issues Extracted</div><div class="value">${fmt(stats.total_issues || 0)}</div></div>
+    <div class="metric"><div class="label">Complaints</div><div class="value text-neg">${fmt(stats.total_complaints || 0)}</div></div>
+    <div class="metric"><div class="label">Suggestions</div><div class="value text-orange">${fmt(stats.total_suggestions || 0)}</div></div>
+    <div class="metric"><div class="label">Praise</div><div class="value text-pos">${fmt(stats.total_praise || 0)}</div></div>
+  `;
+
+  // Season pills
+  const pillContainer = el('ci-season-pills');
+  const opts = ['All Seasons', ...REAL_SEASONS];
+  opts.forEach(s => {
+    const pill = document.createElement('span');
+    pill.className = 'pill' + (s === ciSeason ? ' active' : '');
+    pill.textContent = s;
+    pill.onclick = () => {
+      ciSeason = s;
+      pillContainer.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      updateCI();
+    };
+    pillContainer.appendChild(pill);
+  });
+  updateCI();
+}
+
+function updateCI() {
+  let complaints, suggestions, praise;
+  if (ciSeason === 'All Seasons') {
+    complaints = DATA.top_issues.complaints;
+    suggestions = DATA.top_issues.suggestions;
+    praise = DATA.top_issues.praise;
+  } else {
+    const sd = (DATA.issues_by_season || {})[ciSeason] || {};
+    complaints = sd.complaints || [];
+    suggestions = sd.suggestions || [];
+    praise = sd.praise || [];
+  }
+
+  // Top complaints bar
+  const cSlice = complaints.slice(0, 25);
+  if (cSlice.length) {
+    const cNames = cSlice.map(c => c.text).reverse();
+    const cVals = cSlice.map(c => c.count).reverse();
+    Plotly.newPlot('chart-ci-complaints', [{
+      type: 'bar', orientation: 'h', x: cVals, y: cNames,
+      marker: { color: NEG }, text: cVals.map(v => '  ' + fmt(v)), textposition: 'outside', cliponaxis: false,
+    }], makeLayout({ height: Math.max(500, cSlice.length * 28), margin: { l: 0, r: 50, t: 10, b: 0 },
+      yaxis: { autorange: true, automargin: true, ticksuffix: '  ' },
+      xaxis: { range: [0, Math.max(...cVals) * 1.15] } }), PLOT_CFG);
+  } else {
+    el('chart-ci-complaints').innerHTML = '<p class="caption">No data</p>';
+  }
+
+  // Suggestions bar
+  const sSlice = suggestions.slice(0, 15);
+  if (sSlice.length) {
+    const sNames = sSlice.map(c => c.text).reverse();
+    const sVals = sSlice.map(c => c.count).reverse();
+    Plotly.newPlot('chart-ci-suggestions', [{
+      type: 'bar', orientation: 'h', x: sVals, y: sNames,
+      marker: { color: ORANGE }, text: sVals.map(v => '  ' + fmt(v)), textposition: 'outside', cliponaxis: false,
+    }], makeLayout({ height: Math.max(350, sSlice.length * 28), margin: { l: 0, r: 50, t: 10, b: 0 },
+      yaxis: { autorange: true, automargin: true, ticksuffix: '  ' },
+      xaxis: { range: [0, Math.max(...sVals) * 1.15] } }), PLOT_CFG);
+  } else {
+    el('chart-ci-suggestions').innerHTML = '<p class="caption">No data</p>';
+  }
+
+  // Praise bar
+  const pSlice = praise.slice(0, 15);
+  if (pSlice.length) {
+    const pNames = pSlice.map(c => c.text).reverse();
+    const pVals = pSlice.map(c => c.count).reverse();
+    Plotly.newPlot('chart-ci-praise', [{
+      type: 'bar', orientation: 'h', x: pVals, y: pNames,
+      marker: { color: POS }, text: pVals.map(v => '  ' + fmt(v)), textposition: 'outside', cliponaxis: false,
+    }], makeLayout({ height: Math.max(350, pSlice.length * 28), margin: { l: 0, r: 50, t: 10, b: 0 },
+      yaxis: { autorange: true, automargin: true, ticksuffix: '  ' },
+      xaxis: { range: [0, Math.max(...pVals) * 1.15] } }), PLOT_CFG);
+  } else {
+    el('chart-ci-praise').innerHTML = '<p class="caption">No data</p>';
+  }
+}
+
+// =====================================================================
+// Entity Tracker
+// =====================================================================
+function renderEntityTracker() {
+  const et = DATA.entity_tracking || {};
+  if (!Object.keys(et).length) {
+    el('chart-et-top').innerHTML = '<div class="info-box">Entity tracking data not available</div>';
+    return;
+  }
+
+  // Top entities bar chart
+  const sorted = Object.entries(et).sort((a, b) => b[1].total - a[1].total);
+  const topN = sorted.slice(0, 25);
+  const etNames = topN.map(e => e[0]).reverse();
+  const etVals = topN.map(e => e[1].total).reverse();
+  Plotly.newPlot('chart-et-top', [{
+    type: 'bar', orientation: 'h', x: etVals, y: etNames,
+    marker: { color: BLUE }, text: etVals.map(v => '  ' + fmt(v)), textposition: 'outside', cliponaxis: false,
+  }], makeLayout({ height: Math.max(500, topN.length * 28), margin: { l: 0, r: 50, t: 10, b: 0 },
+    yaxis: { autorange: true, automargin: true, ticksuffix: '  ' },
+    xaxis: { range: [0, Math.max(...etVals) * 1.15] } }), PLOT_CFG);
+
+  // Entity selector
+  const sel = el('et-entity-select');
+  sorted.forEach(([name]) => {
+    const opt = document.createElement('option');
+    opt.value = name;
+    opt.textContent = `${name} (${fmt(et[name].total)})`;
+    sel.appendChild(opt);
+  });
+  sel.onchange = () => showEntityDetails(sel.value);
+  showEntityDetails(sorted[0][0]);
+}
+
+function showEntityDetails(entity) {
+  const et = DATA.entity_tracking || {};
+  const ed = et[entity];
+  if (!ed) return;
+
+  el('et-entity-title').textContent = `"${entity}" mentions across seasons`;
+
+  const byS = ed.by_season || {};
+  const seasons = REAL_SEASONS.filter(s => byS[s]);
+  const cVals = seasons.map(s => (byS[s] || {}).complaint || 0);
+  const sVals = seasons.map(s => (byS[s] || {}).suggestion || 0);
+  const pVals = seasons.map(s => (byS[s] || {}).praise || 0);
+
+  const traces = [];
+  if (cVals.some(v => v > 0))
+    traces.push({ type: 'bar', x: seasons, y: cVals, name: 'Complaints', marker: { color: NEG } });
+  if (sVals.some(v => v > 0))
+    traces.push({ type: 'bar', x: seasons, y: sVals, name: 'Suggestions', marker: { color: ORANGE } });
+  if (pVals.some(v => v > 0))
+    traces.push({ type: 'bar', x: seasons, y: pVals, name: 'Praise', marker: { color: POS } });
+
+  Plotly.newPlot('chart-et-seasons', traces, makeLayout({
+    barmode: 'stack', height: 400, margin: { l: 50, r: 0, t: 10, b: 30 },
+    legend: { orientation: 'h', yanchor: 'bottom', y: 1.02 },
+  }), PLOT_CFG);
+
+  // Related top issues for this entity
+  const allComplaints = DATA.top_issues ? DATA.top_issues.complaints || [] : [];
+  const allSuggestions = DATA.top_issues ? DATA.top_issues.suggestions || [] : [];
+  const related = [...allComplaints, ...allSuggestions]
+    .filter(i => i.text.toLowerCase().includes(entity.toLowerCase()) ||
+                 i.text.split(': ')[0] === entity)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10);
+
+  if (related.length) {
+    let html = '<h3>Related Issues</h3><table><thead><tr><th>Issue</th><th>Mentions</th></tr></thead><tbody>';
+    related.forEach(r => {
+      html += `<tr><td>${escHtml(r.text)}</td><td>${fmt(r.count)}</td></tr>`;
+    });
+    html += '</tbody></table>';
+    el('et-related-issues').innerHTML = html;
+  } else {
+    el('et-related-issues').innerHTML = '';
+  }
+}
+
+// =====================================================================
+// Patch Notes
+// =====================================================================
+let pnSeason = '';
+
+function renderPatchNotes() {
+  const patches = DATA.patch_notes || [];
+  if (!patches.length) {
+    el('pn-content').innerHTML = '<div class="info-box">Patch notes data not available</div>';
+    return;
+  }
+
+  // Season pills
+  const pillContainer = el('pn-season-pills');
+  const patchSeasons = patches.map(p => p.season);
+  if (!pnSeason) pnSeason = patchSeasons[patchSeasons.length - 1];
+  patchSeasons.forEach(s => {
+    const pill = document.createElement('span');
+    pill.className = 'pill' + (s === pnSeason ? ' active' : '');
+    pill.textContent = s;
+    pill.onclick = () => {
+      pnSeason = s;
+      pillContainer.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      showPatchDetails(s);
+    };
+    pillContainer.appendChild(pill);
+  });
+  showPatchDetails(pnSeason);
+}
+
+function showPatchDetails(season) {
+  const patches = DATA.patch_notes || [];
+  const patch = patches.find(p => p.season === season);
+  if (!patch) { el('pn-content').innerHTML = ''; return; }
+
+  // Map season code (S1) to season name (Season 1)
+  const seasonName = DATA.seasons_meta.find(s => s.season === season ||
+    s.season === 'Season ' + season.replace('S', ''))?.season || season;
+
+  let html = `<h2>${patch.version} &mdash; ${patch.date}</h2>`;
+
+  // Balance changes
+  const bc = patch.balance_changes || [];
+  if (bc.length) {
+    html += `<h3>Balance Changes (${bc.length})</h3>`;
+    // Group by type
+    const groups = {};
+    bc.forEach(c => {
+      const g = c.type || 'other';
+      if (!groups[g]) groups[g] = [];
+      groups[g].push(c);
+    });
+    for (const [type, changes] of Object.entries(groups)) {
+      const typeLabel = type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+      const typeColor = type.includes('buff') ? POS : type.includes('nerf') ? NEG : ORANGE;
+      html += `<details><summary style="color:${typeColor}">${typeLabel} (${changes.length})</summary><div class="details-content"><table>`;
+      changes.forEach(c => {
+        html += `<tr><td><strong>${escHtml(c.item || '')}</strong></td><td>${escHtml(c.details || '')}</td></tr>`;
+      });
+      html += '</table></div></details>';
+    }
+  }
+
+  // New content
+  const nc = patch.new_content || [];
+  if (nc.length) {
+    html += `<h3>New Content (${nc.length})</h3>`;
+    html += '<table><thead><tr><th>Type</th><th>Item</th><th>Details</th></tr></thead><tbody>';
+    nc.forEach(c => {
+      html += `<tr><td>${escHtml(c.type || '')}</td><td><strong>${escHtml(c.item || '')}</strong></td><td>${escHtml(c.details || c.class || '')}</td></tr>`;
+    });
+    html += '</tbody></table>';
+  }
+
+  // Bug fixes
+  const bf = patch.bug_fixes || [];
+  if (bf.length) {
+    html += `<details><summary>Bug Fixes (${bf.length})</summary><div class="details-content"><ul style="color:var(--text-muted);font-size:13px;line-height:1.8;padding-left:20px">`;
+    bf.forEach(fix => {
+      const text = typeof fix === 'string' ? fix : fix.details || JSON.stringify(fix);
+      html += `<li>${escHtml(text)}</li>`;
+    });
+    html += '</ul></div></details>';
+  }
+
+  // Community reaction: show top complaints from that season
+  const seasonIssues = (DATA.issues_by_season || {})[seasonName] || {};
+  const seasonComplaints = seasonIssues.complaints || [];
+  if (seasonComplaints.length) {
+    html += `<hr><h3>Community Response (${seasonName})</h3>`;
+    html += '<p class="caption">Top complaints extracted from reviews during this season:</p>';
+    const top10 = seasonComplaints.slice(0, 10);
+    const tNames = top10.map(c => c.text).reverse();
+    const tVals = top10.map(c => c.count).reverse();
+    html += `<div class="chart" id="chart-pn-complaints-${season}"></div>`;
+    el('pn-content').innerHTML = html;
+    Plotly.newPlot(`chart-pn-complaints-${season}`, [{
+      type: 'bar', orientation: 'h', x: tVals, y: tNames,
+      marker: { color: NEG }, text: tVals.map(v => '  ' + fmt(v)), textposition: 'outside', cliponaxis: false,
+    }], makeLayout({ height: Math.max(300, top10.length * 30), margin: { l: 0, r: 50, t: 10, b: 0 },
+      yaxis: { autorange: true, automargin: true, ticksuffix: '  ' },
+      xaxis: { range: [0, Math.max(...tVals) * 1.15] } }), PLOT_CFG);
+  } else {
+    el('pn-content').innerHTML = html;
+  }
+}
+
+// =====================================================================
+// About
+// =====================================================================
+function renderAbout() {
+  const is = DATA.issue_stats || {};
+  el('about-data').innerHTML = `
+    <ul style="color:var(--text-muted);font-size:15px;line-height:1.8;padding-left:20px">
+      <li><strong>Source:</strong> Steam Store Reviews API</li>
+      <li><strong>Total reviews:</strong> ${fmt(DATA.overview.total)}</li>
+      <li><strong>Languages:</strong> ${DATA.overview.languages}</li>
+      <li><strong>Period:</strong> Dec 2023 (launch) &mdash; present</li>
+      ${is.total_issues ? `<li><strong>Issues extracted:</strong> ${fmt(is.total_issues)} (${fmt(is.total_complaints)} complaints, ${fmt(is.total_suggestions)} suggestions, ${fmt(is.total_praise)} praise)</li>` : ''}
+      <li><strong>Patch notes:</strong> ${(DATA.patch_notes || []).length} season-opening patches parsed</li>
+    </ul>`;
+}
+
+// =====================================================================
+// Init
+// =====================================================================
+async function init() {
+  try {
+    const resp = await fetch('dashboard_data.json');
+    DATA = await resp.json();
+  } catch(e) {
+    el('loading').textContent = 'Failed to load data: ' + e.message;
+    return;
+  }
+
+  SEASON_ORDER = DATA.seasons_meta.map(s => s.season);
+  REAL_SEASONS = SEASON_ORDER.filter(s => s in DATA.season_health);
+
+  // Sidebar stats
+  const numSeasons = REAL_SEASONS.length;
+  const issueCount = (DATA.issue_stats || {}).total_issues || 0;
+  let statsHtml = `<strong>${fmt(DATA.overview.total)}</strong> reviews analyzed<br><strong>${DATA.overview.languages}</strong> languages<br><strong>${numSeasons}</strong> seasons`;
+  if (issueCount) statsHtml += `<br><strong>${fmt(issueCount)}</strong> issues extracted`;
+  el('sidebar-stats').innerHTML = statsHtml;
+
+  // Init nav
+  initNav();
+
+  // Hide loading
+  el('loading').style.display = 'none';
+
+  // Navigate to page from hash or default
+  const hash = window.location.hash.slice(1);
+  const validPage = PAGES.find(p => p.id === hash);
+  navigateTo(validPage ? hash : 'overview');
+}
+
+window.addEventListener('hashchange', () => {
+  const hash = window.location.hash.slice(1);
+  const validPage = PAGES.find(p => p.id === hash);
+  if (validPage && hash !== currentPage) navigateTo(hash);
+});
+
+init();
+</script>
+</body>
+</html>

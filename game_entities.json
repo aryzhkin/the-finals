@@ -1,0 +1,72 @@
+{
+  "classes": {
+    "Light": {"hp": 150, "regen_delay": 7, "role": "Fast, fragile, hit-and-run, stealth and evasion"},
+    "Medium": {"hp": 250, "regen_delay": 9, "role": "Balanced, mid-range, healing and support"},
+    "Heavy": {"hp": 350, "regen_delay": 10, "role": "Tank, slow, demolition and fortifications"}
+  },
+  "weapons": {
+    "Light": ["93R", "ARN-220", "Dagger", "LH1", "M11", "M26 Matter", "Recurve Bow", "SH1900", "SR-84", "Sword", "Throwing Knives", "V9S", "XP-54"],
+    "Medium": ["AKM", "CB-01 Repeater", "Cerberus 12GA", "CL-40", "Dual Blades", "FAMAS", "FCAR", "Model 1887", "P90", "Pike-556", "R.357", "Riot Shield"],
+    "Heavy": [".50 Akimbo", "BFR Titan", "Flamethrower", "KS-23", "Lewis Gun", "M134 Minigun", "M60", "MGL32", "SA1216", "ShAK-50", "Sledgehammer", "Spear"]
+  },
+  "specializations": {
+    "Light": ["Cloaking Device", "Evasive Dash", "Grappling Hook"],
+    "Medium": ["Dematerializer", "Guardian Turret", "Healing Beam", "Recon Senses"],
+    "Heavy": ["Charge N Slam", "Goo Gun", "Mesh Shield", "Winch Claw"]
+  },
+  "gadgets": {
+    "Light": ["Breach Charge", "Gateway", "Glitch Grenade", "Gravity Vortex", "H+ Infuser", "Sonar Grenade", "Nullifier", "Thermal Bore", "Thermal Vision", "Tracking Dart", "Vanishing Bomb"],
+    "Medium": ["APS Turret", "Breach Drill", "Data Reshaper", "Defibrillator", "Explosive Mine", "Gas Mine", "Glitch Trap", "Jump Pad", "Zipline", "Proximity Sensor"],
+    "Heavy": ["Anti-Gravity Cube", "Barricade", "C4", "Dome Shield", "Explosive Mine", "Healing Emitter", "Proximity Sensor", "Lockbolt", "Pyro Mine", "RPG-7"],
+    "Universal": ["Flashbang", "Frag Grenade", "Gas Grenade", "Goo Grenade", "Pyro Grenade", "Smoke Grenade"]
+  },
+  "game_modes": {
+    "Cashout": "3v3v3v3 tournament, carry vault to cashout station, defend deposits",
+    "Ranked Cashout": "Competitive Cashout with league progression",
+    "Quick Cash": "Casual 3v3v3 Cashout, first to $20,000 wins",
+    "Head2Head": "Casual 3v3 Cashout, first to $50,000 wins",
+    "Team Deathmatch": "Casual 5v5, eliminations earn cash, first to $3,000",
+    "Power Shift": "Casual 5v5, escort a platform through the arena",
+    "Point Break": "Casual 8v8, attackers push defenders back",
+    "Bank It": "Collect coins, deposit at vault, steal from enemies",
+    "Terminal Attack": "Attack/defend objectives, no respawns"
+  },
+  "arenas": [
+    "Bernal", "Fangwai City", "Fortune Stadium", "Kyoto", "Las Vegas",
+    "Las Vegas Stadium", "Monaco", "NOZOMI/CITADEL", "P.E.A.C.E. Center",
+    "Seoul", "Skyway Stadium", "SYS$HORIZON"
+  ],
+  "aliases": {
+    "sword": "Sword",
+    "katana": "Sword",
+    "melee": "context-dependent",
+    "sniper": "SR-84 or XP-54",
+    "revolver": "R.357 or BFR Titan",
+    "minigun": "M134 Minigun",
+    "shotgun": "context-dependent",
+    "rpg": "RPG-7",
+    "invis": "Cloaking Device",
+    "invisibility": "Cloaking Device",
+    "cloak": "Cloaking Device",
+    "grapple": "Grappling Hook",
+    "dash": "Evasive Dash",
+    "heal beam": "Healing Beam",
+    "defib": "Defibrillator",
+    "zip": "Zipline",
+    "mesh": "Mesh Shield",
+    "dome": "Dome Shield",
+    "charge slam": "Charge N Slam",
+    "slam": "Charge N Slam",
+    "goo gun": "Goo Gun",
+    "turret": "Guardian Turret or APS Turret",
+    "mine": "Explosive Mine or Gas Mine or Pyro Mine",
+    "glitch": "Glitch Grenade or Glitch Trap",
+    "thermal bore": "Thermal Bore",
+    "c4": "C4",
+    "barricade": "Barricade",
+    "lewis": "Lewis Gun",
+    "akm": "AKM",
+    "fcar": "FCAR",
+    "famas": "FAMAS"
+  }
+}
