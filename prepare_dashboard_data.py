@@ -446,6 +446,10 @@ def main():
 
         # Entity tracking: entity -> season -> {complaint, suggestion, praise}
         ent_season = defaultdict(lambda: defaultdict(lambda: Counter()))
+        # Entity issues: entity -> type -> Counter(issue_text)
+        ent_issues = defaultdict(lambda: defaultdict(Counter))
+        # Entity issues by season: entity -> type -> text -> season -> count
+        ent_issues_season = defaultdict(lambda: defaultdict(lambda: defaultdict(Counter)))
 
         total_issues_count = 0
         reviews_with_issues = 0
@@ -474,6 +478,8 @@ def main():
 
                 for entity in iss.get("entities", []):
                     ent_season[entity][season][itype] += 1
+                    ent_issues[entity][itype][text] += 1
+                    ent_issues_season[entity][itype][text][season] += 1
 
         # Top issues (overall)
         top_issues = {
@@ -505,9 +511,23 @@ def main():
         season_names = [s["season"] for s in seasons_meta]
 
         for entity in top_entities:
+            # Top issues per type for this entity
+            ei = ent_issues[entity]
+            ent_top_issues = {}
+            for tp, label in [("complaint", "complaints"), ("suggestion", "suggestions"), ("praise", "praise")]:
+                top = ei[tp].most_common(10)
+                if top:
+                    eis = ent_issues_season[entity][tp]
+                    ent_top_issues[label] = [
+                        {"text": t, "count": c,
+                         "by_season": {s: cnt for s, cnt in eis[t].items() if cnt > 0}}
+                        for t, c in top
+                    ]
+
             entity_tracking[entity] = {
                 "total": ent_totals[entity],
-                "by_season": {}
+                "by_season": {},
+                "issues": ent_top_issues,
             }
             for sn in season_names:
                 counts = ent_season[entity].get(sn, Counter())
@@ -579,6 +599,164 @@ def main():
             })
 
     # -----------------------------------------------------------------------
+    # 15. Issue samples — real review texts for each issue in category_issues
+    # -----------------------------------------------------------------------
+    issue_samples = {}
+    if issues_data and category_issues:
+        print("Building issue samples...")
+        # Collect all issue texts we need samples for
+        needed_issues = set()
+        for cat, items in category_issues.items():
+            for item in items:
+                needed_issues.add(item["text"])
+        # Also include top_issues (all-time) for CI charts
+        for kind in ("complaints", "suggestions", "praise"):
+            for item in top_issues.get(kind, []):
+                needed_issues.add(item["text"])
+        # Also include entity issues for Patch Notes "What Players Say"
+        for entity_data in entity_tracking.values():
+            for kind in ("complaints", "suggestions", "praise"):
+                for item in entity_data.get("issues", {}).get(kind, []):
+                    needed_issues.add(item["text"])
+
+        # Build issue_text → [review_idx, ...] mapping + idx → season lookup
+        issue_to_idxs = defaultdict(list)
+        idx_to_season = {}
+        for rev in issues_data:
+            idx_to_season[rev["idx"]] = get_season(rev["timestamp"])
+            for issue in rev.get("issues", []):
+                t = issue.get("text", "")
+                if t in needed_issues:
+                    issue_to_idxs[t].append(rev["idx"])
+
+        # Load full review texts
+        print("  Loading review texts for samples...")
+        with open("reviews_ai_classified.json", encoding="utf-8") as f:
+            full_reviews = json.load(f)
+
+        # Playtime brackets (must match frontend RE_BRACKETS)
+        PT_BRACKETS = [
+            ("Newcomer", 0, 10),
+            ("Casual", 10, 50),
+            ("Regular", 50, 100),
+            ("Dedicated", 100, 200),
+            ("Veteran", 200, 500),
+            ("Hardcore", 500, float("inf")),
+        ]
+        issue_playtime = {}  # issue_text → {bracket_label: count}
+        issue_playtime_by_season = {}  # issue_text → {season → {bracket_label: count}}
+
+        import random
+        random.seed(42)
+        for issue_text, idxs in issue_to_idxs.items():
+            # Collect all candidates and compute playtime distribution
+            candidates = []
+            pt_dist = Counter()
+            pt_by_season = defaultdict(Counter)  # season → bracket → count
+            for idx in idxs:
+                if idx >= len(full_reviews):
+                    continue
+                rev = full_reviews[idx]
+                text = rev.get("review", "").strip()
+                lang = rev.get("language", "")
+                if not text:
+                    continue
+
+                # Extract playtime for distribution (all reviews)
+                hours = 0
+                try:
+                    author = rev.get("author", {})
+                    if isinstance(author, str):
+                        import ast
+                        author = ast.literal_eval(author)
+                    hours = round(float(author.get("playtime_at_review", 0)) / 60, 1)
+                except (ValueError, TypeError):
+                    pass
+                season = idx_to_season.get(idx, "Off-season")
+                for label, lo, hi in PT_BRACKETS:
+                    if lo <= hours < hi:
+                        pt_dist[label] += 1
+                        pt_by_season[season][label] += 1
+                        break
+
+                # Score: prefer English + medium length
+                length_ok = 60 <= len(text) <= 600
+                is_english = lang == "english"
+                score = (2 if is_english else 0) + (1 if length_ok else 0)
+                candidates.append((score, idx, text, lang, rev, hours))
+
+            if pt_dist:
+                issue_playtime[issue_text] = dict(pt_dist)
+            if pt_by_season:
+                issue_playtime_by_season[issue_text] = {
+                    s: dict(c) for s, c in pt_by_season.items()
+                }
+
+            # Stratified sampling: guarantee playtime diversity
+            # 1. Group candidates by bracket
+            by_bracket = defaultdict(list)
+            for c in candidates:
+                h = c[5]  # hours
+                for label, lo, hi in PT_BRACKETS:
+                    if lo <= h < hi:
+                        by_bracket[label].append(c)
+                        break
+
+            # 2. Sort each bracket by score desc, shuffle top for variety
+            for label in by_bracket:
+                by_bracket[label].sort(key=lambda x: -x[0])
+                top = by_bracket[label][:20]
+                random.shuffle(top)
+                by_bracket[label] = top
+
+            # 3. Round-robin: pick from each bracket proportionally
+            # At least 1 per bracket (if available), rest proportional
+            TARGET = 15
+            present = [l for l, _, _ in PT_BRACKETS if by_bracket.get(l)]
+            if not present:
+                issue_samples[issue_text] = []
+                continue
+
+            # Allocate slots proportional to real distribution
+            total_pop = sum(pt_dist.get(l, 0) for l in present)
+            slots = {}
+            remaining = TARGET
+            for l in present:
+                # At least 1, rest proportional
+                slots[l] = 1
+                remaining -= 1
+            # Distribute remaining proportionally
+            if remaining > 0 and total_pop > 0:
+                for l in present:
+                    extra = round((pt_dist.get(l, 0) / total_pop) * remaining)
+                    slots[l] += extra
+                # Adjust if total != TARGET
+                total_slots = sum(slots.values())
+                diff = TARGET - total_slots
+                if diff != 0:
+                    # Add/remove from largest bracket
+                    largest = max(present, key=lambda l: pt_dist.get(l, 0))
+                    slots[largest] += diff
+
+            samples = []
+            for l in present:
+                n = min(slots.get(l, 1), len(by_bracket[l]))
+                for c in by_bracket[l][:n]:
+                    _, idx, text, lang, rev, hours = c
+                    samples.append({
+                        "text": text[:500],
+                        "hours": hours,
+                        "up": str(rev.get("voted_up", "True")) == "True",
+                        "lang": lang,
+                    })
+
+            if samples:
+                issue_samples[issue_text] = samples
+
+        del full_reviews  # free memory
+        print(f"  {len(issue_samples)} issues with samples")
+
+    # -----------------------------------------------------------------------
     # Assemble and save
     # -----------------------------------------------------------------------
     dashboard = {
@@ -604,6 +782,9 @@ def main():
         "entity_tracking": entity_tracking,
         "issue_stats": issue_stats,
         "category_issues": category_issues,
+        "issue_samples": issue_samples,
+        "issue_playtime": issue_playtime if issues_data and category_issues else {},
+        "issue_playtime_by_season": issue_playtime_by_season if issues_data and category_issues else {},
         # Patch notes
         "patch_notes": patch_notes_out,
     }
