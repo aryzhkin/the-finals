@@ -146,22 +146,39 @@ def main():
     }
 
     # -----------------------------------------------------------------------
-    # 3. Season health data
+    # 3. Season health data + category × season × playtime cross-data
     # -----------------------------------------------------------------------
+    BRACKET_LABEL = {
+        "0-10h (Newcomer)": "Newcomer",
+        "10-50h (Casual)": "Casual",
+        "50-100h (Regular)": "Regular",
+        "100-200h (Dedicated)": "Dedicated",
+        "200-500h (Veteran)": "Veteran",
+        "500-1000h (Hardcore)": "Hardcore",
+        "1000h+ (No-lifer)": "Hardcore",
+    }
+
     season_data = {}
+    cat_season_pt_neg = defaultdict(lambda: defaultdict(Counter))
+    cat_season_pt_pos = defaultdict(lambda: defaultdict(Counter))
     for r in reviews:
         s = r["season"]
         if s not in season_data:
             season_data[s] = {"positive": 0, "negative": 0,
                               "neg_cats": Counter(), "pos_cats": Counter()}
+        bracket = BRACKET_LABEL.get(r.get("playtime_bracket", ""), "")
         if r["sentiment"] == "positive":
             season_data[s]["positive"] += 1
             for c in r["categories"]:
                 season_data[s]["pos_cats"][c] += 1
+                if bracket:
+                    cat_season_pt_pos[c][s][bracket] += 1
         else:
             season_data[s]["negative"] += 1
             for c in r["categories"]:
                 season_data[s]["neg_cats"][c] += 1
+                if bracket:
+                    cat_season_pt_neg[c][s][bracket] += 1
 
     season_health = {}
     for s, d in season_data.items():
@@ -184,13 +201,17 @@ def main():
     for r in reviews:
         monthly[r["month"]][r["sentiment"]] += 1
 
-    # Daily for review bombing detection (with season)
+    # Daily for review bombing detection (with season + categories)
     daily = defaultdict(lambda: {"positive": 0, "negative": 0, "season": ""})
+    daily_cats = defaultdict(Counter)  # day → {category: count} (negative only)
     for r in reviews:
         day = datetime.fromtimestamp(r["timestamp"], tz=timezone.utc).strftime("%Y-%m-%d")
         daily[day][r["sentiment"]] += 1
         if not daily[day]["season"]:
             daily[day]["season"] = r["season"]
+        if r["sentiment"] == "negative":
+            for c in r["categories"]:
+                daily_cats[day][c] += 1
 
     # -----------------------------------------------------------------------
     # 5. Playtime data (player journey)
@@ -766,10 +787,14 @@ def main():
         "seasons_meta": seasons_meta,
         "monthly_timeline": dict(sorted(monthly.items())),
         "daily_timeline": dict(sorted(daily.items())),
+        "daily_cats": {d: dict(cats.most_common(5)) for d, cats in daily_cats.items()
+                       if daily[d]["positive"] + daily[d]["negative"] >= 10},
         "playtime_data": playtime_data,
         "playtime_order": brackets_order,
         "cat_playtime_neg": {k: dict(v) for k, v in cat_playtime_neg.items()},
         "cat_playtime_pos": {k: dict(v) for k, v in cat_playtime_pos.items()},
+        "cat_season_pt_neg": {cat: {s: dict(brs) for s, brs in seasons.items()} for cat, seasons in cat_season_pt_neg.items()},
+        "cat_season_pt_pos": {cat: {s: dict(brs) for s, brs in seasons.items()} for cat, seasons in cat_season_pt_pos.items()},
         "regional": regional,
         "top_reviews": top_reviews,
         "recurring_problems": recurring,
