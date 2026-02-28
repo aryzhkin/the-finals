@@ -136,6 +136,31 @@ def main():
                 if ai_cats:
                     replaced += 1
         print(f"  {replaced:,} reviews got AI categories")
+
+        # Backfill unclassified reviews from Stage 2 issues
+        # If Stage 1 returned no categories but Stage 2 extracted issues,
+        # infer categories from issue prefixes via reverse CATEGORY_ISSUE_PREFIXES
+        prefix_to_cat = {}
+        for cat, prefixes in CATEGORY_ISSUE_PREFIXES.items():
+            for prefix in prefixes:
+                prefix_to_cat[prefix] = cat
+        backfilled = 0
+        for i, r in enumerate(reviews):
+            if r["categories"] or i >= len(issues_data):
+                continue
+            issues = issues_data[i].get("issues", [])
+            if not issues:
+                continue
+            inferred = set()
+            for iss in issues:
+                text = iss.get("text", "")
+                prefix = text.split(": ")[0] if ": " in text else ""
+                if prefix in prefix_to_cat:
+                    inferred.add(prefix_to_cat[prefix])
+            if inferred:
+                r["categories"] = list(inferred)
+                backfilled += 1
+        print(f"  {backfilled:,} unclassified reviews backfilled from Stage 2 issues")
     else:
         print("  WARNING: reviews_issues.json not found, using regex categories")
 
@@ -653,6 +678,17 @@ def main():
             if related:
                 category_issues[cat] = related
 
+        # Report CATEGORY_ISSUE_PREFIXES coverage
+        all_cats = set(neg_cats.keys()) | set(pos_cats.keys())
+        mapped_cats = set(CATEGORY_ISSUE_PREFIXES.keys())
+        unmapped = all_cats - mapped_cats
+        empty_mapped = mapped_cats - set(category_issues.keys())
+        if unmapped:
+            print(f"  CATEGORY_ISSUE_PREFIXES: {len(unmapped)} categories without prefix mapping: {unmapped}")
+        if empty_mapped:
+            print(f"  CATEGORY_ISSUE_PREFIXES: {len(empty_mapped)} mapped categories yielded 0 issues: {empty_mapped}")
+        print(f"  Category issues coverage: {len(category_issues)}/{len(all_cats)} categories")
+
     # Enrich trending/fixed with top specific issues from current season
     if issues_data and (trending or fixed):
         curr_s_complaints = season_issues.get(_trends_curr_season, {})
@@ -876,7 +912,6 @@ def main():
         "entity_tracking": entity_tracking,
         "issue_stats": issue_stats,
         "category_issues": category_issues,
-        "issue_samples": issue_samples,
         "issue_playtime": issue_playtime if issues_data and category_issues else {},
         "issue_playtime_by_season": issue_playtime_by_season if issues_data and category_issues else {},
         # Patch notes
@@ -887,7 +922,16 @@ def main():
         json.dump(dashboard, f, ensure_ascii=False)
 
     size = os.path.getsize("docs/dashboard_data.json") / 1024
-    print(f"\nSaved docs/dashboard_data.json ({size:.0f} KB)")
+    print(f"Saved docs/dashboard_data.json ({size:.0f} KB)")
+
+    # Save issue_samples as separate file (lazy-loaded by frontend)
+    if issue_samples:
+        with open("docs/issue_samples.json", "w", encoding="utf-8") as f:
+            json.dump(issue_samples, f, ensure_ascii=False)
+        ssize = os.path.getsize("docs/issue_samples.json") / 1024
+        print(f"Saved docs/issue_samples.json ({ssize:.0f} KB)")
+
+    print()
 
 
 if __name__ == "__main__":

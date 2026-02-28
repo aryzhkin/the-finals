@@ -115,9 +115,15 @@ details .details-content { padding: 0 16px 12px; }
 /* Mobile */
 @media (max-width: 768px) {
   .sidebar { display: none; }
-  .main { margin-left: 0; padding: 16px; }
+  .main { margin-left: 0; padding: 12px; }
   .grid-2, .grid-3, .grid-23 { grid-template-columns: 1fr; }
   .metrics { flex-direction: column; }
+  .chart { min-height: 250px; }
+  h1 { font-size: 1.3em; }
+  h2 { font-size: 1.1em; }
+  table { font-size: 12px; }
+  .pill { font-size: 11px; padding: 3px 8px; }
+  .info-box { font-size: 13px; }
 }
 
 /* Scrollbar */
@@ -172,6 +178,7 @@ details .details-content { padding: 0 16px 12px; }
       </div>
       <div>
         <h2 style="margin-top:0">Top Positive Reasons</h2>
+        <label style="font-size:12px;color:#999;cursor:pointer;display:inline-flex;align-items:center;gap:4px;margin-bottom:6px"><input type="checkbox" id="ov-exclude-fun"> Exclude "Fun &amp; Addictive"</label>
         <div class="chart" id="chart-pos-cats"></div>
         <div class="caption" id="pos-unclassified"></div>
       </div>
@@ -483,6 +490,15 @@ details .details-content { padding: 0 16px 12px; }
 // Globals
 // =====================================================================
 let DATA = null;
+let ISSUE_SAMPLES = null; // lazy-loaded from issue_samples.json
+async function getIssueSamples() {
+  if (ISSUE_SAMPLES) return ISSUE_SAMPLES;
+  try {
+    const resp = await fetch('issue_samples.json');
+    ISSUE_SAMPLES = await resp.json();
+  } catch(e) { ISSUE_SAMPLES = {}; }
+  return ISSUE_SAMPLES;
+}
 const POS = '#2ecc71', NEG = '#e74c3c', ORANGE = '#e67e22', BLUE = '#3498db';
 const GRID_STYLE = { gridcolor: 'rgba(255,255,255,0.07)', gridwidth: 1, zeroline: false };
 const PLOT_LAYOUT = { paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)', font: { color: '#fafafa', size: 12 }, margin: { l: 0, r: 0, t: 10, b: 0 }, xaxis: GRID_STYLE, yaxis: GRID_STYLE };
@@ -515,6 +531,16 @@ function pct(a, b) { return b ? Math.round(a / b * 1000) / 10 : 0; }
 function el(id) { return document.getElementById(id); }
 function cleanText(t) { return t.replace(/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]/g, ''); }
 function escHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+// Delegated click handler for data-nav-* attributes (XSS-safe alternative to onclick interpolation)
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-nav-issue]');
+  if (t) { navigateToExplorer({ issue: t.dataset.navIssue }); return; }
+  const c = e.target.closest('[data-nav-category]');
+  if (c) { navigateToExplorer({ category: c.dataset.navCategory }); return; }
+  const p = e.target.closest('[data-nav-entity]');
+  if (p) { e.preventDefault(); navigateToPatchEntity(p.dataset.navEntity); return; }
+});
 
 // Make horizontal bar chart bars + y-axis labels clickable with pointer cursor.
 // Plotly renders .draglayer ON TOP of axis labels in SVG order, blocking clicks.
@@ -664,6 +690,12 @@ function renderOverviewCats() {
   const nr = getCatData('negative');
   plotCats('chart-neg-cats', 'neg-unclassified', nr, NEG);
   const pr = getCatData('positive');
+  const excludeFun = el('ov-exclude-fun') && el('ov-exclude-fun').checked;
+  if (excludeFun) {
+    pr.cats = pr.cats.filter(c => c[0] !== 'Fun & Addictive');
+    pr.total = pr.cats.reduce((s, c) => s + c[1], 0);
+    pr.unclassified = null;
+  }
   plotCats('chart-pos-cats', 'pos-unclassified', pr, POS);
 
   // Filter caption
@@ -718,7 +750,7 @@ function renderOverviewTopIssues() {
     html += `<div><h3 class="${cssClass}">${title}</h3>`;
     top.forEach(c => {
       const countStr = fmt(isFiltered ? c.fc : c.count);
-      html += `<p style="font-size:14px;cursor:pointer" onclick="navigateToExplorer({issue:'${c.text.replace(/'/g, "\\'")}'})"><u>${escHtml(c.text)}</u> <strong>(${countStr})</strong></p>`;
+      html += `<p style="font-size:14px;cursor:pointer" data-nav-issue="${escHtml(c.text)}"><u>${escHtml(c.text)}</u> <strong>(${countStr})</strong></p>`;
     });
     if (!top.length) html += '<p class="caption">No data for selected filters</p>';
     html += '</div>';
@@ -768,12 +800,12 @@ function renderOverview() {
       items.forEach(t => {
         const sign = t.delta > 0 ? '+' : '';
         out += `<div style="margin-bottom:12px">`;
-        out += `<p class="${labelClass}" style="font-size:14px;font-weight:600;margin:0;cursor:pointer" onclick="navigateToExplorer({category:'${t.category.replace(/'/g, "\\'")}'});">`;
-        out += `<u>${t.category}</u> &mdash; ${t.prev_pct}% &rarr; ${t.curr_pct}% (${sign}${t.delta}%)</p>`;
+        out += `<p class="${labelClass}" style="font-size:14px;font-weight:600;margin:0;cursor:pointer" data-nav-category="${escHtml(t.category)}">`;
+        out += `<u>${escHtml(t.category)}</u> &mdash; ${t.prev_pct}% &rarr; ${t.curr_pct}% (${sign}${t.delta}%)</p>`;
         if (t.top_issues && t.top_issues.length) {
           out += `<ul style="margin:4px 0 0 18px;padding:0;list-style:disc;opacity:0.85">`;
           t.top_issues.forEach(iss => {
-            out += `<li style="font-size:13px;cursor:pointer" onclick="navigateToExplorer({issue:'${iss.text.replace(/'/g, "\\'")}'});"><u>${iss.text}</u> <span class="caption">(${fmt(iss.count)})</span></li>`;
+            out += `<li style="font-size:13px;cursor:pointer" data-nav-issue="${escHtml(iss.text)}"><u>${escHtml(iss.text)}</u> <span class="caption">(${fmt(iss.count)})</span></li>`;
           });
           out += `</ul>`;
         }
@@ -837,6 +869,7 @@ function renderOverview() {
   makeBarClickable('chart-neg-cats', name => navigateToExplorer({ category: name }));
   el('chart-pos-cats').on('plotly_click', d => { if (d.points[0]) navigateToExplorer({ category: d.points[0].y }); });
   makeBarClickable('chart-pos-cats', name => navigateToExplorer({ category: name }));
+  el('ov-exclude-fun').onchange = () => { renderOverviewCats(); makeBarClickable('chart-pos-cats', name => navigateToExplorer({ category: name })); };
   renderOverviewTopIssues();
 
   // Monthly timeline
@@ -1053,12 +1086,12 @@ function renderSeasonTopIssues(season) {
     stiHtml += '<div class="grid-2"><div>';
     stiHtml += '<h3 class="text-neg" style="margin-top:0">Pain Points</h3>';
     sComplaints.slice(0, 8).forEach(c => {
-      stiHtml += `<p style="font-size:13px;cursor:pointer" onclick="navigateToExplorer({issue:'${c.text.replace(/'/g, "\\'")}'})"><u>${escHtml(c.text)}</u> <strong>(${fmt(c.count)})</strong></p>`;
+      stiHtml += `<p style="font-size:13px;cursor:pointer" data-nav-issue="${escHtml(c.text)}"><u>${escHtml(c.text)}</u> <strong>(${fmt(c.count)})</strong></p>`;
     });
     if (!sComplaints.length) stiHtml += '<p class="caption">No data for selected brackets</p>';
     stiHtml += '</div><div><h3 class="text-orange" style="margin-top:0">Top Requests</h3>';
     sSuggestions.slice(0, 8).forEach(c => {
-      stiHtml += `<p style="font-size:13px;cursor:pointer" onclick="navigateToExplorer({issue:'${c.text.replace(/'/g, "\\'")}'})"><u>${escHtml(c.text)}</u> <strong>(${fmt(c.count)})</strong></p>`;
+      stiHtml += `<p style="font-size:13px;cursor:pointer" data-nav-issue="${escHtml(c.text)}"><u>${escHtml(c.text)}</u> <strong>(${fmt(c.count)})</strong></p>`;
     });
     if (!sSuggestions.length) stiHtml += '<p class="caption">No data for selected brackets</p>';
     stiHtml += '</div></div>';
@@ -1242,7 +1275,7 @@ function updateDDCharts() {
     riHtml += '<p class="caption">Granular issues extracted by AI from reviews in this category.</p>';
     riHtml += '<table><thead><tr><th>Issue</th><th>Mentions</th></tr></thead><tbody>';
     relIssues.forEach(r => {
-      riHtml += `<tr><td><a href="#" style="color:var(--accent);text-decoration:underline" onclick="event.preventDefault();navigateToExplorer({issue:'${r.text.replace(/'/g, "\\'")}'});">${escHtml(r.text)}</a></td><td>${fmt(r.count)}</td></tr>`;
+      riHtml += `<tr><td><span style="color:var(--accent);text-decoration:underline;cursor:pointer" data-nav-issue="${escHtml(r.text)}">${escHtml(r.text)}</span></td><td>${fmt(r.count)}</td></tr>`;
     });
     riHtml += '</tbody></table>';
     el('dd-related-issues').innerHTML = riHtml;
@@ -1874,7 +1907,7 @@ function updateWC() {
     const color = item.sentiment === 'negative' ? NEG : POS;
     const weight = ratio > 0.5 ? 'bold' : 'normal';
     const bg = `${color}18`; // 10% opacity background
-    cloudHtml += `<span title="${item.category}: ${fmt(item.count)} mentions" style="font-size:${size}px;color:${color};font-weight:${weight};cursor:pointer;background:${bg}" onclick="navigateToExplorer({category:'${item.category.replace(/'/g, "\\'")}'});">${escHtml(item.category)}</span> `;
+    cloudHtml += `<span title="${escHtml(item.category)}: ${fmt(item.count)} mentions" style="font-size:${size}px;color:${color};font-weight:${weight};cursor:pointer;background:${bg}" data-nav-category="${escHtml(item.category)}">${escHtml(item.category)}</span> `;
   });
   el('wc-cloud').innerHTML = cloudHtml;
 
@@ -2106,9 +2139,9 @@ function matchesBracket(hours, bracket) {
   return hours >= bracket.min && hours < bracket.max;
 }
 
-function renderReviewExplorer() {
+async function renderReviewExplorer() {
   const ci = DATA.category_issues || {};
-  const samples = DATA.issue_samples || {};
+  const samples = await getIssueSamples();
   const issueCount = Object.keys(samples).length;
   const totalSamples = Object.values(samples).reduce((s, arr) => s + arr.length, 0);
   el('re-methodology').innerHTML = `
@@ -2192,13 +2225,14 @@ function renderReviewExplorer() {
   }
 }
 
-function renderREIssues() {
+async function renderREIssues() {
   const container = el('re-issues');
   const ci = DATA.category_issues || {};
   let issues = ci[reCurrentCategory] || [];
 
   // Direct issue: not in any category but has samples
-  if (!issues.length && reCurrentIssue && (DATA.issue_samples || {})[reCurrentIssue]) {
+  const samples = await getIssueSamples();
+  if (!issues.length && reCurrentIssue && samples[reCurrentIssue]) {
     const ptDist = (DATA.issue_playtime || {})[reCurrentIssue] || {};
     const count = Object.values(ptDist).reduce((a, b) => a + b, 0);
     issues = [{ text: reCurrentIssue, count: count || 1 }];
@@ -2264,7 +2298,7 @@ function renderREIssues() {
 }
 
 function renderREReviews(issueText) {
-  const allSamples = (DATA.issue_samples || {})[issueText];
+  const allSamples = (ISSUE_SAMPLES || {})[issueText];
   if (!allSamples || !allSamples.length) return '<p class="caption">No review samples available.</p>';
   // Filter by playtime if active
   const samples = rePlaytimeFilter.size === 0
@@ -2401,7 +2435,7 @@ function showEntityDetails(entity) {
     function etIssueCol(title, cssClass, items) {
       let col = `<div><h4 class="${cssClass}" style="margin-top:0">${title}</h4>`;
       items.slice(0, 10).forEach(r => {
-        col += `<p style="font-size:13px;cursor:pointer" onclick="navigateToExplorer({issue:'${r.text.replace(/'/g, "\\'")}'})"><u>${escHtml(r.text)}</u> <strong>(${fmt(r.count)})</strong></p>`;
+        col += `<p style="font-size:13px;cursor:pointer" data-nav-issue="${escHtml(r.text)}"><u>${escHtml(r.text)}</u> <strong>(${fmt(r.count)})</strong></p>`;
       });
       if (!items.length) col += '<p class="caption">None found</p>';
       col += '</div>';
@@ -2421,7 +2455,7 @@ function showEntityDetails(entity) {
     return key === entity;
   }));
   if (hasPatch) {
-    rhtml += `<p style="margin-top:12px"><a href="#" style="color:var(--accent);text-decoration:underline;font-weight:600" onclick="event.preventDefault();navigateToPatchEntity('${entity.replace(/'/g, "\\'")}')">View patch history &rarr;</a></p>`;
+    rhtml += `<p style="margin-top:12px"><span style="color:var(--accent);text-decoration:underline;font-weight:600;cursor:pointer" data-nav-entity="${escHtml(entity)}">View patch history &rarr;</span></p>`;
   }
 
   el('et-related-issues').innerHTML = rhtml;
@@ -2688,7 +2722,7 @@ function showPatchEntityTimeline(entityKey, patchList) {
       function issueCol(title, cssClass, items) {
         let col = `<div><h4 class="${cssClass}" style="margin-top:0">${title}</h4>`;
         items.forEach(r => {
-          col += `<p style="font-size:13px;cursor:pointer" onclick="navigateToExplorer({issue:'${r.text.replace(/'/g, "\\'")}'})"><u>${escHtml(r.text)}</u> <strong>(${fmt(r.count)})</strong></p>`;
+          col += `<p style="font-size:13px;cursor:pointer" data-nav-issue="${escHtml(r.text)}"><u>${escHtml(r.text)}</u> <strong>(${fmt(r.count)})</strong></p>`;
         });
         if (!items.length) col += '<p class="caption">None found</p>';
         col += '</div>';
