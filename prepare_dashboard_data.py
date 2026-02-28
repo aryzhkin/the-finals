@@ -916,10 +916,9 @@ def main():
                         pt_by_season[season][label] += 1
                         break
 
-                # Score: prefer English + medium length
+                # Score: prefer medium length (no language bias)
                 length_ok = 60 <= len(text) <= 600
-                is_english = lang == "english"
-                score = (2 if is_english else 0) + (1 if length_ok else 0)
+                score = (1 if length_ok else 0)
                 candidates.append((score, idx, text, lang, rev, hours))
 
             if pt_dist:

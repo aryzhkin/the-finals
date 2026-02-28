@@ -280,9 +280,10 @@ details .details-content { padding: 0 16px 12px; }
     <div id="rb-worst-table"></div>
   </div>
 
-  <!-- Regional Analysis -->
+  <!-- Language Analysis -->
   <div class="page" id="page-regional-analysis">
-    <h1>Regional Analysis</h1>
+    <h1>Language Analysis</h1>
+    <p class="caption" style="margin-top:-8px">Grouped by review language, not player region. A Russian-speaking player may be in EU, a Portuguese speaker in US, etc.</p>
     <div class="chart" id="chart-reg-approval"></div>
     <div class="chart" id="chart-reg-volume"></div>
     <hr>
@@ -348,6 +349,7 @@ details .details-content { padding: 0 16px 12px; }
   <div class="page" id="page-community-insights">
     <h1>Community Insights</h1>
     <p>Specific issues extracted from reviews using AI (Gemini 2.5 Flash Lite). Unlike broad categories, these are granular &mdash; exact complaints, suggestions, and praise points.</p>
+    <p class="caption" style="color:#888;font-style:italic">Rankings are by mention count, not importance. A viral controversy may inflate some issues. Consider using season/playtime filters to control for this.</p>
     <div class="metrics" id="ci-metrics"></div>
     <div class="controls">
       <label>Season:</label>
@@ -464,16 +466,28 @@ details .details-content { padding: 0 16px 12px; }
       <li><strong>Stage 2 &mdash; Issue Extraction:</strong> Specific complaints, suggestions, and praise extracted from each review with game entity normalization. 440,481 issues extracted (avg 1.78 per review). Cost: $6.00</li>
       <li><strong>Post-processing:</strong> Issue texts normalized to merge duplicates (prefix/suffix synonym groups, context-dependent mapping). Patch notes parsed for correlation.</li>
     </ul>
-    <p><strong>Model:</strong> <code style="background:var(--card-bg);padding:2px 6px;border-radius:4px">google/gemini-2.5-flash-lite</code> via <a href="https://ppq.ai" target="_blank" style="color:var(--accent)">PayPerQ</a>. Total AI cost: <strong>$9.30</strong> for all 247K reviews.</p>
+    <p>Total AI cost: <strong>$9.30</strong> for all 247K reviews.</p>
     <h2>Game Data Credits</h2>
     <p>Game entity data (weapons, abilities, gadgets, maps) and patch notes sourced from <a href="https://www.thefinals.wiki/wiki/Main_Page" target="_blank" style="color:var(--accent)">THE FINALS Wiki</a>. Thank you to all wiki contributors!</p>
-    <h2>Limitations</h2>
+    <h2>Limitations &amp; Caveats</h2>
     <ul style="color:var(--text-muted);font-size:15px;line-height:1.8;padding-left:20px">
-      <li><strong>AI is imperfect</strong> &mdash; sarcasm, context, and nuance can be missed</li>
-      <li><strong>~0.7% unclassified</strong> &mdash; very short or empty reviews</li>
-      <li><strong>Issue extraction coverage:</strong> 86% of reviews yielded extractable issues</li>
-      <li><strong>Season assignment</strong> uses review creation date, not update date</li>
-      <li><strong>Entity normalization</strong> may miss unusual spellings or slang</li>
+      <li><strong>Survivorship bias:</strong> Reviews represent ~0.3% of the player base. The silent majority may have entirely different priorities.</li>
+      <li><strong>Volume &#x2260; importance:</strong> Rankings are by mention count. A viral controversy can inflate specific issues disproportionately. Use season/playtime filters to control for this.</li>
+      <li><strong>Correlation &#x2260; causation:</strong> Complaint changes after patches may reflect seasonal trends, player count shifts, or meta changes rather than patch effects.</li>
+      <li><strong>Language &#x2260; region:</strong> The Language Analysis page groups by review language, not player location. A Russian-speaking player may be in EU.</li>
+      <li><strong>AI is imperfect:</strong> Sarcasm, context, and nuance can be missed. There is no manual verification of individual classifications.</li>
+      <li><strong>~0.7% unclassified:</strong> Very short or empty reviews that AI could not categorize.</li>
+      <li><strong>Issue extraction coverage:</strong> 86% of reviews yielded extractable issues.</li>
+      <li><strong>Season assignment</strong> uses review creation date, not update date.</li>
+      <li><strong>Entity normalization</strong> may miss unusual spellings or slang.</li>
+    </ul>
+    <h2>AI Methodology</h2>
+    <ul style="color:var(--text-muted);font-size:15px;line-height:1.8;padding-left:20px">
+      <li><strong>Model:</strong> <code style="background:var(--card-bg);padding:2px 6px;border-radius:4px">google/gemini-2.5-flash-lite</code> (temperature 0.1)</li>
+      <li><strong>Stage 1 (Classification):</strong> Separate prompts for positive and negative reviews (sentiment-locked). Each review classified into 1+ of 42 categories. Batch size: 200. Low-confidence: ~29%.</li>
+      <li><strong>Stage 2 (Issue Extraction):</strong> Each review analyzed for specific complaints, suggestions, and praise. Few-shot examples provided. Entity normalization against canonical game data. Batch size: 80.</li>
+      <li><strong>API:</strong> OpenAI-compatible endpoint at <a href="https://ppq.ai" target="_blank" style="color:var(--accent)">PayPerQ</a> ($0.07/M input, $0.28/M output). Total cost: $9.30.</li>
+      <li><strong>Post-processing:</strong> Synonym merging (prefix/suffix groups), context-dependent normalization. Source code available on GitHub.</li>
     </ul>
     <h2>Tech Stack</h2>
     <ul style="color:var(--text-muted);font-size:15px;line-height:1.8;padding-left:20px">
@@ -526,7 +540,7 @@ const PAGES = [
   { id: 'praise-vs-complaints', label: 'Praise vs Complaints' },
   { id: 'entity-tracker', label: 'Entity Tracker' },
   { id: 'category-deep-dive', label: 'Category Deep-Dive' },
-  { id: 'regional-analysis', label: 'Regional Analysis' },
+  { id: 'regional-analysis', label: 'Language Analysis' },
   { id: 'top-reviews', label: 'Top Reviews' },
   { id: 'review-explorer', label: 'Review Explorer' },
   { id: 'word-cloud', label: 'Word Cloud' },
@@ -862,11 +876,24 @@ function renderOverview() {
 
   el('overview-subtitle').innerHTML = `Analysis of <strong>${fmt(ov.total)}</strong> Steam reviews across all languages and seasons.`;
 
+  // Last 90 days approval
+  const dt = DATA.daily_timeline || {};
+  const days = Object.keys(dt).sort();
+  const cutoff = days.length ? days[days.length - 1] : '';
+  const cutoffDate = new Date(cutoff);
+  cutoffDate.setDate(cutoffDate.getDate() - 90);
+  const cutoffStr = cutoffDate.toISOString().slice(0, 10);
+  let r90pos = 0, r90neg = 0;
+  days.forEach(d => { if (d >= cutoffStr) { r90pos += dt[d].positive || 0; r90neg += dt[d].negative || 0; } });
+  const r90total = r90pos + r90neg;
+  const r90app = r90total ? Math.round(r90pos / r90total * 1000) / 10 : 0;
+  const r90class = r90app >= 70 ? 'text-pos' : r90app >= 50 ? '' : 'text-neg';
+
   el('overview-metrics').innerHTML = `
     <div class="metric"><div class="label">Total Reviews</div><div class="value">${fmt(ov.total)}</div></div>
     <div class="metric"><div class="label">Positive</div><div class="value text-pos">${fmt(ov.positive)} (${posPct}%)</div></div>
     <div class="metric"><div class="label">Negative</div><div class="value text-neg">${fmt(ov.negative)} (${negPct}%)</div></div>
-    <div class="metric"><div class="label">Languages</div><div class="value">${ov.languages}</div></div>
+    <div class="metric"><div class="label">Last 90 Days</div><div class="value ${r90class}">${r90app}% <span style="font-size:12px;opacity:0.7">(${fmt(r90total)} reviews)</span></div></div>
   `;
 
   // Season delta
