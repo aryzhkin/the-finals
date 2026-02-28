@@ -5,6 +5,7 @@ Reads reviews_classified.json (for structural data) + reviews_issues.json
 Categories come from AI Stage 1 classification, NOT regex.
 """
 
+import ast
 import json
 import os
 from collections import Counter, defaultdict
@@ -57,11 +58,31 @@ CATEGORY_ISSUE_PREFIXES = {
     "Class System & Abilities": ["Class system"],
     "Weapon & Gadget Variety": ["Weapon variety"],
     "Sound & Music": ["Audio"],
-    "3v3v3v3 Format": ["3v3v3v3"],
+    "3v3v3v3 Format": ["3v3v3v3", "3v3v3v3 Format"],
 }
 
 
+def get_playtime_bracket(hours):
+    """Compute playtime bracket from hours played."""
+    if hours < 10:
+        return "0-10h (Newcomer)"
+    elif hours < 50:
+        return "10-50h (Casual)"
+    elif hours < 100:
+        return "50-100h (Regular)"
+    elif hours < 200:
+        return "100-200h (Dedicated)"
+    elif hours < 500:
+        return "200-500h (Veteran)"
+    elif hours < 1000:
+        return "500-1000h (Hardcore)"
+    else:
+        return "1000h+ (No-lifer)"
+
+
 def main():
+    full_reviews = None  # will be loaded once if reviews_ai_classified.json exists
+
     print("Loading reviews (structural data)...")
     with open("reviews_classified.json", encoding="utf-8") as f:
         reviews = json.load(f)
@@ -75,6 +96,15 @@ def main():
     with open("seasons.json", encoding="utf-8") as f:
         seasons_meta = json.load(f)
 
+    # Precompute season timestamps for consistent boundary logic
+    seasons_ts = []
+    for s in seasons_meta:
+        start_ts = int(datetime.strptime(s["start"], "%Y-%m-%d").replace(
+            tzinfo=timezone.utc).timestamp())
+        end_ts = int(datetime.strptime(s["end"], "%Y-%m-%d").replace(
+            tzinfo=timezone.utc).timestamp())
+        seasons_ts.append((s["season"], start_ts, end_ts))
+
     # Load Stage 2 AI data (categories + issues)
     issues_data = []
     if os.path.exists("reviews_issues.json"):
@@ -82,6 +112,20 @@ def main():
         with open("reviews_issues.json", encoding="utf-8") as f:
             issues_data = json.load(f)
         print(f"  {len(issues_data)} reviews loaded")
+
+        # Verify data alignment
+        if len(reviews) != len(issues_data):
+            print(f"  WARNING: reviews count mismatch! classified={len(reviews)} issues={len(issues_data)}")
+        # Spot-check timestamps to confirm same order
+        mismatches = 0
+        for check_idx in (0, len(reviews) // 4, len(reviews) // 2, len(reviews) - 1):
+            if check_idx < len(issues_data):
+                ts_c = reviews[check_idx].get("timestamp", 0)
+                ts_i = issues_data[check_idx].get("timestamp", 0)
+                if ts_c != ts_i:
+                    mismatches += 1
+        if mismatches:
+            print(f"  WARNING: {mismatches}/4 timestamp spot-checks failed — data may be misaligned!")
 
         # Replace regex categories with AI categories
         replaced = 0
@@ -94,6 +138,31 @@ def main():
         print(f"  {replaced:,} reviews got AI categories")
     else:
         print("  WARNING: reviews_issues.json not found, using regex categories")
+
+    # Recompute playtime brackets using playtime_at_review (not playtime_forever)
+    if os.path.exists("reviews_ai_classified.json"):
+        print("Loading full reviews for playtime_at_review...")
+        with open("reviews_ai_classified.json", encoding="utf-8") as f:
+            full_reviews = json.load(f)
+        print(f"  {len(full_reviews)} full reviews loaded")
+        recomputed = 0
+        for i, r in enumerate(reviews):
+            if i >= len(full_reviews):
+                break
+            author = full_reviews[i].get("author", {})
+            if isinstance(author, str):
+                author = ast.literal_eval(author)
+            pt_at_review = float(author.get("playtime_at_review", 0))
+            pt_forever = float(author.get("playtime_forever", 0))
+            # Use playtime_at_review if available, else fall back to playtime_forever
+            minutes = pt_at_review if pt_at_review > 0 else pt_forever
+            hours = round(minutes / 60, 1)
+            r["hours"] = hours
+            r["playtime_bracket"] = get_playtime_bracket(hours)
+            recomputed += 1
+        print(f"  {recomputed:,} reviews recomputed with playtime_at_review")
+    else:
+        print("  WARNING: reviews_ai_classified.json not found, using existing playtime brackets")
 
     # Load patch notes
     patch_notes_data = []
@@ -155,7 +224,7 @@ def main():
         "100-200h (Dedicated)": "Dedicated",
         "200-500h (Veteran)": "Veteran",
         "500-1000h (Hardcore)": "Hardcore",
-        "1000h+ (No-lifer)": "Hardcore",
+        "1000h+ (No-lifer)": "No-lifer",
     }
 
     season_data = {}
@@ -447,12 +516,11 @@ def main():
     if issues_data:
         print("Aggregating Stage 2 issues...")
 
-        # Helper: determine season from timestamp
+        # Helper: determine season from timestamp (exclusive end, matches classify_reviews.py)
         def get_season(ts):
-            date_str = datetime.fromtimestamp(ts, tz=timezone.utc).strftime("%Y-%m-%d")
-            for s in seasons_meta:
-                if s["start"] <= date_str <= s["end"]:
-                    return s["season"]
+            for name, start_ts, end_ts in seasons_ts:
+                if start_ts <= ts < end_ts:
+                    return name
             return "Off-season"
 
         # Overall issue counts
@@ -650,10 +718,11 @@ def main():
                 if t in needed_issues:
                     issue_to_idxs[t].append(rev["idx"])
 
-        # Load full review texts
-        print("  Loading review texts for samples...")
-        with open("reviews_ai_classified.json", encoding="utf-8") as f:
-            full_reviews = json.load(f)
+        # Use already-loaded full reviews (from playtime_at_review step)
+        if full_reviews is None:
+            print("  Loading review texts for samples...")
+            with open("reviews_ai_classified.json", encoding="utf-8") as f:
+                full_reviews = json.load(f)
 
         # Playtime brackets (must match frontend RE_BRACKETS)
         PT_BRACKETS = [
@@ -662,7 +731,8 @@ def main():
             ("Regular", 50, 100),
             ("Dedicated", 100, 200),
             ("Veteran", 200, 500),
-            ("Hardcore", 500, float("inf")),
+            ("Hardcore", 500, 1000),
+            ("No-lifer", 1000, float("inf")),
         ]
         issue_playtime = {}  # issue_text → {bracket_label: count}
         issue_playtime_by_season = {}  # issue_text → {season → {bracket_label: count}}
@@ -688,7 +758,6 @@ def main():
                 try:
                     author = rev.get("author", {})
                     if isinstance(author, str):
-                        import ast
                         author = ast.literal_eval(author)
                     hours = round(float(author.get("playtime_at_review", 0)) / 60, 1)
                 except (ValueError, TypeError):

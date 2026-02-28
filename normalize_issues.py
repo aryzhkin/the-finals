@@ -164,6 +164,9 @@ PREFIX_MERGES = {
     "playerbase": "Playerbase",
     "dead game": "Playerbase",
 
+    # 3v3v3v3
+    "3v3v3v3 format": "3v3v3v3",
+
     # Game balance
     "game balance": "Game balance",
     "balance": "Game balance",
@@ -213,7 +216,6 @@ SUFFIX_MERGES = {
 
     "too strong": "overpowered",
     "op": "overpowered",
-    "broken": "overpowered",  # in balance context
     "needs nerf": "overpowered",
     "no skill required": "overpowered",
     "no skill": "overpowered",
