@@ -175,15 +175,17 @@ details .details-content { padding: 0 16px 12px; }
   <hr>
   <div class="stats" id="sidebar-stats"></div>
   <div style="margin:8px 0">
-    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text-muted)" title="Hide 'Fun & Addictive' from positive rankings — it dominates at 73% and drowns other insights">
+    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text-muted)">
       <input type="checkbox" id="exclude-fun-toggle" style="cursor:pointer">
       <span>Hide "Fun &amp; Addictive"</span>
+      <span title="73% of positive reviews say the game is fun. This drowns out other praise categories. Enable to reveal less obvious positive trends." style="display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;border:1px solid var(--text-muted);font-size:10px;opacity:0.6;cursor:help;flex-shrink:0">?</span>
     </label>
   </div>
   <div id="sidebar-hc-toggle" style="display:none;margin:8px 0">
-    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text-muted)" title="Show only reviews where AI classification confidence is high or medium (~71% of data)">
+    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text-muted)">
       <input type="checkbox" id="hc-toggle" style="cursor:pointer">
       <span>High confidence only</span>
+      <span title="Keep only reviews where AI classified with high or medium confidence (~70% of data). Removes ambiguous reviews for cleaner analysis." style="display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;border:1px solid var(--text-muted);font-size:10px;opacity:0.6;cursor:help;flex-shrink:0">?</span>
     </label>
     <div style="margin-top:4px;font-size:10px;color:var(--text-muted);opacity:0.6;line-height:1.3">Applies to: Overview, Season Health, Review Bombing</div>
     <div id="hc-banner" style="display:none;margin-top:6px;padding:6px 8px;background:var(--card-bg);border-radius:4px;font-size:11px;color:var(--text-muted);line-height:1.4"></div>
@@ -834,20 +836,43 @@ function applyHashParams(pageId, params) {
       const sel = el('pn-entity-select');
       if (sel) { sel.value = params.entity; sel.dispatchEvent(new Event('change')); }
     } else if (pageId === 'season-health' && params.season) {
-      const seasonName = 'Season ' + params.season.replace('S', '');
+      const seasonName = params.season === 'off' ? 'Off-season' : 'Season ' + params.season.replace('S', '');
       const pills = el('season-pills');
       if (pills) {
         pills.querySelectorAll('.pill').forEach(p => {
-          p.classList.toggle('active', p.textContent === params.season);
+          p.classList.toggle('active', p.textContent === seasonName);
         });
+        shCurrentSeason = seasonName;
         showSeasonDetails(seasonName);
       }
     } else if (pageId === 'review-explorer') {
-      if (params.category) navigateToExplorer({ category: params.category });
+      // Restore state from URL without re-triggering navigateToExplorer (which would loop)
       if (params.issue) {
-        navigateToExplorer({ issue: params.issue });
-        scrollToParam('data-nav-issue', params.issue);
+        const ci = DATA.category_issues || {};
+        const prefix = params.issue.split(': ')[0];
+        for (const [cat, items] of Object.entries(ci)) {
+          if (items.some(item => item.text === params.issue)) { reCurrentCategory = cat; break; }
+        }
+        if (!reCurrentCategory) {
+          for (const [cat, items] of Object.entries(ci)) {
+            if (items.some(item => item.text.startsWith(prefix + ': '))) { reCurrentCategory = cat; break; }
+          }
+        }
+        reCurrentIssue = params.issue;
+      } else if (params.category) {
+        reCurrentCategory = params.category;
       }
+      rendered.delete('review-explorer');
+      renderPage('review-explorer');
+      if (params.issue) scrollToParam('data-nav-issue', params.issue);
+    } else if (pageId === 'category-deep-dive') {
+      if (params.sentiment) ddSentiment = params.sentiment;
+      if (params.category) ddCategory = params.category;
+      rendered.delete('category-deep-dive');
+      renderPage('category-deep-dive');
+    } else if (pageId === 'regional-analysis' && params.lang) {
+      const sel = el('reg-lang-select');
+      if (sel) { sel.value = params.lang; sel.dispatchEvent(new Event('change')); }
     }
   }, 150);
 }
@@ -1123,15 +1148,15 @@ function renderOverview() {
       let out = '';
       items.forEach(t => {
         const sign = t.delta > 0 ? '+' : '';
-        out += `<div style="margin-bottom:12px">`;
+        out += `<div style="margin-bottom:16px;padding-left:12px">`;
         out += `<p class="${labelClass}" style="font-size:14px;font-weight:600;margin:0;cursor:pointer" data-nav-category="${escHtml(t.category)}">`;
         out += `<u>${escHtml(t.category)}</u> &mdash; ${t.prev_pct}% &rarr; ${t.curr_pct}% (${sign}${t.delta}%)`;
         if (t.prev_count != null) out += ` <span class="caption">${fmt(t.prev_count)} &rarr; ${fmt(t.curr_count)} reviews</span>`;
         out += `</p>`;
         if (t.top_issues && t.top_issues.length) {
-          out += `<ul style="margin:4px 0 0 18px;padding:0;list-style:disc;opacity:0.85">`;
+          out += `<ul style="margin:6px 0 0 24px;padding:0;list-style:disc;opacity:0.85">`;
           t.top_issues.forEach(iss => {
-            out += `<li style="font-size:13px;cursor:pointer" data-nav-issue="${escHtml(iss.text)}"><u>${escHtml(iss.text)}</u> <span class="caption">(${fmt(iss.count)})</span></li>`;
+            out += `<li style="font-size:13px;cursor:pointer;margin-bottom:2px" data-nav-issue="${escHtml(iss.text)}"><u>${escHtml(iss.text)}</u> <span class="caption">(${fmt(iss.count)})</span></li>`;
           });
           out += `</ul>`;
         }
@@ -1143,10 +1168,10 @@ function renderOverview() {
     const cs = trends.curr_season || '';
     const trendingAll = trends.trending || [];
     const fixedAll = trends.fixed || [];
-    let html = `<div><h3>Trending Complaints <span class="caption">(${ps} \u2192 ${cs})</span></h3>`;
+    let html = `<div style="padding:0 8px"><h3>Trending Complaints <span class="caption">(${ps} \u2192 ${cs})</span></h3>`;
     html += renderTrendBlock(trendingAll.slice(0, 5), 'text-neg');
     if (trendingAll.length > 5) html += `<details style="margin-top:12px"><summary class="caption" style="cursor:pointer">Show all ${trendingAll.length}...</summary><div style="margin-top:8px">` + renderTrendBlock(trendingAll.slice(5), 'text-neg') + '</div></details>';
-    html += `</div><div><h3>Improving <span class="caption">(${ps} \u2192 ${cs})</span></h3>`;
+    html += `</div><div style="padding:0 8px"><h3>Improving <span class="caption">(${ps} \u2192 ${cs})</span></h3>`;
     html += renderTrendBlock(fixedAll.slice(0, 5), 'text-pos');
     if (fixedAll.length > 5) html += `<details style="margin-top:12px"><summary class="caption" style="cursor:pointer">Show all ${fixedAll.length}...</summary><div style="margin-top:8px">` + renderTrendBlock(fixedAll.slice(5), 'text-pos') + '</div></details>';
     html += '</div>';
@@ -1293,6 +1318,7 @@ function renderSeasonHealth() {
 
   // Season pills
   const pillContainer = el('season-pills');
+  pillContainer.innerHTML = '';
   available.forEach(s => {
     const pill = document.createElement('span');
     pill.className = 'pill' + (s === available[0] ? ' active' : '');
@@ -1302,6 +1328,7 @@ function renderSeasonHealth() {
       pill.classList.add('active');
       shCurrentSeason = s;
       showSeasonDetails(s);
+      if (currentPage === 'season-health') setHashParams({ season: s === 'Off-season' ? 'off' : s.replace('Season ', 'S') });
     };
     pillContainer.appendChild(pill);
   });
@@ -1686,6 +1713,7 @@ let ddCategory = '';
 function renderCategoryDeepDive() {
   // Sentiment buttons
   const btnContainer = el('dd-sentiment-btns');
+  btnContainer.innerHTML = '';
   ['Negative', 'Positive'].forEach(s => {
     const btn = document.createElement('button');
     btn.className = 'btn' + (s.toLowerCase() === ddSentiment ? ' active' : '');
@@ -1697,6 +1725,7 @@ function renderCategoryDeepDive() {
       ddCategory = '';
       buildDDCatPills();
       updateDDCharts();
+      if (currentPage === 'category-deep-dive') setHashParams({ sentiment: ddSentiment, category: ddCategory });
     };
     btnContainer.appendChild(btn);
   });
@@ -1707,7 +1736,7 @@ function renderCategoryDeepDive() {
 function buildDDCatPills() {
   const container = el('dd-cat-pills');
   container.innerHTML = '';
-  const cats = Object.keys(DATA.category_rankings[ddSentiment].categories);
+  const cats = Object.keys(DATA.category_rankings[ddSentiment].categories).sort((a, b) => a.localeCompare(b));
   if (!ddCategory || !cats.includes(ddCategory)) ddCategory = cats[0];
   cats.forEach(cat => {
     const pill = document.createElement('span');
@@ -1718,6 +1747,7 @@ function buildDDCatPills() {
       container.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
       pill.classList.add('active');
       updateDDCharts();
+      if (currentPage === 'category-deep-dive') setHashParams({ sentiment: ddSentiment, category: cat });
     };
     container.appendChild(pill);
   });
@@ -2033,7 +2063,7 @@ function renderRegionalAnalysis() {
     opt.textContent = lang;
     sel.appendChild(opt);
   });
-  sel.onchange = () => showRegLangDetails(sel.value);
+  sel.onchange = () => { showRegLangDetails(sel.value); if (currentPage === 'regional-analysis') setHashParams({ lang: sel.value }); };
   showRegLangDetails(langs[0][0]);
 }
 
@@ -2528,6 +2558,7 @@ function renderCommunityInsights() {
 
   // Season pills (multi-select)
   const pillContainer = el('ci-season-pills');
+  pillContainer.innerHTML = '';
   const allPill = document.createElement('span');
   allPill.className = 'pill active';
   allPill.textContent = 'All Seasons';
@@ -2563,6 +2594,7 @@ function renderCommunityInsights() {
 
   // Playtime pills
   const ptBox = el('ci-pt-pills');
+  ptBox.innerHTML = '';
   const ptAllPill = document.createElement('span');
   ptAllPill.className = 'pill active';
   ptAllPill.textContent = 'All Players';
@@ -3011,9 +3043,12 @@ function navigateToExplorer(opts) {
   } else if (opts.category) {
     reCurrentCategory = opts.category;
   }
-  // Force re-render
+  // Force re-render with deep-link params
   rendered.delete('review-explorer');
-  navigateTo('review-explorer');
+  const reParams = {};
+  if (reCurrentCategory) reParams.category = reCurrentCategory;
+  if (reCurrentIssue) reParams.issue = reCurrentIssue;
+  navigateTo('review-explorer', reParams);
 }
 
 // =====================================================================
