@@ -144,6 +144,19 @@ details .details-content { padding: 0 16px 12px; }
 
 /* Plotly overrides */
 .js-plotly-plot .plotly .modebar { top: 4px !important; right: 4px !important; }
+
+@media print {
+  :root { --bg: #fff; --card-bg: #f5f5f5; --text: #111; --text-muted: #555; --border: #ddd; --sidebar-bg: #fff; }
+  .sidebar, .mobile-menu-btn, .mobile-overlay, #btn-share, #sidebar-hc-toggle, .controls, .pill-group { display: none !important; }
+  .main { margin-left: 0; padding: 10px; }
+  .page { display: block !important; page-break-inside: avoid; margin-bottom: 24px; border-bottom: 1px solid #ccc; padding-bottom: 16px; }
+  .page.active { display: block !important; }
+  .chart { min-height: auto; page-break-inside: avoid; }
+  .grid-2, .grid-3, .grid-23 { grid-template-columns: 1fr; }
+  .js-plotly-plot .plotly .modebar { display: none !important; }
+  a { color: #111; text-decoration: underline; }
+  body { background: #fff; }
+}
 </style>
 </head>
 <body>
@@ -572,7 +585,13 @@ async function getIssueSamples() {
 const POS = '#2ecc71', NEG = '#e74c3c', ORANGE = '#e67e22', BLUE = '#3498db';
 const GRID_STYLE = { gridcolor: 'rgba(255,255,255,0.07)', gridwidth: 1, zeroline: false };
 const PLOT_LAYOUT = { paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)', font: { color: '#fafafa', size: 12 }, margin: { l: 0, r: 0, t: 10, b: 0 }, xaxis: GRID_STYLE, yaxis: GRID_STYLE };
-const PLOT_CFG = { responsive: true, displayModeBar: false };
+const PLOT_CFG = {
+  responsive: true,
+  displayModeBar: true,
+  modeBarButtonsToRemove: ['select2d', 'lasso2d', 'autoScale2d'],
+  toImageButtonOptions: { format: 'png', width: 1200, height: 600, filename: 'the-finals-chart' },
+  displaylogo: false,
+};
 let REAL_SEASONS = [];
 let SEASON_ORDER = [];
 
@@ -772,12 +791,20 @@ function navigateTo(pageId, params) {
   applyHashParams(pageId, hashParams);
 }
 
+function scrollToParam(attr, value) {
+  setTimeout(() => {
+    const target = document.querySelector(`[${attr}="${CSS.escape(value)}"]`);
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 300);
+}
+
 function applyHashParams(pageId, params) {
   if (!params || !Object.keys(params).length) return;
   setTimeout(() => {
     if (pageId === 'entity-tracker' && params.entity) {
       const sel = el('et-entity-select');
       if (sel) { sel.value = params.entity; showEntityDetails(params.entity); }
+      scrollToParam('data-entity', params.entity);
     } else if (pageId === 'patch-notes' && params.entity) {
       const sel = el('pn-entity-select');
       if (sel) { sel.value = params.entity; sel.dispatchEvent(new Event('change')); }
@@ -792,7 +819,10 @@ function applyHashParams(pageId, params) {
       }
     } else if (pageId === 'review-explorer') {
       if (params.category) navigateToExplorer({ category: params.category });
-      if (params.issue) navigateToExplorer({ issue: params.issue });
+      if (params.issue) {
+        navigateToExplorer({ issue: params.issue });
+        scrollToParam('data-nav-issue', params.issue);
+      }
     }
   }, 150);
 }
