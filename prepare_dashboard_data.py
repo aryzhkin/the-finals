@@ -193,6 +193,8 @@ def main():
             hours = round(minutes / 60, 1)
             r["hours"] = hours
             r["playtime_bracket"] = get_playtime_bracket(hours)
+            # Extract AI confidence for HC filter
+            r["_hc"] = full_reviews[i].get("ai_confidence", "none") in ("high", "medium")
             recomputed += 1
         print(f"  {recomputed:,} reviews recomputed with playtime_at_review")
         # Count updated reviews (timestamp_updated != timestamp_created)
@@ -332,6 +334,87 @@ def main():
         if r["sentiment"] == "negative":
             for c in r["categories"]:
                 daily_cats[day][c] += 1
+
+    # -----------------------------------------------------------------------
+    # HC overlay: key metrics for high+medium confidence reviews only
+    # -----------------------------------------------------------------------
+    hc_data = None
+    hc_count = sum(1 for r in reviews if r.get("_hc"))
+    if hc_count > 0 and hc_count < len(reviews):
+        hc_reviews = [r for r in reviews if r.get("_hc")]
+        hc_pos = [r for r in hc_reviews if r["sentiment"] == "positive"]
+        hc_neg = [r for r in hc_reviews if r["sentiment"] == "negative"]
+        print(f"  HC filter: {hc_count:,} reviews ({round(hc_count / len(reviews) * 100, 1)}%)")
+
+        # HC overview
+        hc_overview = {
+            "total": len(hc_reviews),
+            "positive": len(hc_pos),
+            "negative": len(hc_neg),
+        }
+
+        # HC category rankings
+        hc_neg_cats = Counter()
+        hc_pos_cats = Counter()
+        for r in hc_neg:
+            for c in r["categories"]:
+                hc_neg_cats[c] += 1
+        for r in hc_pos:
+            for c in r["categories"]:
+                hc_pos_cats[c] += 1
+        hc_category_rankings = {
+            "negative": {
+                "categories": dict(hc_neg_cats.most_common()),
+                "total": len(hc_neg),
+            },
+            "positive": {
+                "categories": dict(hc_pos_cats.most_common()),
+                "total": len(hc_pos),
+            },
+        }
+
+        # HC season health
+        hc_season_data = {}
+        for r in hc_reviews:
+            s = r["season"]
+            if s not in hc_season_data:
+                hc_season_data[s] = {"positive": 0, "negative": 0,
+                                     "neg_cats": Counter(), "pos_cats": Counter()}
+            if r["sentiment"] == "positive":
+                hc_season_data[s]["positive"] += 1
+                for c in r["categories"]:
+                    hc_season_data[s]["pos_cats"][c] += 1
+            else:
+                hc_season_data[s]["negative"] += 1
+                for c in r["categories"]:
+                    hc_season_data[s]["neg_cats"][c] += 1
+        hc_season_health = {}
+        for s in season_health:  # ensure all seasons present
+            d = hc_season_data.get(s, {"positive": 0, "negative": 0,
+                                       "neg_cats": Counter(), "pos_cats": Counter()})
+            total = d["positive"] + d["negative"]
+            hc_season_health[s] = {
+                "total": total,
+                "positive": d["positive"],
+                "negative": d["negative"],
+                "approval": round(d["positive"] / total * 100, 1) if total else 0,
+                "all_negative": dict(Counter(d["neg_cats"]).most_common()),
+                "all_positive": dict(Counter(d["pos_cats"]).most_common()),
+                "top_negative": dict(Counter(d["neg_cats"]).most_common(10)),
+                "top_positive": dict(Counter(d["pos_cats"]).most_common(10)),
+            }
+
+        # HC monthly timeline
+        hc_monthly = defaultdict(lambda: {"positive": 0, "negative": 0})
+        for r in hc_reviews:
+            hc_monthly[r["month"]][r["sentiment"]] += 1
+
+        hc_data = {
+            "overview": hc_overview,
+            "category_rankings": hc_category_rankings,
+            "season_health": hc_season_health,
+            "monthly_timeline": dict(sorted(hc_monthly.items())),
+        }
 
     # -----------------------------------------------------------------------
     # 5. Playtime data (player journey)
@@ -1087,8 +1170,11 @@ def main():
             "2025-06": 28835, "2025-07": 19426, "2025-08": 25801,
             "2025-09": 32758, "2025-10": 24326, "2025-11": 16742,
             "2025-12": 12835,
+            "2026-01": 11969, "2026-02": 11872,
         },
     }
+    if hc_data:
+        dashboard["hc"] = hc_data
 
     with open("docs/dashboard_data.json", "w", encoding="utf-8") as f:
         json.dump(dashboard, f, ensure_ascii=False)

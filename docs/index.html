@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>THE FINALS - Review Analytics</title>
+<meta name="description" content="Interactive analytics dashboard for 247K+ Steam reviews of THE FINALS. AI-classified categories, season trends, issue tracking, and player sentiment analysis.">
+<meta property="og:title" content="THE FINALS - Steam Review Analytics">
+<meta property="og:description" content="247K+ reviews analyzed with AI. Category trends, season health, patch impact, and community insights.">
+<meta property="og:image" content="https://cdn.cloudflare.steamstatic.com/steam/apps/2073850/header.jpg">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="https://cdn.cloudflare.steamstatic.com/steam/apps/2073850/capsule_231x87.jpg">
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 <style>
@@ -155,6 +161,12 @@ details .details-content { padding: 0 16px 12px; }
   <div id="nav-buttons"></div>
   <hr>
   <div class="stats" id="sidebar-stats"></div>
+  <div id="sidebar-hc-toggle" style="display:none;margin:8px 0">
+    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text-muted)" title="Show only reviews where AI classification confidence is high or medium (~71% of data)">
+      <input type="checkbox" id="hc-toggle" style="cursor:pointer">
+      <span>High confidence only</span>
+    </label>
+  </div>
   <hr>
   <button id="btn-share" style="width:100%;padding:8px;background:var(--card-bg);border:1px solid var(--border);color:var(--text);border-radius:6px;cursor:pointer;font-size:13px" title="Copy shareable link to clipboard">&#x1F517; Copy Link</button>
 </nav>
@@ -528,6 +540,7 @@ details .details-content { padding: 0 16px 12px; }
 // Globals
 // =====================================================================
 let DATA = null;
+let USE_HC = false; // high-confidence filter toggle
 let ISSUE_SAMPLES = null; // lazy-loaded from issue_samples.json
 async function getIssueSamples() {
   if (ISSUE_SAMPLES) return ISSUE_SAMPLES;
@@ -650,6 +663,42 @@ function barH(cats, vals, color, opts = {}) {
 }
 
 // =====================================================================
+// HC (high confidence) filter — swaps DATA fields for affected pages
+const HC_KEYS = ['overview', 'category_rankings', 'season_health', 'monthly_timeline'];
+const HC_PAGES = ['overview', 'season-health', 'review-bombing'];
+let _origData = {};
+function applyHCFilter() {
+  if (USE_HC && DATA.hc) {
+    HC_KEYS.forEach(k => { if (!_origData[k]) _origData[k] = DATA[k]; DATA[k] = DATA.hc[k]; });
+    // Preserve static fields in overview
+    DATA.overview = Object.assign({}, DATA.hc.overview, {
+      confidence: _origData.overview.confidence,
+      languages: _origData.overview.languages,
+      updated: _origData.overview.updated,
+    });
+  } else if (_origData.overview) {
+    HC_KEYS.forEach(k => { if (_origData[k]) { DATA[k] = _origData[k]; delete _origData[k]; } });
+  }
+}
+function toggleHC() {
+  USE_HC = !USE_HC;
+  applyHCFilter();
+  HC_PAGES.forEach(p => rendered.delete(p));
+  navigateTo(currentPage, hashParams);
+  // Update sidebar stats
+  updateSidebarStats();
+}
+function updateSidebarStats() {
+  const ov = DATA.overview;
+  const numSeasons = REAL_SEASONS.length;
+  const issueCount = (DATA.issue_stats || {}).total_issues || 0;
+  let statsHtml = `<strong>${fmt(ov.total)}</strong> reviews analyzed`;
+  if (issueCount) statsHtml += `<br><strong>${fmt(issueCount)}</strong> issues extracted`;
+  statsHtml += `<br><strong>${ov.languages}</strong> languages<br><strong>${numSeasons}</strong> seasons`;
+  if (USE_HC) statsHtml += `<br><span style="color:var(--accent);font-size:11px">HC filter active</span>`;
+  el('sidebar-stats').innerHTML = statsHtml;
+}
+
 // Navigation & URL hash params
 // =====================================================================
 let currentPage = 'overview';
@@ -2322,7 +2371,10 @@ function updateCI() {
 
   // Hint text
   const hintEl = el('ci-pt-hint');
-  if (ciPtFilter.size > 0) {
+  const hasFilters = ciPtFilter.size > 0 || ciSeasons.size > 0;
+  if (useWeighted && hasFilters) {
+    hintEl.innerHTML = '<p class="caption" style="margin-top:-4px;color:var(--orange)">Vote weighting is only available without filters (requires global weighted data). Showing raw counts.</p>';
+  } else if (ciPtFilter.size > 0) {
     hintEl.innerHTML = `<p class="caption" style="margin-top:-4px">Showing counts from <strong>${[...ciPtFilter].join(' + ')}</strong> players only. Rankings may differ from "All Players".</p>`;
   } else {
     hintEl.innerHTML = '<p class="caption" style="margin-top:-4px;color:#888">Tip: filter by Veteran / Hardcore to see what experienced players care about most.</p>';
@@ -3285,12 +3337,13 @@ async function init() {
   REAL_SEASONS = SEASON_ORDER.filter(s => s in DATA.season_health);
 
   // Sidebar stats
-  const numSeasons = REAL_SEASONS.length;
-  const issueCount = (DATA.issue_stats || {}).total_issues || 0;
-  let statsHtml = `<strong>${fmt(DATA.overview.total)}</strong> reviews analyzed`;
-  if (issueCount) statsHtml += `<br><strong>${fmt(issueCount)}</strong> issues extracted`;
-  statsHtml += `<br><strong>${DATA.overview.languages}</strong> languages<br><strong>${numSeasons}</strong> seasons`;
-  el('sidebar-stats').innerHTML = statsHtml;
+  updateSidebarStats();
+
+  // HC toggle
+  if (DATA.hc) {
+    el('sidebar-hc-toggle').style.display = 'block';
+    el('hc-toggle').onchange = toggleHC;
+  }
 
   // Share button
   el('btn-share').onclick = () => {
