@@ -628,6 +628,8 @@ def main():
                 "prev_pct": round(prev_pct, 1),
                 "curr_pct": round(curr_pct, 1),
                 "delta": round(delta, 1),
+                "prev_count": prev_neg["neg_cats"].get(cat, 0),
+                "curr_count": curr_neg["neg_cats"].get(cat, 0),
             })
         deltas.sort(key=lambda x: x["delta"], reverse=True)
         trending = [d for d in deltas[:15] if d["delta"] > 0]

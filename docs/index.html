@@ -166,6 +166,7 @@ details .details-content { padding: 0 16px 12px; }
       <input type="checkbox" id="hc-toggle" style="cursor:pointer">
       <span>High confidence only</span>
     </label>
+    <div id="hc-banner" style="display:none;margin-top:6px;padding:6px 8px;background:var(--card-bg);border-radius:4px;font-size:11px;color:var(--text-muted);line-height:1.4"></div>
   </div>
   <hr>
   <button id="btn-share" style="width:100%;padding:8px;background:var(--card-bg);border:1px solid var(--border);color:var(--text);border-radius:6px;cursor:pointer;font-size:13px" title="Copy shareable link to clipboard">&#x1F517; Copy Link</button>
@@ -501,6 +502,9 @@ details .details-content { padding: 0 16px 12px; }
     <h2>Game Data Credits</h2>
     <p>Game entity data (weapons, abilities, gadgets, maps) and patch notes sourced from <a href="https://www.thefinals.wiki/wiki/Main_Page" target="_blank" style="color:var(--accent)">THE FINALS Wiki</a>. Thank you to all wiki contributors!</p>
     <h2>Limitations &amp; Caveats</h2>
+    <div style="background:var(--card-bg);border-left:4px solid var(--accent);padding:12px 16px;margin-bottom:16px;border-radius:4px;font-size:14px;color:var(--text-muted)">
+      <strong>Important:</strong> This dashboard analyzes Steam reviews only. Players who write reviews tend to be more vocal and more extreme in their opinions than the average player. Casual and satisfied players are heavily underrepresented. The data reflects <em>what reviewers say</em>, not necessarily <em>what all players think</em>.
+    </div>
     <ul style="color:var(--text-muted);font-size:15px;line-height:1.8;padding-left:20px">
       <li><strong>Survivorship bias:</strong> Reviews represent ~0.3% of the player base. The silent majority may have entirely different priorities.</li>
       <li><strong>Volume &#x2260; importance:</strong> Rankings are by mention count. A viral controversy can inflate specific issues disproportionately. Use season/playtime filters to control for this.</li>
@@ -692,8 +696,18 @@ function toggleHC() {
   applyHCFilter();
   HC_PAGES.forEach(p => rendered.delete(p));
   navigateTo(currentPage, hashParams);
-  // Update sidebar stats
   updateSidebarStats();
+  // HC context banner
+  const banner = el('hc-banner');
+  if (USE_HC && _origData.overview) {
+    const full = _origData.overview.total;
+    const hc = DATA.overview.total;
+    const excluded = full - hc;
+    banner.innerHTML = `Showing <strong>${fmt(hc)}</strong> reviews (${pct(hc, full)}%) with high/medium confidence.<br>Excluded: ${fmt(excluded)} low/unscored reviews.`;
+    banner.style.display = '';
+  } else {
+    banner.style.display = 'none';
+  }
 }
 function updateSidebarStats() {
   const ov = DATA.overview;
@@ -993,7 +1007,9 @@ function renderOverview() {
         const sign = t.delta > 0 ? '+' : '';
         out += `<div style="margin-bottom:12px">`;
         out += `<p class="${labelClass}" style="font-size:14px;font-weight:600;margin:0;cursor:pointer" data-nav-category="${escHtml(t.category)}">`;
-        out += `<u>${escHtml(t.category)}</u> &mdash; ${t.prev_pct}% &rarr; ${t.curr_pct}% (${sign}${t.delta}%)</p>`;
+        out += `<u>${escHtml(t.category)}</u> &mdash; ${t.prev_pct}% &rarr; ${t.curr_pct}% (${sign}${t.delta}%)`;
+        if (t.prev_count != null) out += ` <span class="caption">${fmt(t.prev_count)} &rarr; ${fmt(t.curr_count)} reviews</span>`;
+        out += `</p>`;
         if (t.top_issues && t.top_issues.length) {
           out += `<ul style="margin:4px 0 0 18px;padding:0;list-style:disc;opacity:0.85">`;
           t.top_issues.forEach(iss => {
@@ -1135,13 +1151,18 @@ function renderSeasonHealth() {
 
   const sTotal = sPos.map((p, i) => p + sNeg[i]);
   const sTotalMax = Math.max(...sTotal);
+  const sSizeLabel = sTotal.map(v => v >= 1000 ? (v/1000).toFixed(1) + 'k' : String(v));
+  // Scale marker size by sample size for visual volume cue (min 6, max 16)
+  const sMaxTotal = Math.max(...sTotal);
+  const sMarkerSizes = sTotal.map(v => 6 + 10 * (v / sMaxTotal));
   Plotly.newPlot('chart-season-dual', [
     { type: 'bar', x: sNames, y: sPos, name: 'Positive', marker: { color: POS }, opacity: 0.5 },
     { type: 'bar', x: sNames, y: sNeg, name: 'Negative', marker: { color: NEG }, opacity: 0.5,
-      text: sTotal.map(v => v >= 1000 ? (v/1000).toFixed(1) + 'k' : String(v)),
-      textposition: 'outside', cliponaxis: false, textfont: { size: 10 } },
+      text: sSizeLabel, textposition: 'outside', cliponaxis: false, textfont: { size: 10 } },
     { type: 'scatter', x: sNames, y: sApp, mode: 'lines+markers+text', text: sApp.map(a => a + '%'), textposition: 'top center',
-      line: { color: BLUE, width: 3 }, marker: { size: 10 }, name: 'Approval %', yaxis: 'y2' },
+      line: { color: BLUE, width: 3 }, marker: { size: sMarkerSizes }, name: 'Approval %', yaxis: 'y2',
+      customdata: sTotal.map((v, i) => [v, sSizeLabel[i]]),
+      hovertemplate: '%{x}: %{y:.1f}% approval (%{customdata[1]} reviews)<extra></extra>' },
   ], makeLayout({
     barmode: 'stack', height: 470,
     legend: { orientation: 'h', yanchor: 'bottom', y: 1.02 },
@@ -1191,8 +1212,15 @@ function showSeasonDetails(season) {
     deltaStr = ` (${d > 0 ? '+' : ''}${d}% vs ${REAL_SEASONS[selIdx - 1]})`;
   }
 
+  // Sample size context: compare to median season volume
+  const allTotals = REAL_SEASONS.map(s => DATA.season_health[s].total).sort((a, b) => a - b);
+  const medianTotal = allTotals[Math.floor(allTotals.length / 2)];
+  const sizeRatio = sh.total / medianTotal;
+  const sizeNote = sizeRatio < 0.5 ? '<span class="caption text-neg" title="Small sample — interpret with caution"> (small sample)</span>'
+    : sizeRatio > 2 ? '<span class="caption" title="Large sample — high confidence"> (large sample)</span>' : '';
+
   el('season-metrics').innerHTML = `
-    <div class="metric"><div class="label">Total Reviews</div><div class="value">${fmt(sh.total)}</div></div>
+    <div class="metric"><div class="label">Total Reviews</div><div class="value">${fmt(sh.total)}${sizeNote}</div></div>
     <div class="metric"><div class="label">Approval Rate</div><div class="value">${sh.approval}%${deltaStr}</div></div>
     <div class="metric"><div class="label">Negative Reviews</div><div class="value text-neg">${fmt(sh.negative)}</div></div>
   `;
