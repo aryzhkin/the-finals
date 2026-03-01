@@ -1,0 +1,27 @@
+{
+  "name": "the-finals",
+  "version": "1.0.0",
+  "description": "Interactive dashboard analyzing **247,453 Steam reviews** for [THE FINALS](https://store.steampowered.com/app/2073850/THE_FINALS/) using a two-stage AI pipeline.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aryzhkin/the-finals.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/aryzhkin/the-finals/issues"
+  },
+  "homepage": "https://github.com/aryzhkin/the-finals#readme",
+  "dependencies": {
+    "puppeteer": "^24.37.5"
+  }
+}

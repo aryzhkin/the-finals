@@ -97,7 +97,8 @@ cd docs && python3 -m http.server 8080
 | `validate_data.py` | Data integrity validation |
 | `categories_final.json` | 42 category definitions |
 | `game_entities.json` | Canonical game entities + multilingual aliases |
-| `patch_notes.json` | 9 season-opening patch notes |
+| `patch_notes.json` | 106 patches (470 balance changes) |
+| `parse_all_patches.py` | Wiki scraper + AI extractor for all patches |
 | `seasons.json` | Season date ranges (S0-S9) |
 | `docs/index.html` | Static HTML dashboard |
 | `docs/dashboard_data.json` | Pre-aggregated dashboard data |
@@ -116,6 +117,10 @@ cd docs && python3 -m http.server 8080
 3. Update `game_entities.json` with your game's weapons, abilities, etc.
 4. Update `seasons.json` with your game's season dates
 5. Run the full pipeline
+
+## Support
+
+If you found this useful — [Buy Me a Coffee](https://buymeacoffee.com/andruha)
 
 ## Credits
 

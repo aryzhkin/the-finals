@@ -217,6 +217,17 @@ def main():
             patch_notes_data = pn.get("patches", pn) if isinstance(pn, dict) else pn
         print(f"  {len(patch_notes_data)} patches loaded")
 
+    # Load game entities for class mapping
+    entity_classes = {}  # entity_name -> {class, type}
+    if os.path.exists("game_entities.json"):
+        with open("game_entities.json", encoding="utf-8") as f:
+            ge = json.load(f)
+        for etype in ("weapons", "specializations", "gadgets"):
+            for cls, items in ge.get(etype, {}).items():
+                for item in items:
+                    entity_classes[item] = {"class": cls, "type": etype.rstrip("s")}
+        print(f"  {len(entity_classes)} entity→class mappings loaded")
+
     # Load confidence stats
     confidence = {}
     if os.path.exists("stage1_stats.json"):
@@ -1026,6 +1037,8 @@ def main():
                 delta_pct = round((after - before) / before * 100) if before > 0 else None
                 patch_impact.append({
                     "season": season_code,
+                    "version": patch.get("version", ""),
+                    "date": patch.get("date", ""),
                     "entity": entity_key,
                     "type": change.get("type", ""),
                     "details": change.get("details", ""),
@@ -1256,6 +1269,7 @@ def main():
         "top_issues": top_issues,
         "issues_by_season": issues_by_season,
         "entity_tracking": entity_tracking,
+        "entity_classes": entity_classes,
         "issue_stats": issue_stats,
         "category_issues": category_issues,
         "issue_playtime": issue_playtime if issues_data and category_issues else {},

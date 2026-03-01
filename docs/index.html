@@ -460,7 +460,7 @@ details .details-content { padding: 0 16px 12px; }
   <!-- Patch Notes -->
   <div class="page" id="page-patch-notes">
     <h1>Patch Notes &amp; Community Reaction</h1>
-    <p>Season-opening patch notes parsed from <a href="https://www.thefinals.wiki/wiki/Main_Page" target="_blank" style="color:var(--accent)">THE FINALS Wiki</a>. See what was changed and how complaints shifted in response.</p>
+    <p>Patch notes parsed from <a href="https://www.thefinals.wiki/wiki/Main_Page" target="_blank" style="color:var(--accent)">THE FINALS Wiki</a>. See what was changed and how complaints shifted in response.</p>
     <div id="pn-impact-summary"></div>
     <hr>
     <h2>Entity Timeline</h2>
@@ -584,6 +584,7 @@ details .details-content { padding: 0 16px 12px; }
     <p>For detailed classification methodology, see <a href="#methodology" style="color:var(--accent)">Methodology</a>.</p>
     <h2>Author</h2>
     <p style="font-size:16px"><strong>[VSRAT] ANDRUHA</strong></p>
+    <p style="margin-top:8px"><a href="https://buymeacoffee.com/andruha" target="_blank" style="color:var(--accent)">Buy Me a Coffee</a> if you found this useful!</p>
     <h2>Community Streamers</h2>
     <p style="color:var(--text-muted);font-size:15px">Check out these cool streamers:</p>
     <ul style="color:var(--text-muted);font-size:15px;line-height:1.8;padding-left:20px">
@@ -1833,7 +1834,7 @@ function renderReviewBombing() {
     eventDates[s.start] = { type: 'season', label: `${s.season} start` };
   });
   (DATA.patch_notes || []).forEach(p => {
-    if (p.date) eventDates[p.date] = { type: 'patch', label: `${p.season} patch (${p.version})` };
+    if (p.date && (p.balance_changes || []).length) eventDates[p.date] = { type: 'patch', label: `${p.season} patch (${p.version})` };
   });
 
   // Worst days table with correlation
@@ -1932,7 +1933,7 @@ function updateRBCharts() {
     annotations.push({ x: s.start, y: 1, yref: 'paper', text: s.season, showarrow: false, font: { size: 9, color: 'gray' }, yshift: 10 });
   });
   (DATA.patch_notes || []).forEach(p => {
-    if (p.date) {
+    if (p.date && (p.balance_changes || []).length) {
       shapes.push({ type: 'line', x0: p.date, x1: p.date, y0: 0, y1: 1, yref: 'paper', line: { color: ORANGE, width: 1, dash: 'dash' } });
     }
   });
@@ -3218,11 +3219,12 @@ function renderPatchNotes() {
     return;
   }
 
-  // Season pills
+  // Season pills (deduplicated — one pill per season, not per patch)
   const pillContainer = el('pn-season-pills');
-  const patchSeasons = patches.map(p => p.season);
-  if (!pnSeason) pnSeason = patchSeasons[patchSeasons.length - 1];
-  patchSeasons.forEach(s => {
+  pillContainer.innerHTML = '';
+  const uniqueSeasons = [...new Set(patches.map(p => p.season))];
+  if (!pnSeason) pnSeason = uniqueSeasons[uniqueSeasons.length - 1];
+  uniqueSeasons.forEach(s => {
     const pill = document.createElement('span');
     pill.className = 'pill' + (s === pnSeason ? ' active' : '');
     pill.textContent = s;
@@ -3256,9 +3258,26 @@ function renderPatchNotes() {
       if (b.normDelta === null) return -1;
       return a.normDelta - b.normDelta;
     });
+
+    // Determine which rows are "significant" (have a measurable effect)
+    const isSignificant = r => r.normDelta !== null && (r.normDelta <= -5 || r.normDelta > 5);
+
+    // Collect unique seasons for filter, default to latest
+    const impactSeasons = [...new Set(sorted.map(r => r.season))].sort();
+    const defaultSeason = impactSeasons[impactSeasons.length - 1] || '';
+
     let ihtml = '<h2>Patch Impact Summary</h2>';
-    ihtml += '<p class="caption">Complaints per 1,000 reviews in each season. "Before" = previous season, "After" = patch season.</p>';
-    ihtml += '<table style="width:100%;font-size:13px"><thead><tr><th style="text-align:left">Season</th><th style="text-align:left">Entity</th><th style="text-align:left">Change</th><th style="text-align:right">Before</th><th style="text-align:right">After</th><th style="text-align:right">Delta</th><th style="text-align:left">Verdict</th></tr></thead><tbody>';
+    ihtml += '<p class="caption">Complaints per 1,000 reviews. "Before" = previous season, "After" = patch season. Only changes with measurable community impact shown by default.</p>';
+
+    // Controls: season filter + show all toggle
+    ihtml += '<div class="controls" style="margin-bottom:12px;gap:12px;flex-wrap:wrap">';
+    ihtml += '<label>Season: <select id="pn-impact-filter" style="margin-left:4px"><option value="">All seasons</option>';
+    impactSeasons.forEach(s => { ihtml += `<option value="${escHtml(s)}"${s === defaultSeason ? ' selected' : ''}>${escHtml(s)}</option>`; });
+    ihtml += '</select></label>';
+    ihtml += `<label style="cursor:pointer"><input type="checkbox" id="pn-impact-showall" style="margin-right:4px">Show all including no-effect</label>`;
+    ihtml += '</div>';
+
+    ihtml += '<table style="width:100%;font-size:13px" id="pn-impact-table"><thead><tr><th style="text-align:left">Patch</th><th style="text-align:left">Entity</th><th style="text-align:left">Change</th><th style="text-align:left">Details</th><th style="text-align:right">Before</th><th style="text-align:right">After</th><th style="text-align:right">Delta</th><th style="text-align:left">Verdict</th></tr></thead><tbody>';
     sorted.forEach(r => {
       const isNerf = r.type.includes('nerf');
       const isBuff = r.type.includes('buff');
@@ -3275,10 +3294,14 @@ function renderPatchNotes() {
       const deltaColor = r.normDelta !== null ? (r.normDelta <= 0 ? POS : NEG) : 'var(--text-muted)';
       const beforeStr = r.beforeNorm !== null ? `${r.beforeNorm.toFixed(1)}` : '—';
       const afterStr = r.afterNorm !== null ? `${r.afterNorm.toFixed(1)}` : '—';
-      ihtml += `<tr>
-        <td>${escHtml(r.season)}</td>
+      const sig = isSignificant(r);
+      const matchDefault = r.season === defaultSeason;
+      const showRow = matchDefault && sig;
+      ihtml += `<tr data-season="${escHtml(r.season)}" data-significant="${sig ? '1' : '0'}" ${showRow ? '' : 'style="display:none"'}>
+        <td style="white-space:nowrap" title="${escHtml(r.date || '')}">${escHtml(r.version || r.season)}</td>
         <td style="cursor:pointer;text-decoration:underline" data-nav-entity="${escHtml(r.entity)}">${escHtml(r.entity)}</td>
         <td><span style="color:${typeColor};font-size:12px">${typeLabel}</span></td>
+        <td style="color:var(--text-muted);font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escHtml(r.details || '')}">${escHtml(r.details || '')}</td>
         <td style="text-align:right" title="${fmt(r.before)} complaints / ${fmt(r.beforeTotal)} reviews">${beforeStr}</td>
         <td style="text-align:right" title="${fmt(r.after)} complaints / ${fmt(r.afterTotal)} reviews">${afterStr}</td>
         <td style="text-align:right;color:${deltaColor};font-weight:600">${deltaStr}</td>
@@ -3286,8 +3309,30 @@ function renderPatchNotes() {
       </tr>`;
     });
     ihtml += '</tbody></table>';
-    ihtml += '<p class="caption" style="margin-top:8px;font-style:italic">Values are complaints per 1,000 reviews (hover for raw counts). Correlation does not imply causation.</p>';
+    const defaultCount = sorted.filter(r => r.season === defaultSeason && isSignificant(r)).length;
+    const totalForSeason = sorted.filter(r => r.season === defaultSeason).length;
+    ihtml += `<p class="caption" id="pn-impact-count" style="margin-top:8px;font-style:italic">Showing ${defaultCount} of ${totalForSeason} changes in ${defaultSeason} with measurable impact. Correlation does not imply causation.</p>`;
     el('pn-impact-summary').innerHTML = ihtml;
+
+    // Wire up filter controls
+    const filterImpactTable = () => {
+      const seasonFilter = el('pn-impact-filter').value;
+      const showAll = el('pn-impact-showall').checked;
+      const rows = el('pn-impact-table').querySelectorAll('tbody tr');
+      let visible = 0, total = 0;
+      rows.forEach(tr => {
+        const matchSeason = !seasonFilter || tr.dataset.season === seasonFilter;
+        const matchSignificance = showAll || tr.dataset.significant === '1';
+        const show = matchSeason && matchSignificance;
+        tr.style.display = show ? '' : 'none';
+        if (matchSeason) total++;
+        if (show) visible++;
+      });
+      const scope = seasonFilter || 'all seasons';
+      el('pn-impact-count').textContent = `Showing ${visible} of ${total} changes in ${scope}${!showAll ? ' with measurable impact' : ''}. Correlation does not imply causation.`;
+    };
+    el('pn-impact-filter').onchange = filterImpactTable;
+    el('pn-impact-showall').onchange = filterImpactTable;
   }
 
   // Entity selector
@@ -3297,7 +3342,11 @@ function renderPatchNotes() {
 function buildPatchEntitySelector() {
   const patches = DATA.patch_notes || [];
   const et = DATA.entity_tracking || {};
+  const ec = DATA.entity_classes || {};
   const sel = el('pn-entity-select');
+
+  // Clear previous optgroups and options (keep first placeholder option)
+  while (sel.children.length > 1) sel.removeChild(sel.lastChild);
 
   // Collect all entities that appear in both patch_notes AND entity_tracking
   const entityPatches = {}; // entityKey → [{season, type, details, item}]
@@ -3306,18 +3355,64 @@ function buildPatchEntitySelector() {
       const key = findEntity(c.item);
       if (!key) return;
       if (!entityPatches[key]) entityPatches[key] = [];
-      entityPatches[key].push({ season: patch.season, type: c.type, details: c.details, item: c.item });
+      entityPatches[key].push({ season: patch.season, version: patch.version, date: patch.date, type: c.type, details: c.details, item: c.item });
     });
   });
 
-  // Sort by total mentions desc
-  const sorted = Object.keys(entityPatches).sort((a, b) => (et[b]?.total || 0) - (et[a]?.total || 0));
-  sorted.forEach(key => {
-    const opt = document.createElement('option');
-    opt.value = key;
-    opt.textContent = `${key} (${entityPatches[key].length} patches, ${fmt(et[key]?.total || 0)} mentions)`;
-    sel.appendChild(opt);
+  // Group by class → type using entity_classes data
+  const groups = {}; // "Light Weapons" → [entityKey, ...]
+  const ungrouped = [];
+  const allEntities = Object.keys(entityPatches);
+
+  allEntities.forEach(key => {
+    const info = ec[key];
+    if (info) {
+      const label = `${info.class} — ${info.type}s`;
+      if (!groups[label]) groups[label] = [];
+      groups[label].push(key);
+    } else {
+      ungrouped.push(key);
+    }
   });
+
+  // Sort entities within each group alphabetically
+  Object.values(groups).forEach(arr => arr.sort((a, b) => a.localeCompare(b)));
+  ungrouped.sort((a, b) => a.localeCompare(b));
+
+  // Define display order: Light → Medium → Heavy → Universal, weapons → specializations → gadgets
+  const classOrder = ['Light', 'Medium', 'Heavy', 'Universal'];
+  const typeOrder = ['weapon', 'specialization', 'gadget'];
+  const sortedGroupKeys = Object.keys(groups).sort((a, b) => {
+    const [clsA, typeA] = a.split(' — ');
+    const [clsB, typeB] = b.split(' — ');
+    const ci = classOrder.indexOf(clsA) - classOrder.indexOf(clsB);
+    if (ci !== 0) return ci;
+    return typeOrder.indexOf(typeA.replace(/s$/, '')) - typeOrder.indexOf(typeB.replace(/s$/, ''));
+  });
+
+  sortedGroupKeys.forEach(groupLabel => {
+    const optgroup = document.createElement('optgroup');
+    optgroup.label = groupLabel;
+    groups[groupLabel].forEach(key => {
+      const opt = document.createElement('option');
+      opt.value = key;
+      opt.textContent = `${key} (${entityPatches[key].length} changes)`;
+      optgroup.appendChild(opt);
+    });
+    sel.appendChild(optgroup);
+  });
+
+  if (ungrouped.length) {
+    const optgroup = document.createElement('optgroup');
+    optgroup.label = 'Other';
+    ungrouped.forEach(key => {
+      const opt = document.createElement('option');
+      opt.value = key;
+      opt.textContent = `${key} (${entityPatches[key].length} changes)`;
+      optgroup.appendChild(opt);
+    });
+    sel.appendChild(optgroup);
+  }
 
   sel.onchange = () => {
     if (sel.value) showPatchEntityTimeline(sel.value, entityPatches[sel.value]);
@@ -3345,24 +3440,30 @@ function showPatchEntityTimeline(entityKey, patchList) {
   if (pVals.some(v => v > 0))
     traces.push({ type: 'bar', x: seasons, y: pVals, name: 'Praise', marker: { color: POS } });
 
-  // Patch markers as shapes + annotations
+  // Patch markers as shapes + annotations (stack multiple per season)
   const shapes = [];
   const annotations = [];
   const maxVal = Math.max(...cVals.map((c, i) => c + sVals[i] + pVals[i]), 1);
+  const seasonAnnotCount = {}; // track how many annotations per season for stacking
   patchList.forEach(p => {
     const seasonName = 'Season ' + p.season.replace('S', '');
     const idx = seasons.indexOf(seasonName);
     if (idx < 0) return;
     const isNerf = p.type.includes('nerf');
     const isBuff = p.type.includes('buff');
+    const isRework = p.type.includes('rework');
     const color = isNerf ? NEG : isBuff ? POS : ORANGE;
-    const label = isNerf ? 'NERF' : isBuff ? 'BUFF' : 'CHANGE';
-    shapes.push({
-      type: 'line', x0: seasonName, x1: seasonName, y0: 0, y1: maxVal * 1.05,
-      line: { color: color, width: 2, dash: 'dot' },
-    });
+    const label = isRework ? 'REWORK' : isNerf ? 'NERF' : isBuff ? 'BUFF' : 'CHANGE';
+    const count = seasonAnnotCount[seasonName] || 0;
+    seasonAnnotCount[seasonName] = count + 1;
+    if (count === 0) {
+      shapes.push({
+        type: 'line', x0: seasonName, x1: seasonName, y0: 0, y1: maxVal * 1.05,
+        line: { color: color, width: 2, dash: 'dot' },
+      });
+    }
     annotations.push({
-      x: seasonName, y: maxVal * 1.08, text: `<b>${label}</b>`,
+      x: seasonName, y: maxVal * (1.08 + count * 0.08), text: `<b>${label}</b>`,
       showarrow: false, font: { size: 10, color: color },
     });
   });
@@ -3371,7 +3472,7 @@ function showPatchEntityTimeline(entityKey, patchList) {
   html += '<div class="chart" id="chart-pn-entity"></div>';
 
   // Patch history table (normalized per 1K reviews)
-  html += '<table style="width:100%;font-size:14px;margin-top:12px"><thead><tr><th style="text-align:left">Season</th><th style="text-align:left">Change</th><th style="text-align:left">Details</th><th style="text-align:right">Per 1K reviews</th><th style="text-align:right">Delta</th></tr></thead><tbody>';
+  html += '<table style="width:100%;font-size:14px;margin-top:12px"><thead><tr><th style="text-align:left">Patch</th><th style="text-align:left">Change</th><th style="text-align:left">Details</th><th style="text-align:right">Per 1K reviews</th><th style="text-align:right">Delta</th></tr></thead><tbody>';
   patchList.forEach(p => {
     const seasonNum = parseInt(p.season.replace('S', ''));
     const seasonName = 'Season ' + seasonNum;
@@ -3405,7 +3506,7 @@ function showPatchEntityTimeline(entityKey, patchList) {
       : `<strong title="${fmt(cur)} raw">${curStr}</strong>`;
 
     html += `<tr>
-      <td>${escHtml(p.season)}</td>
+      <td style="white-space:nowrap" title="${escHtml(p.date || '')}">${escHtml(p.version || p.season)}</td>
       <td><span style="color:${typeColor};font-weight:600;font-size:12px">${typeLabel}</span></td>
       <td style="color:var(--text-muted);font-size:13px">${escHtml(p.details || '')}</td>
       <td style="text-align:right;white-space:nowrap">${complaintsHtml}</td>
@@ -3565,41 +3666,52 @@ function findEntity(itemName) {
 }
 
 function showPatchDetails(season) {
-  const patches = DATA.patch_notes || [];
-  const patch = patches.find(p => p.season === season);
-  if (!patch) { el('pn-content').innerHTML = ''; return; }
+  const allPatches = DATA.patch_notes || [];
+  const seasonPatches = allPatches.filter(p => p.season === season);
+  if (!seasonPatches.length) { el('pn-content').innerHTML = ''; return; }
 
   const seasonNum = parseInt(season.replace('S', ''));
   const seasonName = 'Season ' + seasonNum;
   const prevSeasonName = seasonNum > 1 ? 'Season ' + (seasonNum - 1) : null;
   const et = DATA.entity_tracking || {};
 
-  let html = `<h2>${patch.version} &mdash; ${patch.date}</h2>`;
+  // Sort patches by date (earliest first)
+  seasonPatches.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
 
-  // === Patch Impact: balance changes with community response delta ===
-  const bc = patch.balance_changes || [];
-  const impactRows = [];
-  const unmatchedChanges = [];
+  let html = `<h2>${seasonName}</h2>`;
+  html += `<p class="caption">${seasonPatches.length} patch${seasonPatches.length > 1 ? 'es' : ''}: ${seasonPatches.map(p => p.version).join(', ')}</p>`;
 
-  bc.forEach(c => {
-    const entityKey = findEntity(c.item);
-    if (!entityKey) { unmatchedChanges.push(c); return; }
-    const cur = (et[entityKey].by_season || {})[seasonName] || {};
-    const prev = prevSeasonName ? ((et[entityKey].by_season || {})[prevSeasonName] || {}) : null;
-    const curComplaints = (cur.complaint || 0);
-    const prevComplaints = prev ? (prev.complaint || 0) : null;
-    let delta = null, deltaPct = null;
-    if (prevComplaints !== null && prevComplaints > 0) {
-      delta = curComplaints - prevComplaints;
-      deltaPct = Math.round(delta / prevComplaints * 100);
+  // === Patch Impact: balance changes grouped by patch ===
+  let hasAnyImpact = false;
+  seasonPatches.forEach(patch => {
+    const bc = patch.balance_changes || [];
+    if (!bc.length) return;
+
+    const impactRows = [];
+    bc.forEach(c => {
+      const entityKey = findEntity(c.item);
+      if (!entityKey) return;
+      const cur = (et[entityKey].by_season || {})[seasonName] || {};
+      const prev = prevSeasonName ? ((et[entityKey].by_season || {})[prevSeasonName] || {}) : null;
+      const curComplaints = (cur.complaint || 0);
+      const prevComplaints = prev ? (prev.complaint || 0) : null;
+      let delta = null, deltaPct = null;
+      if (prevComplaints !== null && prevComplaints > 0) {
+        delta = curComplaints - prevComplaints;
+        deltaPct = Math.round(delta / prevComplaints * 100);
+      }
+      impactRows.push({ item: c.item, entity: entityKey, type: c.type, details: c.details,
+        curComplaints, prevComplaints, delta, deltaPct });
+    });
+
+    if (!impactRows.length) return;
+    if (!hasAnyImpact) {
+      html += '<h3>Patch Impact</h3>';
+      html += '<p class="caption">How balance changes correlated with community complaints (previous season → this season)</p>';
+      hasAnyImpact = true;
     }
-    impactRows.push({ item: c.item, entity: entityKey, type: c.type, details: c.details,
-      curComplaints, prevComplaints, delta, deltaPct });
-  });
 
-  if (impactRows.length) {
-    html += '<h3>Patch Impact</h3>';
-    html += '<p class="caption">How balance changes correlated with community complaints (previous season → this season)</p>';
+    html += `<h4 style="margin:16px 0 8px;color:var(--text-muted)">${patch.version} — ${patch.date}</h4>`;
     html += '<table style="width:100%;font-size:14px"><thead><tr><th style="text-align:left">Item</th><th style="text-align:left">Change</th><th style="text-align:left">Details</th><th style="text-align:right">Complaints</th><th style="text-align:right">Delta</th></tr></thead><tbody>';
     impactRows.forEach(r => {
       const isNerf = r.type.includes('nerf');
@@ -3608,11 +3720,9 @@ function showPatchDetails(season) {
       const typeColor = isBuff ? POS : isNerf ? NEG : ORANGE;
       const typeBadge = `<span style="color:${typeColor};font-weight:600;font-size:12px">${typeLabel}</span>`;
 
-      // Delta display
       let deltaHtml = '';
       if (r.prevComplaints !== null && r.prevComplaints > 0) {
         const arrow = r.delta > 0 ? '↑' : r.delta < 0 ? '↓' : '→';
-        // For nerfs: complaints going DOWN is good (green). For buffs: complaints going UP might be expected.
         const deltaGood = r.delta <= 0;
         const deltaColor = deltaGood ? POS : NEG;
         deltaHtml = `<span style="color:${deltaColor};font-weight:600">${arrow} ${Math.abs(r.deltaPct)}%</span>`;
@@ -3620,7 +3730,6 @@ function showPatchDetails(season) {
         deltaHtml = '<span style="color:var(--text-muted)">—</span>';
       }
 
-      // Complaints column: "prev → cur"
       let complaintsHtml = '';
       if (r.prevComplaints !== null) {
         complaintsHtml = `<span style="color:var(--text-muted)">${fmt(r.prevComplaints)}</span> → <strong>${fmt(r.curComplaints)}</strong>`;
@@ -3637,7 +3746,7 @@ function showPatchDetails(season) {
       </tr>`;
     });
     html += '</tbody></table>';
-  }
+  });
 
   // === Community Response: top complaints for this season ===
   const seasonIssues = (DATA.issues_by_season || {})[seasonName] || {};
@@ -3648,45 +3757,56 @@ function showPatchDetails(season) {
     html += `<div class="chart" id="chart-pn-complaints-${season}"></div>`;
   }
 
-  // === Full Patch Details (collapsed) ===
-  const nc = patch.new_content || [];
-  const bf = patch.bug_fixes || [];
-  if (bc.length || nc.length || bf.length) {
+  // === Full Patch Details (collapsed) — one section per patch ===
+  const totalBc = seasonPatches.reduce((s, p) => s + (p.balance_changes || []).length, 0);
+  const totalNc = seasonPatches.reduce((s, p) => s + (p.new_content || []).length, 0);
+  const totalBf = seasonPatches.reduce((s, p) => s + (p.bug_fixes || []).length, 0);
+  if (totalBc || totalNc || totalBf) {
     html += '<hr>';
     html += '<details><summary style="font-size:16px;font-weight:600;cursor:pointer">Full Patch Details</summary><div class="details-content">';
 
-    if (nc.length) {
-      html += `<details><summary>New Content (${nc.length})</summary><div class="details-content">`;
-      html += '<table><thead><tr><th>Type</th><th>Item</th><th>Details</th></tr></thead><tbody>';
-      nc.forEach(c => {
-        html += `<tr><td>${escHtml(c.type || '')}</td><td><strong>${escHtml(c.item || '')}</strong></td><td>${escHtml(c.details || c.class || '')}</td></tr>`;
-      });
-      html += '</tbody></table></div></details>';
-    }
+    seasonPatches.forEach(patch => {
+      const bc = patch.balance_changes || [];
+      const nc = patch.new_content || [];
+      const bf = patch.bug_fixes || [];
+      if (!bc.length && !nc.length && !bf.length) return;
 
-    if (bc.length) {
-      html += `<h3>All Balance Changes (${bc.length})</h3>`;
-      const groups = {};
-      bc.forEach(c => { const g = c.type || 'other'; if (!groups[g]) groups[g] = []; groups[g].push(c); });
-      for (const [type, changes] of Object.entries(groups)) {
-        const typeLabel = type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-        const typeColor = type.includes('buff') ? POS : type.includes('nerf') ? NEG : ORANGE;
-        html += `<details><summary style="color:${typeColor}">${typeLabel} (${changes.length})</summary><div class="details-content"><table>`;
-        changes.forEach(c => {
-          html += `<tr><td><strong>${escHtml(c.item || '')}</strong></td><td>${escHtml(c.details || '')}</td></tr>`;
+      html += `<h4 style="margin:20px 0 8px;border-bottom:1px solid var(--border);padding-bottom:4px">${patch.version} — ${patch.date}</h4>`;
+
+      if (nc.length) {
+        html += `<details><summary>New Content (${nc.length})</summary><div class="details-content">`;
+        html += '<table><thead><tr><th>Type</th><th>Item</th><th>Details</th></tr></thead><tbody>';
+        nc.forEach(c => {
+          html += `<tr><td>${escHtml(c.type || '')}</td><td><strong>${escHtml(c.item || '')}</strong></td><td>${escHtml(c.details || c.class || '')}</td></tr>`;
         });
-        html += '</table></div></details>';
+        html += '</tbody></table></div></details>';
       }
-    }
 
-    if (bf.length) {
-      html += `<details><summary>Bug Fixes (${bf.length})</summary><div class="details-content"><ul style="color:var(--text-muted);font-size:13px;line-height:1.8;padding-left:20px">`;
-      bf.forEach(fix => {
-        const text = typeof fix === 'string' ? fix : fix.details || JSON.stringify(fix);
-        html += `<li>${escHtml(text)}</li>`;
-      });
-      html += '</ul></div></details>';
-    }
+      if (bc.length) {
+        html += `<details><summary>Balance Changes (${bc.length})</summary><div class="details-content">`;
+        const groups = {};
+        bc.forEach(c => { const g = c.type || 'other'; if (!groups[g]) groups[g] = []; groups[g].push(c); });
+        for (const [type, changes] of Object.entries(groups)) {
+          const typeLabel = type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+          const typeColor = type.includes('buff') ? POS : type.includes('nerf') ? NEG : ORANGE;
+          html += `<details open><summary style="color:${typeColor}">${typeLabel} (${changes.length})</summary><div class="details-content"><table>`;
+          changes.forEach(c => {
+            html += `<tr><td><strong>${escHtml(c.item || '')}</strong></td><td>${escHtml(c.details || '')}</td></tr>`;
+          });
+          html += '</table></div></details>';
+        }
+        html += '</div></details>';
+      }
+
+      if (bf.length) {
+        html += `<details><summary>Bug Fixes (${bf.length})</summary><div class="details-content"><ul style="color:var(--text-muted);font-size:13px;line-height:1.8;padding-left:20px">`;
+        bf.forEach(fix => {
+          const text = typeof fix === 'string' ? fix : fix.details || JSON.stringify(fix);
+          html += `<li>${escHtml(text)}</li>`;
+        });
+        html += '</ul></div></details>';
+      }
+    });
 
     html += '</div></details>';
   }
@@ -3734,7 +3854,7 @@ function renderAbout() {
       <li><strong>Languages:</strong> ${DATA.overview.languages}</li>
       <li><strong>Period:</strong> Dec 2023 (launch) &mdash; Feb 2026</li>
       ${is.total_issues ? `<li><strong>Issues extracted:</strong> ${fmt(is.total_issues)} (${fmt(is.total_complaints)} complaints, ${fmt(is.total_suggestions)} suggestions, ${fmt(is.total_praise)} praise)</li>` : ''}
-      <li><strong>Patch notes:</strong> ${(DATA.patch_notes || []).length} season-opening patches parsed</li>
+      <li><strong>Patch notes:</strong> ${(DATA.patch_notes || []).length} patches parsed (${(DATA.patch_notes || []).filter(p => (p.balance_changes || []).length).length} with balance changes, ${(DATA.patch_impact || []).length} entity impacts tracked)</li>
     </ul>`;
 }
 

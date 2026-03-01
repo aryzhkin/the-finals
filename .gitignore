@@ -33,6 +33,13 @@ archive/
 .env
 .env.local
 
+# Node (test tooling)
+node_modules/
+
+# Temp/cache
+patch_pages_cache.json
+patch_parse_progress.json
+
 # Python
 __pycache__/
 *.pyc

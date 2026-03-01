@@ -15,7 +15,7 @@
     "Heavy": ["Charge N Slam", "Goo Gun", "Mesh Shield", "Winch Claw"]
   },
   "gadgets": {
-    "Light": ["Breach Charge", "Gateway", "Glitch Grenade", "Gravity Vortex", "H+ Infuser", "Sonar Grenade", "Nullifier", "Thermal Bore", "Thermal Vision", "Tracking Dart", "Vanishing Bomb"],
+    "Light": ["Breach Charge", "Gateway", "Glitch Grenade", "Gravity Vortex", "H+ Infuser", "Sonar Grenade", "Nullifier", "Stun Gun", "Thermal Bore", "Thermal Vision", "Tracking Dart", "Vanishing Bomb"],
     "Medium": ["APS Turret", "Breach Drill", "Data Reshaper", "Defibrillator", "Explosive Mine", "Gas Mine", "Glitch Trap", "Jump Pad", "Zipline", "Proximity Sensor"],
     "Heavy": ["Anti-Gravity Cube", "Barricade", "C4", "Dome Shield", "Explosive Mine", "Healing Emitter", "Proximity Sensor", "Lockbolt", "Pyro Mine", "RPG-7"],
     "Universal": ["Flashbang", "Frag Grenade", "Gas Grenade", "Goo Grenade", "Pyro Grenade", "Smoke Grenade"]

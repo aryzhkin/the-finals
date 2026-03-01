@@ -1,88 +1,607 @@
 {
   "patches": [
     {
-      "version": "Season 1",
+      "version": "1.10.0",
       "season": "S1",
-      "date": "2023-12-07",
-      "url": "https://www.thefinals.wiki/wiki/Update:Season_1",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:1.10.0",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "1.11.0",
+      "season": "S1",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:1.11.0",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "1.2.1",
+      "season": "S1",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:1.2.1",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "1.2.2",
+      "season": "S1",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:1.2.2",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "1.2.3",
+      "season": "S1",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:1.2.3",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "1.3.0",
+      "season": "S1",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:1.3.0",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "1.4.0",
+      "season": "S1",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:1.4.0",
       "balance_changes": [
-        {"type": "weapon_buff", "item": "LH1", "details": "Damage increased 41 -> 45; fire rate reduced 400 -> 300 RPM"},
-        {"type": "weapon_buff", "item": "FCAR", "details": "Recoil patterns made easier to control"},
-        {"type": "weapon_buff", "item": "Lewis Gun", "details": "Recoil patterns made easier to control"},
-        {"type": "weapon_nerf", "item": "AKM", "details": "Recoil patterns made harder to control"},
-        {"type": "weapon_nerf", "item": "M60", "details": "Recoil patterns made harder to control"},
-        {"type": "weapon_nerf", "item": "V9S", "details": "Magazine 24 -> 20; increased damage fall-off"},
-        {"type": "weapon_nerf", "item": "Flamethrower", "details": "Range reduced 60cm; fire rate 180 -> 160 RPM; damage 31 -> 28"},
-        {"type": "gadget_buff", "item": "C4", "details": "Health 5 -> 25"},
-        {"type": "gadget_buff", "item": "Tactical Breach", "details": "Health 5 -> 25"},
-        {"type": "gadget_buff", "item": "Defibrillators", "details": "Added 50 damage vs. enemies"},
-        {"type": "gadget_nerf", "item": "Sonar Grenade", "details": "Radius 17.5m -> 10m"},
-        {"type": "gadget_nerf", "item": "Glitch Grenade", "details": "Fuse time 1.1s -> 1.8s"},
-        {"type": "gadget_rework", "item": "Stun Gun", "details": "Removed sensitivity reduction; added specialization/gadget lockout effect"},
-        {"type": "gadget_removed", "item": "Night Vision", "details": "Removed for reworking"}
+        {
+          "item": "Mesh Shield",
+          "type": "gadget_nerf",
+          "details": "Health reduced to 1100 from 1250"
+        },
+        {
+          "item": "Recon Senses",
+          "type": "specialization_nerf",
+          "details": "Activation cost reduced to 1 from 2"
+        },
+        {
+          "item": "C4",
+          "type": "gadget_nerf",
+          "details": "Max player damage reduced to 210 from 240; Max damage radius reduced to 1.6m from 2.4m; Self-damage multiplier increased to 1.3 from 1"
+        },
+        {
+          "item": "Dome Shield",
+          "type": "gadget_nerf",
+          "details": "Health reduced to 300 from 350"
+        },
+        {
+          "item": "Gas Mine",
+          "type": "gadget_nerf",
+          "details": "Arming time added (1.6 seconds)"
+        },
+        {
+          "item": "Glitch Mine",
+          "type": "gadget_nerf",
+          "details": "Arming time added (1.6 seconds)"
+        },
+        {
+          "item": "Mine",
+          "type": "gadget_nerf",
+          "details": "Max player damage reduced to 140 from 160; Damage radius reduced to 3.5m from 4m; Arming time added (1.6 seconds)"
+        },
+        {
+          "item": "Pyro Mine",
+          "type": "gadget_nerf",
+          "details": "Arming time added (1.6 seconds)"
+        },
+        {
+          "item": "RPG-7",
+          "type": "weapon_nerf",
+          "details": "Max player damage reduced to 150 from 165; Min player damage reduced to 80 from 90; Damage radius reduced to 4.5m from 4.75m; Max damage radius reduced to 1.5m from 2.5m; Aim-down sights dispersion increased slightly; Hip-fire dispersion increased slightly"
+        },
+        {
+          "item": "Stun Gun",
+          "type": "weapon_buff",
+          "details": "Range increased to 12m from 10m"
+        },
+        {
+          "item": "AKM",
+          "type": "weapon_rework",
+          "details": "Slight adjustment to recoil pattern"
+        },
+        {
+          "item": "Flamethrower",
+          "type": "weapon_buff",
+          "details": "Fire rate increased to 170 from 160"
+        },
+        {
+          "item": "LH1",
+          "type": "weapon_buff",
+          "details": "Damage increased to 47 from 45"
+        },
+        {
+          "item": "M11",
+          "type": "weapon_buff",
+          "details": "Damage increased to 16 from 15"
+        },
+        {
+          "item": "SA1216",
+          "type": "weapon_nerf",
+          "details": "Pellet dispersion increased slightly; Damage per pellet reduced to 7 from 8"
+        }
       ],
-      "new_content": [
-        {"type": "weapon", "item": "Throwing Knives", "class": "Light"},
-        {"type": "gadget", "item": "Vanishing Bomb", "class": "Light"},
-        {"type": "map", "item": "Las Vegas", "details": "With Sandstorm variant featuring environmental hazards"},
-        {"type": "system", "item": "Weapon Mastery", "details": "6 mastery levels per weapon"},
-        {"type": "system", "item": "Gadget Mastery", "details": "6 mastery levels per gadget"},
-        {"type": "system", "item": "Ability Levels", "details": "5 ability levels"},
-        {"type": "cosmetic", "item": "Battle Pass", "details": "12 pages with 96 exclusive rewards, 29 free rewards, 1575 Multibucks"}
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "1.4.1",
+      "season": "S1",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:1.4.1",
+      "balance_changes": [
+        {
+          "item": "Aim Assist",
+          "type": "specialization_nerf",
+          "details": "Zoom Snapping Angular Velocity now has a max cap, preventing unintended rapid 90-degree turns."
+        },
+        {
+          "item": "Aim Assist",
+          "type": "specialization_nerf",
+          "details": "Camera Magnetism reduced to 35% from 50%."
+        },
+        {
+          "item": "Aim Assist",
+          "type": "specialization_nerf",
+          "details": "Zoom Snapping Time reduced to 0.25s from 0.3s."
+        },
+        {
+          "item": "SR-84 Sniper Rifle",
+          "type": "weapon_nerf",
+          "details": "Zoom Snapping removed."
+        },
+        {
+          "item": "Revolver",
+          "type": "weapon_nerf",
+          "details": "Zoom Snapping removed."
+        },
+        {
+          "item": "LH1",
+          "type": "weapon_nerf",
+          "details": "Zoom Snapping removed."
+        },
+        {
+          "item": "Shotguns",
+          "type": "weapon_nerf",
+          "details": "Zoom Snapping removed for all Shotguns."
+        }
       ],
-      "bug_fixes": [
-        "Fixed infinite weapon firing/cooldown issues",
-        "Fixed Riot Shield blocking during emotes",
-        "Fixed Recon Senses triggering on enemy statues",
-        "Fixed Flamethrower ammo consumption bug"
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "1.5.0",
+      "season": "S1",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:1.5.0",
+      "balance_changes": [
+        {
+          "item": "Cloaking Device",
+          "type": "specialization_nerf",
+          "details": "Increased activation cost from 1s to 2s; Increased minimum required charge time to activate from 1.5s to 2.5s"
+        },
+        {
+          "item": "Mesh Shield",
+          "type": "gadget_nerf",
+          "details": "Decreased health from 1100 to 1000"
+        },
+        {
+          "item": "Recon Senses",
+          "type": "specialization_nerf",
+          "details": "Increased activation cost from 1s to 1.5s; Decreased minimum charge time to activate from 2.5s to 2s"
+        },
+        {
+          "item": "C4",
+          "type": "gadget_nerf",
+          "details": "Player damage decreased from 210 to 155; Player min damage decreased from 120 to 100"
+        },
+        {
+          "item": "Flashbang",
+          "type": "gadget_buff",
+          "details": "Cooldown decreased from 20s to 18s"
+        },
+        {
+          "item": "Gas Mine",
+          "type": "gadget_nerf",
+          "details": "Cooldown increased from 25s to 27s"
+        },
+        {
+          "item": "Incendiary Mine",
+          "type": "gadget_buff",
+          "details": "Cooldown decreased from 30s to 27s"
+        },
+        {
+          "item": "Vanishing Bomb",
+          "type": "gadget_buff",
+          "details": "Cooldown decreased from 20s to 18s"
+        },
+        {
+          "item": "RPG",
+          "type": "weapon_nerf",
+          "details": "Player damage decreased from 150 to 140"
+        },
+        {
+          "item": "Stun Gun",
+          "type": "gadget_nerf",
+          "details": "Decreased duration of stun effect from 5s to 3.75s"
+        },
+        {
+          "item": "Tracking Dart",
+          "type": "gadget_buff",
+          "details": "Cooldown decreased from 15s to 13s"
+        },
+        {
+          "item": "Flamethrower",
+          "type": "weapon_buff",
+          "details": "Damage increased from 28 to 30"
+        },
+        {
+          "item": "LH1",
+          "type": "weapon_buff",
+          "details": "Damage increased from 47 to 49"
+        },
+        {
+          "item": "M11",
+          "type": "weapon_buff",
+          "details": "Recoil pattern updated, to make the weapon easier to control"
+        },
+        {
+          "item": "SH1900 Shotgun",
+          "type": "weapon_nerf",
+          "details": "Damage decreased from 12 to 10 damage per pellet"
+        },
+        {
+          "item": "M60",
+          "type": "weapon_buff",
+          "details": "Damage increased from 21 to 22"
+        },
+        {
+          "item": "Riot Shield",
+          "type": "weapon_rework",
+          "details": "Updated attack animations and hit sweeps, to make the weapon feel more responsive"
+        },
+        {
+          "item": "V9S",
+          "type": "weapon_buff",
+          "details": "Damage increased from 35 to 36"
+        }
       ],
-      "other_changes": [
-        "Added reload/inspect animations, emoticons, gestures, pets, sounds, watches"
-      ]
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "1.5.1",
+      "season": "S1",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:1.5.1",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "1.5.5",
+      "season": "S1",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:1.5.5",
+      "balance_changes": [
+        {
+          "item": "Defibrillator",
+          "type": "gadget_nerf",
+          "details": "Invulnerability after revive decreased to 0.75s from 1.5s"
+        },
+        {
+          "item": ".357 Revolver",
+          "type": "weapon_nerf",
+          "details": "Bullet dispersion while aiming down sights decreased; Damage fall-off start range reduced to 23m from 35m; Damage fall-off end range reduced to 40m from 50m"
+        },
+        {
+          "item": "CL-40",
+          "type": "weapon_buff",
+          "details": "Player damage increased to 110 from 100"
+        },
+        {
+          "item": "FCAR",
+          "type": "weapon_nerf",
+          "details": "Damage decreased to 25 from 26"
+        },
+        {
+          "item": "Guardian Turret",
+          "type": "weapon_nerf",
+          "details": "Health decreased to 280 from 300"
+        },
+        {
+          "item": "MGL32",
+          "type": "weapon_buff",
+          "details": "Player damage increased to 83 from 80"
+        },
+        {
+          "item": "Throwing Knives",
+          "type": "weapon_nerf",
+          "details": "Projectile dispersion while falling decreased; Projectile dispersion while sprinting decreased"
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "1.6.0",
+      "season": "S1",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:1.6.0",
+      "balance_changes": [
+        {
+          "item": "Vanishing Bomb",
+          "type": "gadget_buff",
+          "details": "Increased the invisibility interrupt grace period for teammates from 0.65s to 0.8s; Increased the invisibility interrupt grace period for the player from 0s to 0.35s; Increased the duration of Vanishing Bomb invisibility on teammates from 5s to 6s"
+        },
+        {
+          "item": "Recon Senses",
+          "type": "specialization_rework",
+          "details": "Added a range limit to Recon Senses set to 30m. Players outside of this range will not be detected. Players detected by Recon Senses will now see ‘Detected’ warning text on their HUD."
+        },
+        {
+          "item": "Ranked Tournament",
+          "type": "weapon_nerf",
+          "details": "Lowered the number of rounds required to play Ranked Tournament from 60 to 45"
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "1.6.1",
+      "season": "S1",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:1.6.1",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "1.7.0",
+      "season": "S1",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:1.7.0",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "1.8.0",
+      "season": "S1",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:1.8.0",
+      "balance_changes": [
+        {
+          "item": "Red Canisters",
+          "type": "weapon_rework",
+          "details": "Gravity and physics have been enabled on Red Canisters with attachments. Overloaded cans will now drop faster and take less predictable pathways."
+        },
+        {
+          "item": "C4",
+          "type": "weapon_nerf",
+          "details": "Fixed an issue where multiple C4s would cause more damage than intended when exploding together, for example when attached to an object."
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "1.9.0",
+      "season": "S1",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:1.9.0",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
     },
     {
       "version": "2.0.0",
       "season": "S2",
-      "date": "2024-03-14",
+      "date": "",
       "url": "https://www.thefinals.wiki/wiki/Update:2.0.0",
       "balance_changes": [
-        {"type": "weapon_nerf", "item": "AKM", "details": "Falloff range reduced; modifier 67% -> 55%"},
-        {"type": "weapon_nerf", "item": "FCAR", "details": "Falloff modifier 67% -> 55%"},
-        {"type": "weapon_nerf", "item": "Lewis Gun", "details": "Recoil reduced accuracy over time"},
-        {"type": "weapon_buff", "item": "M11", "details": "Hip-fire accuracy improved"},
-        {"type": "weapon_change", "item": "M60", "details": "Recoil improved, accuracy adjusted"},
-        {"type": "weapon_buff", "item": "R.357", "details": "Falloff modifier 33% -> 45%"},
-        {"type": "weapon_buff", "item": "Throwing Knives", "details": "Speed 120 -> 138 m/s"},
-        {"type": "weapon_nerf", "item": "XP-54", "details": "Hip-fire dispersion increased"},
-        {"type": "gadget_change", "item": "C4", "details": "Ammo 2 -> 1; cooldown 45s -> 30s; min damage 93 -> 75"},
-        {"type": "gadget_nerf", "item": "Dome Shield", "details": "Duration 20s -> 12s"},
-        {"type": "gadget_nerf", "item": "Jump Pad", "details": "Cooldown 25s -> 30s"},
-        {"type": "gadget_change", "item": "Motion Sensor", "details": "Moved from Light to Heavy class"},
-        {"type": "gadget_change", "item": "Sonar Grenade", "details": "Moved from Medium to Light class"},
-        {"type": "gadget_change", "item": "Tracking Dart", "details": "Moved from Medium to Light; dispersion -50%; ADS 30% -> 10%"},
-        {"type": "gadget_buff", "item": "Vanishing Bomb", "details": "Grace period 0.75s -> 1.25s; duration increases"},
-        {"type": "gadget_change", "item": "RPG", "details": "Increased dispersion non-aiming; reduced aiming; zoom 0.2s -> 0.4s"},
-        {"type": "gadget_change", "item": "Mesh Shield", "details": "Cooldown 12s -> 15s; health 200 -> 250"},
-        {"type": "gadget_change", "item": "Defibrillator", "details": "Charge 0.6s -> 0.8s; revive health 40% -> 50%"},
-        {"type": "gadget_change", "item": "Toxic Gas", "details": "Damage starts 0.5s after entering; scales 30 -> 60 hp/s over 2s; tick 0.1s -> 0.3s"},
-        {"type": "explosive_nerf", "item": "Nuke", "details": "Damage reduced with diminishing returns (60%/40%/30%/20%)"},
-        {"type": "explosive_nerf", "item": "Propane tanks", "details": "Health 250 -> 120"},
-        {"type": "explosive_change", "item": "Unprimed explosions", "details": "Now deal 20% damage"},
-        {"type": "specialization_removed", "item": "Recon Senses", "details": "Removed for assessment"}
+        {
+          "item": "C4",
+          "type": "gadget_nerf",
+          "details": "Decreased ammo count from 2 to 1; Decreased cooldown from 45s to 30s; Decreased minimum damage at the edge of the explosion from 93 to 75"
+        },
+        {
+          "item": "Defibrillator",
+          "type": "gadget_rework",
+          "details": "Added functionality that causes revived players to gradually re-materialize into the level over a period of 3s before fully loading back into the arena; Increased charge-up time from 0.6s to 0.8s; Increased starting health from a defibrillator revive from 40% to 50%"
+        },
+        {
+          "item": "Dome Shield",
+          "type": "gadget_nerf",
+          "details": "Decreased maximum duration from 20s to 12s"
+        },
+        {
+          "item": "Jump Pad",
+          "type": "gadget_nerf",
+          "details": "Increased cooldown from 25s to 30s"
+        },
+        {
+          "item": "Motion Sensor",
+          "type": "gadget_rework",
+          "details": "Moved from the Light archetype to the Heavy"
+        },
+        {
+          "item": "RPG",
+          "type": "weapon_buff",
+          "details": "Increased projectile dispersion in all non-aiming states; Reduced projectile dispersion when aiming down sights; Increased zoom-in time from 0.2s to 0.4s; Increased equip time from 0.45s to 0.5s; Increased unequip time from 0.35s to 0.4s"
+        },
+        {
+          "item": "Sonar Grenade",
+          "type": "gadget_rework",
+          "details": "Moved from the Medium archetype to the Light"
+        },
+        {
+          "item": "Tracking dart",
+          "type": "weapon_buff",
+          "details": "Moved from the Medium archetype to the Light; Decreased dispersion in most movement states by 50%; Increased accuracy by decreasing dart dispersion while aiming down sights from 30% to 10%"
+        },
+        {
+          "item": "Vanishing Bomb",
+          "type": "gadget_buff",
+          "details": "Increased grace period on teammates from 0.75s to 1.25s; Increased total cloaked duration on teammates from 6s to 7.5s; Increased total cloaked duration on the user from 5s to 6s"
+        },
+        {
+          "item": "Recon Senses",
+          "type": "specialization_rework",
+          "details": "Removed for assessment"
+        },
+        {
+          "item": "Mesh Shield",
+          "type": "gadget_nerf",
+          "details": "Increased cooldown on a fully depleted shield from 12s to 15s"
+        },
+        {
+          "item": "Mesh Shield",
+          "type": "gadget_buff",
+          "details": "Increased starting health after full depletion from 200 to 250"
+        },
+        {
+          "item": "AKM",
+          "type": "weapon_nerf",
+          "details": "Decreased damage falloff minimum range from 35m to 30m; Decreased damage falloff max range from 40m to 37.5m; Decreased damage falloff modifier at max range from 67% to 55%"
+        },
+        {
+          "item": "FCAR",
+          "type": "weapon_nerf",
+          "details": "Decreased damage falloff modifier at max range from 67% to 55%"
+        },
+        {
+          "item": "Lewis Gun",
+          "type": "weapon_nerf",
+          "details": "Updated weapon recoil pattern to be slightly less accurate over time during sustained firing"
+        },
+        {
+          "item": "M11",
+          "type": "weapon_buff",
+          "details": "Increased accuracy by decreasing bullet dispersion when firing from the hip"
+        },
+        {
+          "item": "M60",
+          "type": "weapon_rework",
+          "details": "Updated weapon recoil pattern to be slightly more accurate over time during sustained firing; Increased accuracy by decreasing bullet dispersion while moving when firing from the hip; Increased accuracy by decreasing bullet dispersion while moving when firing while aiming down sights; Decreased accuracy slightly by increasing bullet dispersion while standing still when firing while aiming down sights"
+        },
+        {
+          "item": "R .357",
+          "type": "weapon_buff",
+          "details": "Increased damage falloff modifier at max range from 33% to 45%"
+        },
+        {
+          "item": "Throwing Knives",
+          "type": "weapon_buff",
+          "details": "Increased projectile speed from 120m/s to 138m/s"
+        },
+        {
+          "item": "XP-54",
+          "type": "weapon_nerf",
+          "details": "Decreased accuracy by increasing bullet dispersion when firing from the hip in most movement states"
+        },
+        {
+          "item": "Toxic Gas",
+          "type": "gadget_rework",
+          "details": "Added a delay to the application of damage. Damage will now start to tick 0.5s after the player enters the gas cloud; Added new functionality that causes damage to ramp up gradually over time, from 30hp/s to 60 hp/s over 2s.; Increased damage tick interval from 0.1s per tick to 0.3s per tick"
+        }
       ],
       "new_content": [
-        {"type": "weapon", "item": "93R", "class": "Light", "details": "Burst Pistol"},
-        {"type": "weapon", "item": "FAMAS", "class": "Medium", "details": "Burst Rifle"},
-        {"type": "weapon", "item": "KS-23", "class": "Heavy", "details": "Slug Shotgun"},
-        {"type": "gadget", "item": "Gateway", "details": "Creates spatial links between two deployed points for traversal"},
-        {"type": "gadget", "item": "Data Reshaper", "details": "Transforms objects/equipment into canisters or decor"},
-        {"type": "gadget", "item": "Anti-Gravity Cube", "details": "Creates limited-area gravity field"},
-        {"type": "specialization", "item": "Dematerializer", "details": "Create temporary holes in arena construction"},
-        {"type": "mode", "item": "Power Shift", "details": "5v5 platform escort mode"},
-        {"type": "map", "item": "SYS$HORIZON", "details": "Glitchy cityscape with floating geometric shapes and neon night mode"},
-        {"type": "system", "item": "Private Matches", "details": "For 6+ friends"},
-        {"type": "system", "item": "League Overhaul", "details": "Ranked tournament quality improvements"},
-        {"type": "system", "item": "Equipment Mastery", "details": "New reward levels added"}
+        {
+          "type": "weapon",
+          "item": "93R",
+          "class": "Light",
+          "details": "Burst Pistol"
+        },
+        {
+          "type": "weapon",
+          "item": "FAMAS",
+          "class": "Medium",
+          "details": "Burst Rifle"
+        },
+        {
+          "type": "weapon",
+          "item": "KS-23",
+          "class": "Heavy",
+          "details": "Slug Shotgun"
+        },
+        {
+          "type": "gadget",
+          "item": "Gateway",
+          "details": "Creates spatial links between two deployed points for traversal"
+        },
+        {
+          "type": "gadget",
+          "item": "Data Reshaper",
+          "details": "Transforms objects/equipment into canisters or decor"
+        },
+        {
+          "type": "gadget",
+          "item": "Anti-Gravity Cube",
+          "details": "Creates limited-area gravity field"
+        },
+        {
+          "type": "specialization",
+          "item": "Dematerializer",
+          "details": "Create temporary holes in arena construction"
+        },
+        {
+          "type": "mode",
+          "item": "Power Shift",
+          "details": "5v5 platform escort mode"
+        },
+        {
+          "type": "map",
+          "item": "SYS$HORIZON",
+          "details": "Glitchy cityscape with floating geometric shapes and neon night mode"
+        },
+        {
+          "type": "system",
+          "item": "Private Matches",
+          "details": "For 6+ friends"
+        },
+        {
+          "type": "system",
+          "item": "League Overhaul",
+          "details": "Ranked tournament quality improvements"
+        },
+        {
+          "type": "system",
+          "item": "Equipment Mastery",
+          "details": "New reward levels added"
+        }
       ],
       "bug_fixes": [
         "Scoreboard cashbox transfer display corrected",
@@ -106,47 +625,579 @@
       ]
     },
     {
+      "version": "2.1.0",
+      "season": "S2",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:2.1.0",
+      "balance_changes": [
+        {
+          "item": "SA1216",
+          "type": "weapon_nerf",
+          "details": "Fire rate 230RPM -> 200RPM; Damage per pellet 7 -> 6"
+        },
+        {
+          "item": "Glitch Grenades",
+          "type": "gadget_rework",
+          "details": "Now trigger on impact when hitting mesh shields and dome shields; still bounce on other surfaces"
+        },
+        {
+          "item": "Glitch Traps",
+          "type": "gadget_rework",
+          "details": "Now trigger on impact when hitting mesh shields and dome shields"
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "2.10.0",
+      "season": "S2",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:2.10.0",
+      "balance_changes": [
+        {
+          "item": "APS",
+          "type": "gadget_rework",
+          "details": "APS turret now consumes a set amount of health for each projectile it destroys. Health cost per destroyed projectile is 40%."
+        },
+        {
+          "item": "Throwing Knives",
+          "type": "weapon_buff",
+          "details": "Delay before the first projectile spawns reduced from 0.22s to 0.11s. Delay between the first and second projectile spawning reduced from 0.15s to 0.11s. Initial projectile speed increased from 138m/s to 166m/s. Primary attack damage increased from 60 to 63."
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "2.10.4",
+      "season": "S2",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:2.10.4",
+      "balance_changes": [
+        {
+          "item": "FAMAS",
+          "type": "weapon_nerf",
+          "details": "Removed exploit allowing higher fire rate than intended"
+        },
+        {
+          "item": "Throwing Knives",
+          "type": "weapon_nerf",
+          "details": "Removed exploit allowing higher fire rate than intended"
+        },
+        {
+          "item": "R93",
+          "type": "weapon_nerf",
+          "details": "Removed exploit allowing higher fire rate than intended"
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "2.11.0",
+      "season": "S2",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:2.11.0",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "2.2.0",
+      "season": "S2",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:2.2.0",
+      "balance_changes": [
+        {
+          "item": "KS23",
+          "type": "weapon_rework",
+          "details": "Fire rate 55 RPM -> 73 RPM; Player damage 120 -> 100; Environmental damage 600 -> 700; Pump-action animation delay 0.2s -> 0s; Pump-action animation duration 0.6s -> 0.7s; Damage fall-off start range 15m -> 18m; Damage fall-off end range 50m -> 23m; Damage fall-off multiplier at max range 0.4 -> 0.6; Projectile speed 200m/s -> 300m/s; Decreased bullet dispersion when firing from the hip while crouching, standing, and running."
+        },
+        {
+          "item": "FCAR",
+          "type": "weapon_nerf",
+          "details": "Adjusted recoil pattern to make the weapon slightly less easy to control; Damage fall-off multiplier at max range 0.67 -> 0.5."
+        },
+        {
+          "item": "FAMAS",
+          "type": "weapon_buff",
+          "details": "Adjusted recoil pattern to make the weapon slightly easier to control."
+        },
+        {
+          "item": "93R",
+          "type": "weapon_buff",
+          "details": "Fire rate 240 RPM -> 260 RPM."
+        },
+        {
+          "item": "Glitch Trap",
+          "type": "gadget_nerf",
+          "details": "Duration of glitch effect 10s -> 5s."
+        },
+        {
+          "item": "Glitch Grenade",
+          "type": "gadget_nerf",
+          "details": "Duration of glitch effect 10s -> 5s."
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "2.3.0",
+      "season": "S2",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:2.3.0",
+      "balance_changes": [
+        {
+          "item": "FAMAS",
+          "type": "weapon_nerf",
+          "details": "Recoil curve recovery delay increased from 0.68 to 0.8; Recoil recovery time increased from 0.8 to 1"
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "2.4.0",
+      "season": "S2",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:2.4.0",
+      "balance_changes": [
+        {
+          "item": "CL-40",
+          "type": "weapon_buff",
+          "details": "Projectile weapons (Grenades, RPG, MG32L, CL-40) can now pass through friendly teammates."
+        },
+        {
+          "item": "MG32L",
+          "type": "weapon_buff",
+          "details": "Projectile weapons (Grenades, RPG, MG32L, CL-40) can now pass through friendly teammates."
+        },
+        {
+          "item": "RPG",
+          "type": "weapon_buff",
+          "details": "Projectile weapons (Grenades, RPG, MG32L, CL-40) can now pass through friendly teammates."
+        },
+        {
+          "item": "Grenades",
+          "type": "weapon_buff",
+          "details": "Projectile weapons (Grenades, RPG, MG32L, CL-40) can now pass through friendly teammates."
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "2.5.0",
+      "season": "S2",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:2.5.0",
+      "balance_changes": [
+        {
+          "item": "Data Reshaper",
+          "type": "gadget_rework",
+          "details": "Range increased from 5m to 15m; Target FOV decreased from 25 degrees to 12 degrees"
+        },
+        {
+          "item": "Cloaking Device",
+          "type": "specialization_nerf",
+          "details": "Increased the activation cost from 14.2% to 33%"
+        },
+        {
+          "item": "Mesh Shield",
+          "type": "gadget_nerf",
+          "details": "Decreased health from 1000 to 750"
+        },
+        {
+          "item": "KS-23",
+          "type": "weapon_buff",
+          "details": "Bullet dispersion reduced when jumping, sprinting, or zoomed in"
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "2.5.1",
+      "season": "S2",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:2.5.1",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "2.6.0",
+      "season": "S2",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:2.6.0",
+      "balance_changes": [
+        {
+          "item": "Barricade",
+          "type": "gadget_buff",
+          "details": "Increased the size of the Barricade by 20%"
+        },
+        {
+          "item": "Glitch Grenade",
+          "type": "gadget_rework",
+          "details": "Glitch effect now passes through Mesh Shields and Dome Shields"
+        },
+        {
+          "item": "Stun Gun",
+          "type": "gadget_rework",
+          "details": "Increased projectile maximum travel distance from 12m to 16m. Stunned players can now use Specializations and Gadgets, aim down sights, and crouch. Stun effect now primarily lowers movement speed, blocks jumping, mantling, and vaulting, and interrupts interactions."
+        },
+        {
+          "item": "Vanishing Bomb",
+          "type": "gadget_nerf",
+          "details": "Decreased the impact of the cloaking effect, making affected players slightly easier to see when moving."
+        },
+        {
+          "item": "Cloaking Device",
+          "type": "specialization_nerf",
+          "details": "Decreased the impact of the cloaking effect, making cloaked players slightly easier to see when they are moving."
+        },
+        {
+          "item": "FCAR",
+          "type": "weapon_rework",
+          "details": "Damage decreased from 25 to 22; magazine size increased from 20 to 25; fall-off damage multiplier at max range increased from 50% to 55%."
+        },
+        {
+          "item": "Melee",
+          "type": "weapon_buff",
+          "details": "Melee aim assistance now validates targets at the time aim correction is applied, reducing instances where melee attacks pull the player away from a target."
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "2.7.0",
+      "season": "S2",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:2.7.0",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "2.8.0",
+      "season": "S2",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:2.8.0",
+      "balance_changes": [
+        {
+          "item": "Anti-gravity Cube",
+          "type": "gadget_rework",
+          "details": "Made the cube heavier so that it doesn’t get pushed as easily when hit by other objects. Fixed a bug where objects would lift much faster than intended when they were attached together. This also prevents an exploit in which the cube could be carried upwards together with the objects it’s lifting, causing entire structures to traverse upwards into the sky endlessly."
+        },
+        {
+          "item": "Charge'N'Slam",
+          "type": "specialization_rework",
+          "details": "Can now clear higher obstacles when activated on the ground to reduce instances where players get stuck on geometry."
+        },
+        {
+          "item": "Dagger",
+          "type": "weapon_rework",
+          "details": "Improved backstab validation. Fixed so that the aim assist for backstabs now synchronizes with the swing, rather than triggering at the start of the charge-up."
+        },
+        {
+          "item": "All Melee Weapons",
+          "type": "weapon_rework",
+          "details": "Improved hit validation for all melee weapons. The aim assist and lunge range are slightly more generous for quick melee. Changed the way sprinting gets blocked when attacking with melee weapons and using quick melee, so that sprint is only blocked through parts of a swing, instead of the whole duration of the attack. This is tweaked on a weapon-to-weapon basis. The sprint toggle no longer gets canceled by melee attacks."
+        },
+        {
+          "item": "Riot Shield",
+          "type": "weapon_buff",
+          "details": "The shield can now be raised more quickly after performing an attack."
+        },
+        {
+          "item": "SR-84",
+          "type": "weapon_rework",
+          "details": "Is now correctly marked as a Marksman Rifle instead of a Melee Weapon in the menus."
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "2.9.0",
+      "season": "S2",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:2.9.0",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
       "version": "3.0.0",
       "season": "S3",
-      "date": "2024-06-13",
+      "date": "",
       "url": "https://www.thefinals.wiki/wiki/Update:3.0.0",
       "balance_changes": [
-        {"type": "class_buff", "item": "Light", "details": "Health regeneration delay reduced 10s -> 7s (excludes Terminal Attack)"},
-        {"type": "class_buff", "item": "Medium", "details": "Health regeneration delay reduced 10s -> 9s"},
-        {"type": "weapon_change", "item": "93R", "details": "Fire rate 260 -> 210 RPM; recoil recovery 0.72s -> 0.7s; damage fall-off start 15m -> 23m; max distance 22m -> 35m; fall-off multiplier 65% -> 45%"},
-        {"type": "weapon_nerf", "item": "CL-40", "details": "Damage 110 -> 93; fire rate 250 -> 275 RPM; pump-action 0.7s -> 0.65s; self-damage multiplier 1 -> 0.75"},
-        {"type": "weapon_buff", "item": "FAMAS", "details": "Recoil recovery 1s -> 0.8s; recoil delay 0.8s -> 0.7s; damage 23 -> 24"},
-        {"type": "weapon_buff", "item": "KS-23", "details": "Pump-action 0.7s -> 0.575s"},
-        {"type": "weapon_nerf", "item": "Lewis Gun", "details": "Damage 25 -> 22; recoil pattern adjusted"},
-        {"type": "weapon_change", "item": "LH1", "details": "Fire rate 300 -> 280 RPM; improved precision while crouching/stationary; damage 49 -> 52"},
-        {"type": "weapon_nerf", "item": "M60", "details": "Damage 22 -> 19; recoil pattern adjusted"},
-        {"type": "weapon_change", "item": "SH1900", "details": "Damage 10 -> 13 per pellet; fire rate 100 -> 80 RPM; increased pellet dispersion (optimized for close-range)"},
-        {"type": "weapon_change", "item": "Throwing Knives", "details": "Primary speed 16.5 -> 14.75 m/s; drag 7.5 -> 7; secondary speed 13.8 -> 18.5 m/s; drag 4 -> 5.5"},
-        {"type": "weapon_buff", "item": "V9S", "details": "Damage 36 -> 37"},
-        {"type": "gadget_change", "item": "Breach Charge", "details": "Ammo 1 -> 2; cooldown 15s -> 26s; damage 200 -> 80"},
-        {"type": "gadget_change", "item": "Data Reshaper", "details": "Ammo 1 -> 2; cooldown 15s -> 26s"},
-        {"type": "gadget_buff", "item": "Gas Grenade", "details": "Radius 4.5m -> 5m"},
-        {"type": "gadget_rework", "item": "Glitch Trap", "details": "Changed from proximity detonation to line-of-sight tether; prevents specialization/gadget use and disrupts HUD"},
-        {"type": "gadget_change", "item": "Goo Grenade", "details": "Wall size 2x4 -> 2x6; now blocks Evasive Dash and Grapple Hook"},
-        {"type": "gadget_change", "item": "Guardian Turret", "details": "Cooldown regen starts on destruction (not deployment); added remote destruction capability"},
-        {"type": "gadget_rework", "item": "Motion Sensor", "details": "Changed from impulse detection to line-of-sight tether; scans tethered enemies through walls"},
-        {"type": "gadget_buff", "item": "Smoke Grenade", "details": "Ammo 2 -> 3; cooldown 45s -> 50s"},
-        {"type": "gadget_buff", "item": "Sonar Grenade", "details": "Detection radius 10m -> 15m"},
-        {"type": "gadget_change", "item": "Stun Gun", "details": "Players cannot use specializations while Glitch status is applied"},
-        {"type": "specialization_change", "item": "Goo Gun", "details": "Goo now blocks movement specializations like Evasive Dash (except Charge 'n Slam)"},
-        {"type": "specialization_change", "item": "Winch Claw", "details": "Max range 20m -> 17m; miss cooldown 6s -> 7s; carriable/statue hit cooldown 6s -> 7s; player/terminal hit cooldown 12s -> 14s"},
-        {"type": "carriable_nerf", "item": "Glitch Barrel", "details": "Radius 6m -> 3.5m"},
-        {"type": "carriable_nerf", "item": "Goo Barrel", "details": "Wall size 2x6 -> 2x4"},
-        {"type": "carriable_nerf", "item": "Toxic Gas Barrel", "details": "Radius 5m -> 3.5m"}
+        {
+          "item": "Light",
+          "type": "specialization_nerf",
+          "details": "Decreased health regeneration delay from 10 seconds to 7 seconds (does not apply in Terminal Attack)."
+        },
+        {
+          "item": "Medium",
+          "type": "specialization_nerf",
+          "details": "Decreased health regeneration delay from 10 seconds to 9 seconds (does not apply in Terminal Attack)."
+        },
+        {
+          "item": "Medium",
+          "type": "specialization_rework",
+          "details": "Healing Beam has been replaced with Guardian Turret as the default specialization."
+        },
+        {
+          "item": "Medium",
+          "type": "gadget_rework",
+          "details": "Defibrillator has been replaced with Glitch Trap as one of the default gadgets."
+        },
+        {
+          "item": "Goo Gun",
+          "type": "specialization_nerf",
+          "details": "Getting hit by goo will now block movement Specializations such as Evasive Dash, except Charge ‘n Slam."
+        },
+        {
+          "item": "Winch Claw",
+          "type": "specialization_nerf",
+          "details": "Decreased max range from 20m to 17m."
+        },
+        {
+          "item": "Breach Charge",
+          "type": "gadget_buff",
+          "details": "Increased ammo count from 1 to 2."
+        },
+        {
+          "item": "Breach Charge",
+          "type": "gadget_nerf",
+          "details": "Increased cooldown from 15s to 26s."
+        },
+        {
+          "item": "Data Reshaper",
+          "type": "gadget_buff",
+          "details": "Increased ammo count from 1 to 2."
+        },
+        {
+          "item": "Data Reshaper",
+          "type": "gadget_nerf",
+          "details": "Increased cooldown from 15s to 26s."
+        },
+        {
+          "item": "Gas Grenade",
+          "type": "gadget_buff",
+          "details": "Increased radius from 4.5m to 5m."
+        },
+        {
+          "item": "Glitch Trap",
+          "type": "gadget_rework",
+          "details": "Glitch trap is no longer a proximity detonation device. It now has a line-of-sight application. If an enemy player stands within range and in line-of-sight to the trap it will attach a tether to them. Tethered players have the Glitch effect applied to them, preventing them from using Specializations and Gadgets, and disrupting their HUD. Players will need to break the line of sight to the trap, destroy it, or get out of range of it, to remove the effect."
+        },
+        {
+          "item": "Goo Grenade",
+          "type": "gadget_buff",
+          "details": "Increased the size of the goo wall created by the Goo Grenade from 2x4 to 2x6."
+        },
+        {
+          "item": "Guardian Turret",
+          "type": "gadget_buff",
+          "details": "The cooldown regeneration on the Guardian Turret now starts when the turret is destroyed, not when it is deployed."
+        },
+        {
+          "item": "Motion Sensor",
+          "type": "gadget_rework",
+          "details": "Motion Sensor no longer sends out impulses at regular intervals for detection. It now has line-of-sight application. If an enemy player stands within range and in line-of-sight to the device, the sensor will attach a tether to them. Tethered players will be scanned by the Motion Sensor, allowing friendly players to see them through walls. Players will need to break the line of sight to the sensor or destroy it, to remove the scanning effect."
+        },
+        {
+          "item": "Smoke Grenade",
+          "type": "gadget_buff",
+          "details": "Increased ammo count from 2 to 3."
+        },
+        {
+          "item": "Smoke Grenade",
+          "type": "gadget_nerf",
+          "details": "Increased cooldown from 45s to 50s."
+        },
+        {
+          "item": "Sonar Grenade",
+          "type": "gadget_buff",
+          "details": "Increased detection radius from 10m to 15m."
+        },
+        {
+          "item": "Stun Gun",
+          "type": "gadget_nerf",
+          "details": "Players are now unable to use Specializations while the Glitch status is applied."
+        },
+        {
+          "item": "93R",
+          "type": "weapon_rework",
+          "details": "Updated recoil pattern, making the weapon much easier to control and hopefully making headshots easier to achieve."
+        },
+        {
+          "item": "93R",
+          "type": "weapon_nerf",
+          "details": "Decreased fire rate from 260 RPM to 210 RPM."
+        },
+        {
+          "item": "93R",
+          "type": "weapon_buff",
+          "details": "Decreased automatic recoil recovery duration from 0.72s to 0.7s, making the weapon easier to control."
+        },
+        {
+          "item": "CL-40",
+          "type": "weapon_nerf",
+          "details": "Decreased damage from 110 to 93."
+        },
+        {
+          "item": "CL-40",
+          "type": "weapon_buff",
+          "details": "Increased fire rate from 250 RPM to 275 RPM."
+        },
+        {
+          "item": "FAMAS",
+          "type": "weapon_buff",
+          "details": "Decreased automatic recoil recovery duration from 1s to 0.8s, making the weapon easier to control."
+        },
+        {
+          "item": "KS-23",
+          "type": "weapon_buff",
+          "details": "Decreased pump-action duration from 0.7s to 0.575s."
+        },
+        {
+          "item": "Lewis Gun",
+          "type": "weapon_rework",
+          "details": "Further updated recoil pattern, making the weapon easier to control for the first few bullets in the sequence, but making the weapon recoil more the longer the trigger is held."
+        },
+        {
+          "item": "Lewis Gun",
+          "type": "weapon_nerf",
+          "details": "Decreased damage from 25 to 22."
+        },
+        {
+          "item": "LH1",
+          "type": "weapon_rework",
+          "details": "Updated firing animation, which should make the weapon easier to use."
+        },
+        {
+          "item": "LH1",
+          "type": "weapon_nerf",
+          "details": "Decreased fire rate from 300 RPM to 280 RPM."
+        },
+        {
+          "item": "LH1",
+          "type": "weapon_buff",
+          "details": "Decreased bullet dispersion when crouching and standing still, making the weapon more precise."
+        },
+        {
+          "item": "M60",
+          "type": "weapon_rework",
+          "details": "Updated recoil pattern, making the weapon recoil more during the first few bullets, but making it easier to control for the rest of the sequence."
+        },
+        {
+          "item": "M60",
+          "type": "weapon_nerf",
+          "details": "Decreased damage from 22 to 19."
+        },
+        {
+          "item": "SH1900",
+          "type": "weapon_buff",
+          "details": "Increased damage from 10 to 13 per pellet."
+        },
+        {
+          "item": "SH1900",
+          "type": "weapon_nerf",
+          "details": "Decreased fire rate from 100 RPM to 80 RPM."
+        },
+        {
+          "item": "Throwing Knives",
+          "type": "weapon_nerf",
+          "details": "Decreased projectile speed of primary attacks from 16.5 m/s to 14.75 m/s."
+        },
+        {
+          "item": "Throwing Knives",
+          "type": "weapon_buff",
+          "details": "Decreased projectile air drag of primary attacks from 7.5 to 7, allowing the projectile to travel farther."
+        },
+        {
+          "item": "V9S",
+          "type": "weapon_buff",
+          "details": "Increased damage from 36 to 37."
+        },
+        {
+          "item": "Glitch Barrel",
+          "type": "gadget_nerf",
+          "details": "Decreased radius from 6m to 3.5m."
+        },
+        {
+          "item": "Goo Barrel",
+          "type": "gadget_nerf",
+          "details": "Decreased the size of the goo wall created by the Goo Barrel from 2x6 to 2x4."
+        },
+        {
+          "item": "Toxic Gas Barrel",
+          "type": "gadget_nerf",
+          "details": "Decreased radius from 5m to 3.5m."
+        },
+        {
+          "item": "pump-action",
+          "type": "weapon_rework",
+          "details": "duration from 0.7s to 0.575s"
+        }
       ],
       "new_content": [
-        {"type": "weapon", "item": "Recurve Bow", "class": "Light"},
-        {"type": "weapon", "item": "Dual Blades", "class": "Medium"},
-        {"type": "weapon", "item": "Spear", "class": "Heavy"},
-        {"type": "specialization", "item": "Winch Claw", "class": "Heavy", "details": "Launches a chain that pulls objects or enemies toward you, briefly stunning them"},
-        {"type": "gadget", "item": "Thermal Bore", "class": "Light", "details": "Long-range breaching tool for walls and obstacles"},
-        {"type": "mode", "item": "Ranked Terminal Attack", "details": "Best of 13, first to 7 format"},
-        {"type": "map", "item": "Kyoto 1568", "details": "Temples, gardens, bamboo forests, shallow water that slows movement, shoji paper walls with bullet penetration"}
+        {
+          "type": "weapon",
+          "item": "Recurve Bow",
+          "class": "Light"
+        },
+        {
+          "type": "weapon",
+          "item": "Dual Blades",
+          "class": "Medium"
+        },
+        {
+          "type": "weapon",
+          "item": "Spear",
+          "class": "Heavy"
+        },
+        {
+          "type": "specialization",
+          "item": "Winch Claw",
+          "class": "Heavy",
+          "details": "Launches a chain that pulls objects or enemies toward you, briefly stunning them"
+        },
+        {
+          "type": "gadget",
+          "item": "Thermal Bore",
+          "class": "Light",
+          "details": "Long-range breaching tool for walls and obstacles"
+        },
+        {
+          "type": "mode",
+          "item": "Ranked Terminal Attack",
+          "details": "Best of 13, first to 7 format"
+        },
+        {
+          "type": "map",
+          "item": "Kyoto 1568",
+          "details": "Temples, gardens, bamboo forests, shallow water that slows movement, shoji paper walls with bullet penetration"
+        }
       ],
       "bug_fixes": [
         "Fixed equipped charms disappearing near walls",
@@ -168,56 +1219,551 @@
       ]
     },
     {
+      "version": "3.1.0",
+      "season": "S3",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:3.1.0",
+      "balance_changes": [
+        {
+          "item": "Sonar Grenades",
+          "type": "gadget_nerf",
+          "details": "Range decreased from 15m to 12m"
+        },
+        {
+          "item": "LH1",
+          "type": "weapon_nerf",
+          "details": "Damage decreased from 52 to 48"
+        },
+        {
+          "item": "Throwing Knives",
+          "type": "weapon_nerf",
+          "details": "Damage decreased from 63 to 60"
+        },
+        {
+          "item": "Winch Claw",
+          "type": "weapon_nerf",
+          "details": "Damage decreased from 15 to 5"
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "3.10.0",
+      "season": "S3",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:3.10.0",
+      "balance_changes": [
+        {
+          "item": "Dome Shield",
+          "type": "gadget_nerf",
+          "details": "Duration decreased from 12s to 5.5s"
+        },
+        {
+          "item": "Goo Grenade",
+          "type": "gadget_nerf",
+          "details": "Time for fire to destroy goo decreased from 12s to 9s"
+        },
+        {
+          "item": "Goo Gun",
+          "type": "gadget_nerf",
+          "details": "Time for fire to destroy goo decreased from 12s to 9s"
+        },
+        {
+          "item": "Winch Claw",
+          "type": "gadget_nerf",
+          "details": "Max range decreased from 17m to 12m"
+        },
+        {
+          "item": "Throwing Knives",
+          "type": "weapon_nerf",
+          "details": "Primary fire rate decreased from 125rpm to 107rpm"
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "3.11.0",
+      "season": "S3",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:3.11.0",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "3.12.0",
+      "season": "S3",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:3.12.0",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "3.13.0",
+      "season": "S3",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:3.13.0",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "3.14.0",
+      "season": "S3",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:3.14.0",
+      "balance_changes": [
+        {
+          "item": "Mesh Shield",
+          "type": "gadget_nerf",
+          "details": "Support score generated from absorbing damage lowered by ~50%"
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "3.2.0",
+      "season": "S3",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:3.2.0",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "3.3.0",
+      "season": "S3",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:3.3.0",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "3.4.0",
+      "season": "S3",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:3.4.0",
+      "balance_changes": [
+        {
+          "item": "Breach Charge",
+          "type": "gadget_rework",
+          "details": "Decreased minimum damage applied at outer edge of explosions to 0; Increased damage radius from 2m to 2.5m; Set damage fall-off to scale linearly from the max damage radius to the outer radius"
+        },
+        {
+          "item": "C4",
+          "type": "gadget_rework",
+          "details": "Decreased minimum damage applied at outer edge of explosions to 0; Increased damage radius from 6m to 6.5m; Set damage fall-off to scale linearly from the max damage radius to the outer radius"
+        },
+        {
+          "item": "Explosive Mine",
+          "type": "gadget_rework",
+          "details": "Decreased minimum damage applied at outer edge of explosions to 0; Increased damage radius from 3.5m to 4.25m; Set damage fall-off to scale linearly from the max damage radius to the outer radius"
+        },
+        {
+          "item": "Frag Grenade",
+          "type": "gadget_rework",
+          "details": "Decreased minimum damage applied at outer edge of explosions to 0; Increased damage radius from 4.5m to 5m; Set damage fall-off to scale linearly from the max damage radius to the outer radius"
+        },
+        {
+          "item": "CL-40",
+          "type": "weapon_rework",
+          "details": "Decreased minimum damage applied at outer edge of explosions to 0; Increased damage radius from 2.6m to 3m; Set damage fall-off to scale linearly from the max damage radius to the outer radius"
+        },
+        {
+          "item": "MGL-32",
+          "type": "weapon_rework",
+          "details": "Decreased minimum damage applied at outer edge of explosions to 0; Increased damage radius from 3.75m to 4m; Set damage fall-off to scale linearly from the max damage radius to the outer radius"
+        },
+        {
+          "item": "RPG-7",
+          "type": "weapon_rework",
+          "details": "Decreased minimum damage applied at outer edge of explosions to 0; Increased damage radius from 4.5m to 5.5m; Set damage fall-off to scale linearly from the max damage radius to the outer radius"
+        },
+        {
+          "item": "Spear",
+          "type": "weapon_nerf",
+          "details": "Reduced the impulse applied by the secondary attack"
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "3.5.0",
+      "season": "S3",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:3.5.0",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "3.6.0",
+      "season": "S3",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:3.6.0",
+      "balance_changes": [
+        {
+          "item": "Goo Grenade",
+          "type": "gadget_buff",
+          "details": "Increased the time it takes for fire to destroy goo from 6s to 12s"
+        },
+        {
+          "item": "Evasive Dash",
+          "type": "specialization_nerf",
+          "details": "Increased the cooldown duration from 5.5s to 6.5s per charge"
+        },
+        {
+          "item": "Goo Gun",
+          "type": "gadget_buff",
+          "details": "Increased the time it takes for fire to destroy goo from 6s to 12s"
+        },
+        {
+          "item": "Grapple Hook",
+          "type": "specialization_buff",
+          "details": "Decreased the cooldown duration from 10s to 8s"
+        },
+        {
+          "item": "Healing Beam",
+          "type": "specialization_nerf",
+          "details": "Decreased the time taken until the Healing Beam can overheat from 7s to 5.5s"
+        },
+        {
+          "item": "93R",
+          "type": "weapon_buff",
+          "details": "Slightly decreased bullet dispersion when firing from the hip in all stances, making the weapon more accurate"
+        },
+        {
+          "item": "93R",
+          "type": "weapon_buff",
+          "details": "Decreased the amount of horizontal recoil when firing the 93R, making it easier to control and more precise"
+        },
+        {
+          "item": "93R",
+          "type": "weapon_buff",
+          "details": "Slightly tightened the cluster of bullets fired in a burst, making the weapon more precise"
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "3.7.0",
+      "season": "S3",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:3.7.0",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "3.8.0",
+      "season": "S3",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:3.8.0",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "3.8.1",
+      "season": "S3",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:3.8.1",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "3.8.2",
+      "season": "S3",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:3.8.2",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "3.9.0",
+      "season": "S3",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:3.9.0",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
       "version": "4.0.0",
       "season": "S4",
-      "date": "2024-09-26",
+      "date": "",
       "url": "https://www.thefinals.wiki/wiki/Update:4.0.0",
       "balance_changes": [
-        {"type": "gadget_buff", "item": "Anti-Gravity Cube", "details": "Radius 6m -> 7m; height 11m -> 12m"},
-        {"type": "gadget_change", "item": "Breach Charge", "details": "Ammo 2 -> 3; cooldown 26s -> 30s"},
-        {"type": "gadget_buff", "item": "Data Reshaper", "details": "Range 15m -> 21m; charges 2 -> 3"},
-        {"type": "gadget_change", "item": "Explosive Mine", "details": "Damage 140 -> 120; cooldown 30s -> 15s; ammo 2 -> 1"},
-        {"type": "gadget_buff", "item": "Flashbang", "details": "Blind duration 4s -> 4.5s; max intensity duration 1.8s -> 3.5s"},
-        {"type": "gadget_change", "item": "Glitch Trap", "details": "Ammo 2 -> 1; cooldown 30s -> 20s; hit markers disabled"},
-        {"type": "gadget_change", "item": "Jump Pad", "details": "Added bounce variance preventing indefinite bouncing"},
-        {"type": "gadget_buff", "item": "Proximity Sensor", "details": "Radius 10m -> 11m"},
-        {"type": "gadget_nerf", "item": "RPG-7", "details": "Damage 140 -> 100; reload 0.9s -> 2.15s; ADS dispersion 0.3x -> 0.25x"},
-        {"type": "gadget_change", "item": "Tracking Dart", "details": "Magazine 2 -> 4; regen 13s -> 12s; duration 15s -> 10s"},
-        {"type": "gadget_change", "item": "Zipline", "details": "Decreased height for door compatibility"},
-        {"type": "weapon_buff", "item": "93R", "details": "Fire rate 210 -> 220 RPM; improved hip-fire accuracy"},
-        {"type": "weapon_nerf", "item": "AKM", "details": "Magazine 36 -> 32 rounds"},
-        {"type": "weapon_change", "item": "CL-40", "details": "Damage 93 -> 117; fire rate 275 -> 210 RPM; damage radius 9cm -> 30cm"},
-        {"type": "weapon_change", "item": "Dagger", "details": "Backstab now held, triggering on release"},
-        {"type": "weapon_buff", "item": "Lewis Gun", "details": "Recoil smoothed, horizontal recoil reduced"},
-        {"type": "weapon_nerf", "item": "LH1", "details": "Damage fall-off start 80m -> 50m; end 100m -> 55m"},
-        {"type": "weapon_buff", "item": "M60", "details": "Fire rate 560 -> 580 RPM; recoil smoothed"},
-        {"type": "weapon_buff", "item": "MGL32", "details": "Reload 3.1s -> 2.8s"},
-        {"type": "weapon_buff", "item": "Recurve Bow", "details": "Minimum damage 55 -> 60; draw ramp-up 0.2s -> 0.15s; max draw 0.585s -> 0.49s"},
-        {"type": "weapon_buff", "item": "Riot Shield", "details": "Damage 84 -> 90"},
-        {"type": "weapon_buff", "item": "SH1900", "details": "Reload 2.5s -> 2.125s"},
-        {"type": "weapon_buff", "item": "Spear", "details": "Run speed during secondary 65% -> 75%"},
-        {"type": "weapon_change", "item": "SR-84", "details": "Hit-scan only to 40m; projectile with drop beyond 40m"},
-        {"type": "weapon_buff", "item": "Sword", "details": "Lunge range ~5m -> ~6m; attack sweeps centered on crosshair"},
-        {"type": "weapon_change", "item": "Throwing Knives", "details": "Secondary now held, triggering on release"},
-        {"type": "weapon_nerf", "item": "XP-54", "details": "Damage 18 -> 16; sight magnification increased"},
-        {"type": "specialization_buff", "item": "Dematerializer", "details": "Improved targeting through objects"},
-        {"type": "specialization_change", "item": "Goo Gun", "details": "Semi-automatic -> fully automatic"},
-        {"type": "specialization_nerf", "item": "Healing Beam", "details": "Rate 50 -> 40 health/second"},
-        {"type": "specialization_change", "item": "Mesh Shield", "details": "Enters cooldown when destroyed or lowered; cooldown 15s -> 12s (8s if undamaged)"},
-        {"type": "carriable_nerf", "item": "Propane Gas Canister", "details": "Direct impact damage 50 -> 25"}
+        {
+          "item": "Anti-Gravity Cube",
+          "type": "gadget_buff",
+          "details": "Increased radius from 6m to 7m, Increased height from 11m to 12m"
+        },
+        {
+          "item": "Breach Charge",
+          "type": "gadget_buff",
+          "details": "Increased ammo from 2 to 3, Increased cooldown from 26s to 30s"
+        },
+        {
+          "item": "Data Reshaper",
+          "type": "gadget_buff",
+          "details": "Increased range from 15m to 21m, Increased number of charges from 2 to 3"
+        },
+        {
+          "item": "Explosive Mine",
+          "type": "gadget_nerf",
+          "details": "Decreased max damage from 140 to 120, Decreased cooldown from 30s to 15s, Decreased ammo count from 2 to 1 (max mines deployed remains at 2)"
+        },
+        {
+          "item": "Flashbang",
+          "type": "gadget_buff",
+          "details": "Increased the max duration of the Blind status effect from 4s to 4.5s, Increased the max duration of the max intensity of the Blind status effect from 1.8s to 3.5s, Increase the intensity of flashes that explode close to the enemy’s position, Increased the view angle of flashes, causing more intense flashes when the flash goes off by someone’s side or slightly behind them, Flashbangs now only show Hit Indicators on the crosshair if they reach a minimum amount of intensity on a hostile target, Decreased the intensity and duration of the Blind status effect on teammates, Improved the leniency of hit detection of the Flashbang when targeting players, so that it is less likely to be blocked by small objects"
+        },
+        {
+          "item": "Glitch Trap",
+          "type": "gadget_nerf",
+          "details": "Disabled crosshair hit markers when the Glitch Trap attaches to an enemy, so that it can no longer be used to detect players, Decreased ammo from 2 to 1, Decreased cooldown from 30s to 20s"
+        },
+        {
+          "item": "Jump Pad",
+          "type": "gadget_rework",
+          "details": "Added a small amount of variance to the Jump Pad so that objects cannot bounce on them indefinitely"
+        },
+        {
+          "item": "Proximity Sensor",
+          "type": "gadget_buff",
+          "details": "Increased radius from 10m to 11m"
+        },
+        {
+          "item": "RPG-7",
+          "type": "weapon_nerf",
+          "details": "Decreased damage from 140 to 100, Increased reload time from 0.9s to 2.15s, Decreased projectile dispersion when aiming down sights from 0.3x to 0.25x"
+        },
+        {
+          "item": "Tracking Dart",
+          "type": "gadget_buff",
+          "details": "Increased magazine size from 2 to 4, Decreased ammunition regeneration rate from 13s to 12s, Decreased tracking duration from 15s to 10s"
+        },
+        {
+          "item": "Zipline",
+          "type": "gadget_nerf",
+          "details": "Decreased the height of Ziplines slightly, so that they will better fit through doors"
+        },
+        {
+          "item": "Propane Gas Canister",
+          "type": "gadget_nerf",
+          "details": "Decreased direct physical impact damage from 50 to 25"
+        },
+        {
+          "item": "Glitch Trap",
+          "type": "gadget_buff",
+          "details": "Decreased cooldown from 30s to 20s."
+        },
+        {
+          "item": "RPG-7",
+          "type": "weapon_buff",
+          "details": "Decreased projectile dispersion when aiming down sights from 0.3x to 0.25x."
+        },
+        {
+          "item": "Tracking Dart",
+          "type": "weapon_buff",
+          "details": "Increased magazine size from 2 to 4. Decreased ammunition regeneration rate from 13s to 12s."
+        },
+        {
+          "item": "Tracking Dart",
+          "type": "weapon_nerf",
+          "details": "Decreased tracking duration from 15s to 10s."
+        },
+        {
+          "item": "Dematerializer",
+          "type": "specialization_buff",
+          "details": "Improved targeting to reduce the amount of times the dematerializer fails to make a passageway through objects."
+        },
+        {
+          "item": "Goo Gun",
+          "type": "weapon_rework",
+          "details": "Fire mode changed from semi-automatic to fully automatic."
+        },
+        {
+          "item": "Healing Beam",
+          "type": "specialization_nerf",
+          "details": "Decreased healing rate from 50 health per second to 40 health per second."
+        },
+        {
+          "item": "Mesh Shield",
+          "type": "specialization_rework",
+          "details": "Mesh Shield will now enter cooldown either when destroyed or lowered. Decreased Mesh Shield cooldown from 15s to 12s. The cooldown is only 8s if the Shield is undamaged when deactivated."
+        },
+        {
+          "item": "93R",
+          "type": "weapon_buff",
+          "details": "Smoothed the vertical recoil to avoid having sharp jumps in intensity, which could previously cause an inconsistent feel. Increased fire rate from 210 RPM to 220 RPM. Decreased bullet dispersion when firing ‘from the hip’ when crouching, crouch moving, standing still, running, and in ‘uncontrolled’ states such as falling or sliding. Decreased the rate at which bullet dispersion builds up over time when firing for a sustained period. Increased the bullet dispersion recovery speed from 0.45 to 0.65."
+        },
+        {
+          "item": "AKM",
+          "type": "weapon_nerf",
+          "details": "Decreased magazine size from 36 to 32."
+        },
+        {
+          "item": "CL-40",
+          "type": "weapon_buff",
+          "details": "Increased max damage from 93 to 117. Increased the max damage radius from 9cm to 30cm."
+        },
+        {
+          "item": "CL-40",
+          "type": "weapon_nerf",
+          "details": "Decreased fire rate from 275 RPm to 210 RPM."
+        },
+        {
+          "item": "Dagger",
+          "type": "weapon_rework",
+          "details": "The Dagger’s backstab secondary attack can now be held, only triggering when the button is released, rather than automatically. During this stance, the player moves at the normal run speed and cannot sprint."
+        },
+        {
+          "item": "Lewis Gun",
+          "type": "weapon_buff",
+          "details": "Smoothed the recoil pattern of the Lewis Gun, reducing the amount of horizontal recoil at some points. The recoil pattern overall remains the same but should be considerably easier to control."
+        },
+        {
+          "item": "LH1",
+          "type": "weapon_nerf",
+          "details": "Decreased the damage fall-off start range from 80m to 50m. Decreased the damage fall-off end range from 100m to 55m."
+        },
+        {
+          "item": "M60",
+          "type": "weapon_buff",
+          "details": "Increased fire rate from 560 RPM to 580 RPM. Smoothed the recoil pattern of the M60, reducing the amount of horizontal recoil at some points. The recoil pattern overall remains the same but should be considerably easier to control."
+        },
+        {
+          "item": "MGL32",
+          "type": "weapon_buff",
+          "details": "Decreased reload time from 3.1s to 2.8s."
+        },
+        {
+          "item": "Recurve Bow",
+          "type": "weapon_buff",
+          "details": "Increased damage at minimum draw from 55 to 60. Decreased damage ramp-up start time from 0.2s to 0.15s. Decreased the time taken to reach maximum draw from 0.585s to 0.49s."
+        },
+        {
+          "item": "Riot Shield",
+          "type": "weapon_buff",
+          "details": "Increased damage from 84 to 90."
+        },
+        {
+          "item": "SH1900 Shotgun",
+          "type": "weapon_nerf",
+          "details": "Decreased reload time from 2.5s to 2.125s."
+        },
+        {
+          "item": "Spear",
+          "type": "weapon_buff",
+          "details": "Increased run speed modifier during secondary spin attack from 65% to 75%."
+        },
+        {
+          "item": "SR-84 Sniper",
+          "type": "weapon_rework",
+          "details": "Updated the SR-84 to now only fire hit-scan rounds up to 40m range. After this point, the shot becomes a projectile with bullet drop from gravity and drag."
+        },
+        {
+          "item": "Sword",
+          "type": "weapon_buff",
+          "details": "Updated attack sweeps to be more centered on the crosshair, making the weapon more accurate. Increased the range of the secondary lunge from approximately 5m to approximately 6m. Secondary lunge attack now maintains its top speed for slightly longer."
+        },
+        {
+          "item": "Throwing Knives",
+          "type": "weapon_rework",
+          "details": "The Throwing Knives secondary attack can now be held, only triggering when the button is released, rather than automatically. During this stance, the player moves at the normal run speed and cannot sprint."
+        },
+        {
+          "item": "XP-54",
+          "type": "weapon_nerf",
+          "details": "Decreased damage from 18 to 16."
+        }
       ],
       "new_content": [
-        {"type": "weapon", "item": ".50 Akimbo", "class": "Heavy", "details": "Dual pistols"},
-        {"type": "weapon", "item": "Pike-556", "class": "Medium", "details": "Designated marksman rifle"},
-        {"type": "weapon", "item": "M26 Matter", "class": "Light", "details": "Pump-action shotgun"},
-        {"type": "map", "item": "Fortune Stadium", "details": "Urban environment with brand-specific sectors and vertical spaces"},
-        {"type": "system", "item": "Sponsors", "details": "Players sign with HOLTOW, ENGIMO, or ISEUL-T for seasonal rewards"},
-        {"type": "system", "item": "Alternate Sights & Scopes", "details": "Red Dots, Scopes unlocked via VRs"},
-        {"type": "system", "item": "Ranked Tournaments", "details": "8-team, 24-player tournament format"},
-        {"type": "system", "item": "Facial Hair Customization", "details": "Beards and mustaches"},
-        {"type": "system", "item": "Loadout Slots", "details": "Increased from 6 to 8 slots"},
-        {"type": "system", "item": "World Tour Ranks", "details": "Added Platinum and Diamond ranks"},
-        {"type": "system", "item": "Career Levels", "details": "Added 10 new levels"}
+        {
+          "type": "weapon",
+          "item": ".50 Akimbo",
+          "class": "Heavy",
+          "details": "Dual pistols"
+        },
+        {
+          "type": "weapon",
+          "item": "Pike-556",
+          "class": "Medium",
+          "details": "Designated marksman rifle"
+        },
+        {
+          "type": "weapon",
+          "item": "M26 Matter",
+          "class": "Light",
+          "details": "Pump-action shotgun"
+        },
+        {
+          "type": "map",
+          "item": "Fortune Stadium",
+          "details": "Urban environment with brand-specific sectors and vertical spaces"
+        },
+        {
+          "type": "system",
+          "item": "Sponsors",
+          "details": "Players sign with HOLTOW, ENGIMO, or ISEUL-T for seasonal rewards"
+        },
+        {
+          "type": "system",
+          "item": "Alternate Sights & Scopes",
+          "details": "Red Dots, Scopes unlocked via VRs"
+        },
+        {
+          "type": "system",
+          "item": "Ranked Tournaments",
+          "details": "8-team, 24-player tournament format"
+        },
+        {
+          "type": "system",
+          "item": "Facial Hair Customization",
+          "details": "Beards and mustaches"
+        },
+        {
+          "type": "system",
+          "item": "Loadout Slots",
+          "details": "Increased from 6 to 8 slots"
+        },
+        {
+          "type": "system",
+          "item": "World Tour Ranks",
+          "details": "Added Platinum and Diamond ranks"
+        },
+        {
+          "type": "system",
+          "item": "Career Levels",
+          "details": "Added 10 new levels"
+        }
       ],
       "bug_fixes": [
         "Fixed spawn-in animations missing",
@@ -238,40 +1784,338 @@
       ]
     },
     {
+      "version": "4.1.0",
+      "season": "S4",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:4.1.0",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "4.2.0",
+      "season": "S4",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:4.2.0",
+      "balance_changes": [
+        {
+          "item": "Data Reshaper",
+          "type": "gadget_rework",
+          "details": "Added Glitch Barrels to the rotation of reshaped items the Data Reshaper can create"
+        },
+        {
+          "item": "Smoke Grenade",
+          "type": "gadget_buff",
+          "details": "Increased 'smoke entity duration' from 15s to 17.5s"
+        },
+        {
+          "item": "Mesh Shield",
+          "type": "specialization_buff",
+          "details": "Decreased Mesh Shield cooldown from 12s to 8s if the shield is damaged when closed"
+        },
+        {
+          "item": "Mesh Shield",
+          "type": "specialization_buff",
+          "details": "Decreased Mesh Shield cooldown from 8s to 4s if the shield is undamaged when closed"
+        },
+        {
+          "item": "CL-40",
+          "type": "weapon_nerf",
+          "details": "Decreased damage from 117 to 100"
+        },
+        {
+          "item": "CL-40",
+          "type": "weapon_buff",
+          "details": "Increased ammo from 4 to 5"
+        },
+        {
+          "item": "CL-40",
+          "type": "weapon_nerf",
+          "details": "Increased self-damage multiplier from 0.75 to 1.6"
+        },
+        {
+          "item": "CL-40",
+          "type": "weapon_rework",
+          "details": "Updated damage fall-off curve so that damage drops to 90% at the edge of the 30cm inner radius, with damage falling off linearly from that point to 0 at the outer edge of the blast radius"
+        },
+        {
+          "item": "Pike-556",
+          "type": "weapon_nerf",
+          "details": "Decreased damage from 59 to 52"
+        },
+        {
+          "item": "V9S",
+          "type": "weapon_nerf",
+          "details": "Decreased fire rate from 430 RPM to 360 RPM"
+        },
+        {
+          "item": "V9S",
+          "type": "weapon_buff",
+          "details": "Increased damage from 37 to 40"
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "4.3.0",
+      "season": "S4",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:4.3.0",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "4.4.0",
+      "season": "S4",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:4.4.0",
+      "balance_changes": [
+        {
+          "item": "Sledgehammer",
+          "type": "weapon_nerf",
+          "details": "Secondary attack sweep duration decreased by 25%; Secondary attack sweep width decreased from 30cm to 25cm; Primary attack sweep width increased from 12cm to 15cm"
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "4.5.0",
+      "season": "S4",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:4.5.0",
+      "balance_changes": [
+        {
+          "item": "Model 1887",
+          "type": "weapon_nerf",
+          "details": "Increased inner pellet radius from 0.45 to 0.65; Increased outer pellet radius from 1.3 to 1.7; Decreased damage falloff multiplier from 65% to 60%"
+        },
+        {
+          "item": "XP-54",
+          "type": "weapon_buff",
+          "details": "Increased damage falloff start distance from 15m to 20m; Increased damage falloff end distance from 25m to 30m; Decreased damage falloff multiplier from 65% to 62%"
+        },
+        {
+          "item": "Sponsors",
+          "type": "specialization_nerf",
+          "details": "Disabled the ability to earn Fans with the Healing Beam"
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "4.6.0",
+      "season": "S4",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:4.6.0",
+      "balance_changes": [
+        {
+          "item": "Healing Beam",
+          "type": "specialization_nerf",
+          "details": "Max target distance decreased from 12m to 10m; Max healing distance decreased from 15m to 13m; Time before disconnecting a blocked healing beam decreased from 1s to 0.75s"
+        },
+        {
+          "item": "Pike-556",
+          "type": "weapon_nerf",
+          "details": "Damage decreased from 52 to 47; Damage falloff multiplier at max range increased from 75% to 85%"
+        },
+        {
+          "item": "Pyro Grenade",
+          "type": "gadget_buff",
+          "details": "Deals damage to shields (Dome Shield, Mesh Shield)"
+        },
+        {
+          "item": "Sword",
+          "type": "weapon_nerf",
+          "details": "Lunge duration of secondary attack decreased from 0.4s to 0.3s (~1m reduction in distance); Length of secondary attack's hit sweep decreased by 55cm"
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "4.7.0",
+      "season": "S4",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:4.7.0",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "4.8.0",
+      "season": "S4",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:4.8.0",
+      "balance_changes": [
+        {
+          "item": "Grapple Hook",
+          "type": "specialization_rework",
+          "details": "Added improved targeting, to solve the recurring bug where the hook would hit invisible targets"
+        },
+        {
+          "item": "Dash",
+          "type": "specialization_rework",
+          "details": "Fixed an issue that allowed players to interrupt dashes by emoting, making them lunge further than intended"
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "4.9.0",
+      "season": "S4",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:4.9.0",
+      "balance_changes": [
+        {
+          "item": "Model 1887",
+          "type": "weapon_rework",
+          "details": "Increased pellet count from 8 to 9 (added a center pellet); Decreased damage from 16 to 13 per pellet; Updated pellet dispersion pattern, reducing the outer radius slightly"
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
       "version": "5.0.0",
       "season": "S5",
-      "date": "2024-12-12",
+      "date": "",
       "url": "https://www.thefinals.wiki/wiki/Update:5.0.0",
       "balance_changes": [
-        {"type": "gadget_change", "item": "Defibrillator", "details": "Added 5-second cooldown to revived players' specializations and gadgets"},
-        {"type": "gadget_nerf", "item": "Jump Pad", "details": "Cooldown increased 30s -> 40s"},
-        {"type": "gadget_change", "item": "Proximity Sensor", "details": "Medium class can now equip"},
-        {"type": "gadget_change", "item": "Smoke Grenade", "details": "Medium and Heavy classes can now equip"},
-        {"type": "gadget_change", "item": "Sonar Grenade", "details": "Duration 7.52s -> 5.25s; pulse interval 2.5s -> 1.75s"},
-        {"type": "gadget_nerf", "item": "Zipline", "details": "Cooldown increased 30s -> 37s"},
-        {"type": "specialization_change", "item": "Cloaking Device", "details": "Energy consumption now scales with movement speed; fire and poison damage no longer break cloaking"},
-        {"type": "specialization_rework", "item": "Mesh Shield", "details": "Reworked as energy-based system (750 total energy); 225 energy lost when lowering shield; cooldown removed"},
-        {"type": "weapon_buff", "item": "93R", "details": "Damage 24 -> 28; horizontal recoil reduced; vertical recoil decreased; falloff start 23m -> 28m; max range multiplier 45% -> 55%"},
-        {"type": "weapon_buff", "item": "Dual Blades (Basic)", "details": "Lunge speed and duration increased"},
-        {"type": "weapon_change", "item": "Dual Blades (Deflect)", "details": "Deflection angle 25 -> 35 degrees; direct hit modifier 0.2 -> 0.1; glancing modifier 0.4 -> 0.3; melee modifier 0.33 -> 0.25; bullet dispersion 2.5 -> 1"},
-        {"type": "weapon_buff", "item": "R .357", "details": "Hip-fire bullet dispersion reduced ~20%"},
-        {"type": "weapon_buff", "item": "Spear (Basic)", "details": "Lunge distance 6m -> 7.5m; lunge speed increased ~15%; lunge cancel improved"},
-        {"type": "weapon_buff", "item": "Spear (Secondary)", "details": "Damage per swing 100 -> 105"},
-        {"type": "weapon_buff", "item": "XP-54", "details": "Ammo count 30 -> 34"},
-        {"type": "weapon_change", "item": "All Red Dot Optics", "details": "Visual recoil significantly reduced across all weapons"}
+        {
+          "item": "Defibrillator",
+          "type": "gadget_rework",
+          "details": "Added 'revive sickness' to players revived by the Defibrillator, causing their Specializations and Gadgets to be placed on a five-second cooldown"
+        },
+        {
+          "item": "Jump Pad",
+          "type": "gadget_nerf",
+          "details": "Increased cooldown from 30s to 40s"
+        },
+        {
+          "item": "Sonar Grenade",
+          "type": "gadget_nerf",
+          "details": "Decreased active duration from 7.52 to 5.25s; Decreased time between sonar pulses from 2.5s to 1.75s"
+        },
+        {
+          "item": "Zipline",
+          "type": "gadget_nerf",
+          "details": "Increased cooldown from 30s to 37s"
+        },
+        {
+          "item": "Cloaking Device",
+          "type": "specialization_rework",
+          "details": "Updated to consume energy based on player's current movement speed while cloaked; Removed the ability for burning damage to break the cloaking effect; Removed the ability for poison damage to break the cloaking effect"
+        },
+        {
+          "item": "Mesh Shield",
+          "type": "specialization_rework",
+          "details": "Reworked to be energy based (750 energy total); Loses energy when taking damage; Loses 225 energy when player lowers the shield; Energy regenerates when shield has not taken damage for a short time; No longer has a cooldown"
+        },
+        {
+          "item": "93R",
+          "type": "weapon_buff",
+          "details": "Increased damage from 24 to 28; Decreased horizontal recoil after the third burst; Decreased vertical recoil slightly; Increased the damage fall-off start range from 23m to 28m; Increased the damage fall-off multiplier at max range from 45% to 55%"
+        },
+        {
+          "item": "Dual Blades",
+          "type": "weapon_buff",
+          "details": "Basic attack: Increased the speed and duration of the lunge; Deflect: Decreased the dispersion angle of deflected bullets from 2.5 to 1; Decreased the damage modifier for direct hits from enemy bullets from 0.2 to 0.1; Decreased the damage modifier for glancing hits from enemy bullets from 0.4 to 0.3; Increased deflection angle from 25 degrees to 35 degrees; Decreased incoming melee damage modifier from 0.33 to 0.25"
+        },
+        {
+          "item": "R .357 Revolver",
+          "type": "weapon_buff",
+          "details": "Decreased bullet dispersion when firing from the hip by approximately 20%"
+        },
+        {
+          "item": "Spear",
+          "type": "weapon_buff",
+          "details": "Basic attack: Increased the lunge distance from 6m to 7.5m; Increased the lunge speed by approximately 15%; Increased the lunge cancel; Secondary attack: Increased the damage of each swing from 100 to 105"
+        },
+        {
+          "item": "XP-54",
+          "type": "weapon_buff",
+          "details": "Increased ammo count from 30 to 34"
+        },
+        {
+          "item": "Weapon Optics",
+          "type": "weapon_buff",
+          "details": "Decreased the amount of animated “visual recoil” significantly on all red dot optics"
+        }
       ],
       "new_content": [
-        {"type": "weapon", "item": "ShAK-50", "class": "Heavy", "details": "Assault rifle firing two bullets per shot"},
-        {"type": "weapon", "item": "Cerberus 12GA", "class": "Medium", "details": "Triple-barrel shotgun with incendiary shells"},
-        {"type": "gadget", "item": "Gravity Vortex", "class": "Light", "details": "Remote-triggered singularity pulling objectives, players, and debris"},
-        {"type": "gadget", "item": "Lockbolt Launcher", "class": "Heavy", "details": "Anchor that ensnares up to three targets simultaneously"},
-        {"type": "map", "item": "Bernal", "details": "Beneath Mexico's Pena de Bernal monolith, rooftop skirmishes, sponsor structures, spinning platform"},
-        {"type": "system", "item": "Clubs", "details": "Social system supporting up to 50 members with daily contracts, bonus XP/Fans, and team roles"},
-        {"type": "system", "item": "Gifting", "details": "Send up to 5 gifts daily including cosmetics and Premium Battle Pass"},
-        {"type": "system", "item": "Jukebox", "details": "Select multiple seasonal soundtracks for customized playlists"},
-        {"type": "system", "item": "Incognito Mode", "details": "Randomizes queue times to prevent stream sniping"},
-        {"type": "system", "item": "120Hz Console Mode", "details": "Available on PS5, PS5 Pro, and Xbox Series X"},
-        {"type": "system", "item": "PlayStation 4 Support", "details": "First-time release on PS4"}
+        {
+          "type": "weapon",
+          "item": "ShAK-50",
+          "class": "Heavy",
+          "details": "Assault rifle firing two bullets per shot"
+        },
+        {
+          "type": "weapon",
+          "item": "Cerberus 12GA",
+          "class": "Medium",
+          "details": "Triple-barrel shotgun with incendiary shells"
+        },
+        {
+          "type": "gadget",
+          "item": "Gravity Vortex",
+          "class": "Light",
+          "details": "Remote-triggered singularity pulling objectives, players, and debris"
+        },
+        {
+          "type": "gadget",
+          "item": "Lockbolt Launcher",
+          "class": "Heavy",
+          "details": "Anchor that ensnares up to three targets simultaneously"
+        },
+        {
+          "type": "map",
+          "item": "Bernal",
+          "details": "Beneath Mexico's Pena de Bernal monolith, rooftop skirmishes, sponsor structures, spinning platform"
+        },
+        {
+          "type": "system",
+          "item": "Clubs",
+          "details": "Social system supporting up to 50 members with daily contracts, bonus XP/Fans, and team roles"
+        },
+        {
+          "type": "system",
+          "item": "Gifting",
+          "details": "Send up to 5 gifts daily including cosmetics and Premium Battle Pass"
+        },
+        {
+          "type": "system",
+          "item": "Jukebox",
+          "details": "Select multiple seasonal soundtracks for customized playlists"
+        },
+        {
+          "type": "system",
+          "item": "Incognito Mode",
+          "details": "Randomizes queue times to prevent stream sniping"
+        },
+        {
+          "type": "system",
+          "item": "120Hz Console Mode",
+          "details": "Available on PS5, PS5 Pro, and Xbox Series X"
+        },
+        {
+          "type": "system",
+          "item": "PlayStation 4 Support",
+          "details": "First-time release on PS4"
+        }
       ],
       "bug_fixes": [
         "Fixed character deformation during respawning",
@@ -296,44 +2140,472 @@
       ]
     },
     {
+      "version": "5.1.0",
+      "season": "S5",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:5.1.0",
+      "balance_changes": [
+        {
+          "item": "Lockbolt",
+          "type": "gadget_nerf",
+          "details": "Disabled the ability to attach to objectives (Cashbox, Cashout Station)"
+        },
+        {
+          "item": "Cloaking Device",
+          "type": "specialization_nerf",
+          "details": "Decreased max duration of invisibility when fully stationary from 133s to 27s"
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "5.10.0",
+      "season": "S5",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:5.10.0",
+      "balance_changes": [
+        {
+          "item": "Breach Charge",
+          "type": "gadget_buff",
+          "details": "Priming time decreased from 1.9s to 1.5s"
+        },
+        {
+          "item": "Frag Grenade",
+          "type": "gadget_nerf",
+          "details": "Ammo decreased from 2 to 1"
+        },
+        {
+          "item": "Frag Grenade",
+          "type": "gadget_nerf",
+          "details": "Damage decreased from 150 to 140"
+        },
+        {
+          "item": "Frag Grenade",
+          "type": "gadget_buff",
+          "details": "Environmental damage increased from 600 to 900"
+        },
+        {
+          "item": "Stun Gun",
+          "type": "gadget_rework",
+          "details": "Temporarily disabled pending rework"
+        },
+        {
+          "item": "Winch Claw",
+          "type": "specialization_rework",
+          "details": "Updated underlying physics of pulled objects for more consistent behavior"
+        },
+        {
+          "item": "Winch Claw",
+          "type": "specialization_nerf",
+          "details": "Reduced physics force applied to world objects to prevent launching objectives across long distances"
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "5.11.0",
+      "season": "S5",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:5.11.0",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "5.12.0",
+      "season": "S5",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:5.12.0",
+      "balance_changes": [
+        {
+          "item": "Model 1887",
+          "type": "weapon_buff",
+          "details": "Damage per pellet increased from 11 to 12; Lever-action animation duration decreased from 0.85s to 0.8s, increasing fire rate from 70RPM to 75RPM"
+        },
+        {
+          "item": "Recurve Bow",
+          "type": "weapon_buff",
+          "details": "Damage per shot at max draw increased from 120 to 124 (base damage remains 60)"
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "5.13.0",
+      "season": "S5",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:5.13.0",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "5.2.0",
+      "season": "S5",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:5.2.0",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "5.3.0",
+      "season": "S5",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:5.3.0",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "5.4.0",
+      "season": "S5",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:5.4.0",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "5.5.0",
+      "season": "S5",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:5.5.0",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "5.6.0",
+      "season": "S5",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:5.6.0",
+      "balance_changes": [
+        {
+          "item": "Winch Claw",
+          "type": "specialization_rework",
+          "details": "Will now cancel and block vaulting for opponents on successful hits"
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "5.6.1",
+      "season": "S5",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:5.6.1",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "5.7.0",
+      "season": "S5",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:5.7.0",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "5.8.0",
+      "season": "S5",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:5.8.0",
+      "balance_changes": [
+        {
+          "item": "Breach Charge",
+          "type": "gadget_buff",
+          "details": "Decreased the delay between throwing multiple Breach Charges from 0.9s to 0.6s"
+        },
+        {
+          "item": "Lockbolt Launcher",
+          "type": "gadget_rework",
+          "details": "Re-enabled the ability for the Lockbolt to attach to objectives; Increased activation grace period from 0.8s to 1s; Decreased the minimum pull distance from 8m to 6m; Decreased the maximum pull distance from 10m to 6m; Increased the pull force of the Lockbolt by 50%; Increased the damage the Lockbolt applies to targets from 0 to 5; Added functionality that will disable the Lockbolt’s tethers if the Lockbolt is carried through a Gateway that is outside the maximum pull distance (6m)"
+        },
+        {
+          "item": "Charge N’ Slam",
+          "type": "specialization_nerf",
+          "details": "Decreased the damage done by the initial impact on enemies from 130 to 100; Decreased the damage done by subsequent hits on enemies from 50 to 40; Decreased the minimum damage of the ground slam, based on fall height from 80 to 50"
+        },
+        {
+          "item": "Dematerializer",
+          "type": "gadget_rework",
+          "details": "Decreased the duration of dematerialized objects from 30s to 15s; Added the ability for the Dematerializer to remove props attached to wall segments"
+        },
+        {
+          "item": "Guardian Turret",
+          "type": "gadget_buff",
+          "details": "Decreased the cooldown from 8s to 3s when manually picking up the Guardian Turret"
+        },
+        {
+          "item": "Winch Claw",
+          "type": "gadget_nerf",
+          "details": "Decreased the range of the Winch Claw from 12m to 10m"
+        },
+        {
+          "item": "Cerberus",
+          "type": "weapon_buff",
+          "details": "Increased damage from 9 to 10 per pellet; Slightly decreased the size of the pellet distribution; Decreased the reload time for reloading one cartridge from 2.2s to 2.1s; Decreased the reload time for reloading two cartridges from 2.4s to 2.25s; Decreased the reload time for reloading three cartridges from 2.6s to 2.45s"
+        },
+        {
+          "item": "CL-40",
+          "type": "weapon_nerf",
+          "details": "Decreased the radius of the weapon’s projectile from 10cm to 5cm; Decreased self-damage multiplier from 1.6 to 1.25"
+        },
+        {
+          "item": "FAMAS",
+          "type": "weapon_nerf",
+          "details": "Decreased the fire rate from 230 RPM to 220 RPM; Decreased damage per bullet from 24 to 23"
+        },
+        {
+          "item": "LH1",
+          "type": "weapon_nerf",
+          "details": "Decreased damage from 48 to 46; Decreased rate of fire from 280 RPM to 270 RPM"
+        },
+        {
+          "item": "Model 1887",
+          "type": "weapon_nerf",
+          "details": "Decreased damage from 13 to 11 per pellet; Increased min damage falloff multiplier from 0.6 to 0.7"
+        },
+        {
+          "item": "Pike-556",
+          "type": "weapon_buff",
+          "details": "Increased damage from 47 to 50"
+        },
+        {
+          "item": "SR-84",
+          "type": "weapon_buff",
+          "details": "Decreased the bolt action animation duration from 1.25s to 1.05s; Increased damage from 115 to 118"
+        },
+        {
+          "item": "Sword",
+          "type": "weapon_buff",
+          "details": "Increased the length of the Sword’s secondary attack hit sweep by 55cm"
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "5.8.1",
+      "season": "S5",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:5.8.1",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "5.9.0",
+      "season": "S5",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:5.9.0",
+      "balance_changes": [
+        {
+          "item": "Dagger",
+          "type": "weapon_nerf",
+          "details": "Decreased the backstab angle on the Dagger’s secondary attack from 180 degrees to 150"
+        },
+        {
+          "item": "KS-23",
+          "type": "weapon_buff",
+          "details": "Increased min damage falloff multiplier from 0.6 to 0.7"
+        },
+        {
+          "item": "KS-23",
+          "type": "weapon_buff",
+          "details": "Decreased bullet dispersion when aiming down sights to increase accuracy"
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
       "version": "6.0.0",
       "season": "S6",
-      "date": "2025-03-20",
+      "date": "",
       "url": "https://www.thefinals.wiki/wiki/Update:6.0.0",
       "balance_changes": [
-        {"type": "gadget_buff", "item": "Anti-Gravity Cube", "details": "Cooldown 40s -> 35s; radius 3.5m -> 4m"},
-        {"type": "gadget_change", "item": "APS Turret", "details": "Damage per blocked projectile: 40% -> 31.25% health (blocks 4 vs 3 projectiles)"},
-        {"type": "gadget_nerf", "item": "Data Reshaper", "details": "Ammo 3 -> 2"},
-        {"type": "gadget_buff", "item": "Glitch Grenade", "details": "Fuse time 1.8s -> 1.5s"},
-        {"type": "gadget_change", "item": "Gravity Vortex", "details": "Duration 8s -> 10s (min 5s -> 7s); throw velocity 16.5 -> 15 m/s; max distance ~29m -> ~15m"},
-        {"type": "gadget_buff", "item": "Tracking Dart", "details": "Duration 10s -> 13s"},
-        {"type": "gadget_buff", "item": "Explosive Canisters", "details": "Reduced fuse time for faster/reliable detonation"},
-        {"type": "specialization_change", "item": "Cloaking Device", "details": "Cloak blend increased (1.5 -> 1.75) for visibility; transition delay 0s -> 0.5s; first-person multiplier 0.9 -> 1.0"},
-        {"type": "specialization_buff", "item": "Winch Claw", "details": "Max range 10m -> 12m; stun scaling added based on distance; max stun 0.55s -> 0.65s; min stun (3m or less) new 0.3s"},
-        {"type": "weapon_change", "item": "AKM", "details": "Recoil interpolation smoothing (QoL)"},
-        {"type": "weapon_buff", "item": "CL-40", "details": "Blast radius 30cm -> 60cm; velocity 35 -> 42 m/s; gravity 1 -> 0.9"},
-        {"type": "weapon_buff", "item": "Dagger", "details": "Regular damage 50 -> 60; non-backstab secondary 50 -> 75"},
-        {"type": "weapon_change", "item": "FAMAS", "details": "Recoil interpolation smoothing (QoL)"},
-        {"type": "weapon_buff", "item": "FCAR", "details": "Bullets 5-7 recoil reduction"},
-        {"type": "weapon_buff", "item": "KS-23", "details": "Pump duration 0.82s -> 0.7s (fire rate 73 -> 85 RPM)"},
-        {"type": "weapon_nerf", "item": "LH1", "details": "Damage 46 -> 40"},
-        {"type": "weapon_change", "item": "M11", "details": "Falloff max 15m -> 17.5m; multiplier 0.62 -> 0.52"},
-        {"type": "weapon_buff", "item": "M60", "details": "Damage 19 -> 20; falloff max 32m -> 35m; multiplier 0.4 -> 0.5"},
-        {"type": "weapon_change", "item": "Pike-556", "details": "Falloff min 50m -> 45m; max 55m -> 50m; multiplier 0.85 -> 0.75; reduced visual recoil"},
-        {"type": "weapon_change", "item": "SA1216", "details": "Pellets 13 -> 12 (damage 78 -> 72); falloff min 10m -> 12.5m; max 15m -> 20m"},
-        {"type": "weapon_buff", "item": "XP-54", "details": "Damage 16 -> 17; falloff min 20m -> 22.5m; max 30m -> 32.5m; multiplier 0.62 -> 0.52"}
+        {
+          "item": "Anti-Gravity Cube",
+          "type": "gadget_buff",
+          "details": "Cooldown decreased from 40s to 35s; Effect radius increased from 3.5m to 4m"
+        },
+        {
+          "item": "APS Turret",
+          "type": "gadget_buff",
+          "details": "Damage taken per projectile destroyed decreased from 40% to 31.25% of total health"
+        },
+        {
+          "item": "Data Reshaper",
+          "type": "gadget_nerf",
+          "details": "Ammo count decreased from 3 to 2"
+        },
+        {
+          "item": "Glitch Grenade",
+          "type": "gadget_buff",
+          "details": "Fuse time decreased from 1.8s to 1.5s"
+        },
+        {
+          "item": "Gravity Vortex",
+          "type": "gadget_buff",
+          "details": "Maximum duration increased from 8s to 10s; Minimum duration increased from 5s to 7s; Throw velocity decreased from 16.5m/s to 15m/s; Projectile gravity modifier increased from 1 to 1.7; Maximum throw distance decreased from ~29m to ~15m"
+        },
+        {
+          "item": "Tracking Dart",
+          "type": "gadget_buff",
+          "details": "Tracking duration on targets increased from 10s to 13s"
+        },
+        {
+          "item": "Explosive Canisters",
+          "type": "gadget_buff",
+          "details": "Fuse time reduced"
+        },
+        {
+          "item": "Cloaking Device",
+          "type": "specialization_nerf",
+          "details": "'Cloak Max Blend' increased from 1.5 to 1.75; 'Delay Before Transitioning Into Cloak' increased from 0 to 0.5s; 'First Person Cloak Multiplier' increased from 0.9 to 1.0"
+        },
+        {
+          "item": "Winch Claw",
+          "type": "specialization_buff",
+          "details": "Max range increased from 10m to 12m; Stun duration for Weapons and Gadgets now scales with distance, with max stun duration at max range increased from 0.55s to 0.65s, and min stun duration at min range (3m or less) set to 0.3s"
+        },
+        {
+          "item": "AKM",
+          "type": "weapon_buff",
+          "details": "Improved recoil interpolation for smoother camera movement"
+        },
+        {
+          "item": "CL-40",
+          "type": "weapon_buff",
+          "details": "Inner blast radius increased from 30cm to 60cm; Grenade projectile speed increased from 35m/s to 42m/s; Projectile gravity modifier decreased from 1 to 0.9"
+        },
+        {
+          "item": "Dagger",
+          "type": "weapon_buff",
+          "details": "Damage of regular attacks increased from 50 to 60; Damage of non-backstab secondary attacks increased from 50 to 75"
+        },
+        {
+          "item": "FAMAS",
+          "type": "weapon_buff",
+          "details": "Improved recoil interpolation for smoother camera movement"
+        },
+        {
+          "item": "FCAR",
+          "type": "weapon_buff",
+          "details": "Recoil intensity for bullets 5-7 in the firing sequence decreased"
+        },
+        {
+          "item": "KS-23",
+          "type": "weapon_buff",
+          "details": "Pump-action duration decreased from 0.82s to 0.7s, increasing fire rate from 73RPM to 85RPM"
+        },
+        {
+          "item": "LH1",
+          "type": "weapon_nerf",
+          "details": "Damage decreased from 46 to 40"
+        },
+        {
+          "item": "M11",
+          "type": "weapon_rework",
+          "details": "Damage falloff max range increased from 15m to 17.5m; Damage falloff multiplier decreased from 0.62 to 0.52"
+        },
+        {
+          "item": "M60",
+          "type": "weapon_buff",
+          "details": "Damage increased from 19 to 20; Damage falloff max range increased from 32m to 35m; Damage falloff multiplier increased from 0.4 to 0.5"
+        },
+        {
+          "item": "Pike-556",
+          "type": "weapon_nerf",
+          "details": "Damage falloff minimum range decreased from 50m to 45m; Damage falloff max range decreased from 55m to 50m; Damage falloff multiplier decreased from 0.85 to 0.75; Visual recoil when aiming-down-sights significantly reduced"
+        },
+        {
+          "item": "SA1216",
+          "type": "weapon_rework",
+          "details": "Pellet count decreased from 13 to 12 (total damage per shot decreased from 78 to 72); Damage falloff minimum range increased from 10m to 12.5m; Damage falloff max range increased from 15m to 20m; Pellet pattern adjusted for closer-range role"
+        },
+        {
+          "item": "XP-54",
+          "type": "weapon_rework",
+          "details": "Damage increased from 16 to 17; Damage falloff minimum range increased from 20m to 22.5m; Damage falloff max range increased from 30m to 32.5m; Damage falloff multiplier decreased from 0.62 to 0.52"
+        }
       ],
       "new_content": [
-        {"type": "weapon", "item": "ARN-220", "class": "Light", "details": "Fast-reload assault rifle with secondary magazine"},
-        {"type": "weapon", "item": "CB-01 Repeater", "class": "Medium", "details": "Lever-action precision rifle with speed-loader"},
-        {"type": "weapon", "item": "M134 Minigun", "class": "Heavy", "details": "High fire-rate with massive ammo reserves"},
-        {"type": "mode", "item": "Team Deathmatch (TDM)", "details": "Permanent 5v5 mode in Quick Play on 6 arenas"},
-        {"type": "map_rework", "item": "Las Vegas Stadium", "details": "Complete redesign with sponsor-themed casinos, improved movement/sightlines"},
-        {"type": "system", "item": "Quickplay Progression", "details": "Earn points across all Quick Play modes for seasonal rewards"},
-        {"type": "system", "item": "Outfit Customization", "details": "Save/mix 24 outfits with instant application across builds"},
-        {"type": "system", "item": "Practice Range Upgrade", "details": "Smarties react to player loadouts"},
-        {"type": "system", "item": "Anonymous Mode", "details": "Privacy option for streaming"},
-        {"type": "weapon_sights", "item": "New Sights", "details": "Holographic, Looking Glass, Adder Reflex, Compact Reflector added across various weapons"}
+        {
+          "type": "weapon",
+          "item": "ARN-220",
+          "class": "Light",
+          "details": "Fast-reload assault rifle with secondary magazine"
+        },
+        {
+          "type": "weapon",
+          "item": "CB-01 Repeater",
+          "class": "Medium",
+          "details": "Lever-action precision rifle with speed-loader"
+        },
+        {
+          "type": "weapon",
+          "item": "M134 Minigun",
+          "class": "Heavy",
+          "details": "High fire-rate with massive ammo reserves"
+        },
+        {
+          "type": "mode",
+          "item": "Team Deathmatch (TDM)",
+          "details": "Permanent 5v5 mode in Quick Play on 6 arenas"
+        },
+        {
+          "type": "map_rework",
+          "item": "Las Vegas Stadium",
+          "details": "Complete redesign with sponsor-themed casinos, improved movement/sightlines"
+        },
+        {
+          "type": "system",
+          "item": "Quickplay Progression",
+          "details": "Earn points across all Quick Play modes for seasonal rewards"
+        },
+        {
+          "type": "system",
+          "item": "Outfit Customization",
+          "details": "Save/mix 24 outfits with instant application across builds"
+        },
+        {
+          "type": "system",
+          "item": "Practice Range Upgrade",
+          "details": "Smarties react to player loadouts"
+        },
+        {
+          "type": "system",
+          "item": "Anonymous Mode",
+          "details": "Privacy option for streaming"
+        },
+        {
+          "type": "weapon_sights",
+          "item": "New Sights",
+          "details": "Holographic, Looking Glass, Adder Reflex, Compact Reflector added across various weapons"
+        }
       ],
       "bug_fixes": [
         "Fixed APS collision blocking bullets when attached to liftable objects",
@@ -360,38 +2632,336 @@
       ]
     },
     {
+      "version": "6.1.0",
+      "season": "S6",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:6.1.0",
+      "balance_changes": [
+        {
+          "item": "ARN-220",
+          "type": "weapon_buff",
+          "details": "Damage 15 -> 17"
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "6.3.0",
+      "season": "S6",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:6.3.0",
+      "balance_changes": [
+        {
+          "item": "Sword",
+          "type": "weapon_nerf",
+          "details": "Secondary attack damage 140 -> 105"
+        },
+        {
+          "item": "Minigun",
+          "type": "weapon_rework",
+          "details": "Winding up the minigun no longer uses the secondary fire input action. Instead winding up the minigun uses the same keybind as aim down sight (Hold or Toggle)"
+        },
+        {
+          "item": "SR-84",
+          "type": "weapon_rework",
+          "details": "Scope movement when aiming down the scope is now toned down to more accurately reflect where the shots will land when firing. Improved the camera motion when crouching or stopping after moving while aiming down the scope."
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "6.4.0",
+      "season": "S6",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:6.4.0",
+      "balance_changes": [
+        {
+          "item": "CB-01 Repeater",
+          "type": "weapon_buff",
+          "details": "Environmental damage increased from 8 to 18"
+        },
+        {
+          "item": "M134 Minigun",
+          "type": "weapon_buff",
+          "details": "Bullet dispersion decreased by approximately 10% when standing still and 'focus firing'; Bullet dispersion decreased by approximately 10% when moving and focus firing"
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "6.6.0",
+      "season": "S6",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:6.6.0",
+      "balance_changes": [
+        {
+          "item": "Winch Claw",
+          "type": "specialization_rework",
+          "details": "Winch Claw will now force players it hooks into the ‘uncontrolled’ state, adjusting the victim’s bullet dispersion and recoil as if they were falling from a building"
+        },
+        {
+          "item": ".50 Akimbo",
+          "type": "weapon_nerf",
+          "details": "Damage falloff minimum range 37.5m -> 35m; Damage falloff max range 47.5m -> 42m"
+        },
+        {
+          "item": "93R",
+          "type": "weapon_rework",
+          "details": "Damage falloff minimum range 28m -> 32m; Damage falloff max range 35m -> 40m; Damage falloff multiplier 0.55 -> 0.4"
+        },
+        {
+          "item": "ARN-220",
+          "type": "weapon_buff",
+          "details": "Quick reload animation duration 0.95s -> 0.75s"
+        },
+        {
+          "item": "Cerberus",
+          "type": "weapon_nerf",
+          "details": "Pellet count 12 -> 11 (max damage per shot 120 -> 110)"
+        },
+        {
+          "item": "FAMAS",
+          "type": "weapon_nerf",
+          "details": "Damage falloff minimum range 37.5m -> 35m; Damage falloff max range 47.5m -> 42.5m"
+        },
+        {
+          "item": "Model 1887",
+          "type": "weapon_rework",
+          "details": "Pump-action duration 0.8s -> 0.78s (fire rate 75RPM -> 77RPM); Damage falloff minimum range 15m -> 20m; Damage falloff max range 25m -> 30m; Damage falloff multiplier 0.7 -> 0.65"
+        },
+        {
+          "item": "R .357",
+          "type": "weapon_rework",
+          "details": "Damage falloff minimum range 23m -> 27.5m; Damage falloff max range 40m -> 44m; Damage falloff multiplier 0.45 -> 0.4"
+        },
+        {
+          "item": "SA1216",
+          "type": "weapon_rework",
+          "details": "Rate of fire 200RPM -> 190RPM; Magazine rotation animation duration 1.1s -> 0.8s"
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "6.9.0",
+      "season": "S6",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:6.9.0",
+      "balance_changes": [
+        {
+          "item": "ARN-220",
+          "type": "weapon_rework",
+          "details": "Updated the recoil pattern to be the same for both magazines, making the weapon feel more consistent to aim"
+        },
+        {
+          "item": "FAMAS",
+          "type": "weapon_nerf",
+          "details": "Decreased the amount of visual recoil when firing the FAMAS, making it slightly less shaky"
+        },
+        {
+          "item": "KS-23",
+          "type": "weapon_buff",
+          "details": "Increased accuracy by decreasing bullet dispersion when firing from the hip while crouch moving; Increased accuracy by decreasing bullet dispersion when aiming down sights while crouch moving; Increased accuracy by decreasing bullet dispersion when firing from the hip while standing still; Increased accuracy by decreasing bullet dispersion when aiming down sights while standing still; Increased accuracy by decreasing bullet dispersion when firing from the hip while running; Increased accuracy by decreasing bullet dispersion when aiming down sights while running"
+        },
+        {
+          "item": "M11",
+          "type": "weapon_nerf",
+          "details": "Decreased the jitter at the end of the weapon’s recoil pattern, making it smoother and easier to use at the end of long bursts of firing; Decreased the amount of visual recoil when firing the M11, making it slightly less shaky"
+        },
+        {
+          "item": "Melee Weapons",
+          "type": "weapon_buff",
+          "details": "Improved hit sweeps across all melee weapons, to make them more reliable. As a result, it should feel like fewer sweeps get lost to collision with world objects or geometry"
+        },
+        {
+          "item": "XP-54",
+          "type": "weapon_rework",
+          "details": "Decreased damage from 17 to 16; Increased rate of fire from 850RPM to 860RPM"
+        },
+        {
+          "item": "Cloaking Device",
+          "type": "specialization_buff",
+          "details": "Prevented invisibility from being canceled by emotes, and ensured Cloaking Device activation is not interrupted when holding an environmental prop"
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
       "version": "7.0.0",
       "season": "S7",
-      "date": "2025-06-12",
+      "date": "",
       "url": "https://www.thefinals.wiki/wiki/Update:7.0.0",
       "balance_changes": [
-        {"type": "carriable_change", "item": "Gas Canister", "details": "Removed instant damage requirement"},
-        {"type": "carriable_nerf", "item": "Glitch Barrel", "details": "Health 75 -> 50"},
-        {"type": "carriable_nerf", "item": "Goo Barrel", "details": "Health 75 -> 50; blob health 300 -> 240"},
-        {"type": "carriable_nerf", "item": "Healing Barrel", "details": "Health 50 -> 15; removed damage trigger"},
-        {"type": "carriable_nerf", "item": "Powder Canister", "details": "Health 50 -> 15; removed damage trigger"},
-        {"type": "gadget_buff", "item": "Anti-Gravity Cube", "details": "Cooldown 35s -> 28s"},
-        {"type": "gadget_buff", "item": "APS Turret", "details": "Health consumption reduced to 20% per projectile (5 blocks instead of 4)"},
-        {"type": "gadget_change", "item": "Flashbang", "details": "Increased view angle falloff; radial check 3m -> 1m"},
-        {"type": "gadget_nerf", "item": "Goo Grenade", "details": "Wall size 2x6 -> 2x5; blob health 300 -> 240"},
-        {"type": "gadget_buff", "item": "Gravity Vortex", "details": "Cooldown 24s -> 20s"},
-        {"type": "weapon_buff", "item": "93R", "details": "Magazine 21 -> 24"},
-        {"type": "weapon_nerf", "item": "Cerberus", "details": "Damage per pellet 10 -> 9 (full shot 110 -> 99)"},
-        {"type": "weapon_buff", "item": "KS-23", "details": "Environmental damage 700 -> 1000"},
-        {"type": "weapon_buff", "item": "LH1", "details": "Damage 40 -> 42"},
-        {"type": "weapon_buff", "item": "M134 Minigun", "details": "Environmental damage 25 -> 30"},
-        {"type": "weapon_nerf", "item": "Sledgehammer", "details": "Primary 115 -> 100; secondary 200 -> 154"}
+        {
+          "item": "Gas Canister",
+          "type": "gadget_rework",
+          "details": "Removed the required instant damage to trigger, making them easier to active"
+        },
+        {
+          "item": "Glitch Barrel",
+          "type": "gadget_nerf",
+          "details": "Decreased health from 75 to 50"
+        },
+        {
+          "item": "Goo Barrel",
+          "type": "gadget_nerf",
+          "details": "Decreased health from 75 to 50; Decreased Goo blob health from 300 to 240"
+        },
+        {
+          "item": "Healing Barrel",
+          "type": "gadget_nerf",
+          "details": "Decreased health from 50 to 15; Removed the required instant damage to trigger, making them easier to active"
+        },
+        {
+          "item": "Powder Canister",
+          "type": "gadget_nerf",
+          "details": "Decreased health from 50 to 15; Removed the required instant damage to trigger, making them easier to active"
+        },
+        {
+          "item": "Anti-Gravity Cube",
+          "type": "gadget_buff",
+          "details": "Decreased cooldown from 35s to 28s"
+        },
+        {
+          "item": "APS Turret",
+          "type": "gadget_buff",
+          "details": "Decreased the health consumed per projectile to 20%, meaning a full health APS can now block 5 projectiles instead of 4"
+        },
+        {
+          "item": "Flashbang",
+          "type": "gadget_rework",
+          "details": "Increased view angle falloff, reducing effects when looking away; Decreased the radial check from 3m to 1m, meaning players will be much less likely to be flashed when looking away from a Flashbang"
+        },
+        {
+          "item": "Goo Grenade",
+          "type": "gadget_nerf",
+          "details": "Decreased the size of the goo wall from 2x6 to 2x5; Decreased goo blob health from 300 to 240"
+        },
+        {
+          "item": "Gravity Vortex",
+          "type": "gadget_buff",
+          "details": "Decreased cooldown from 24s to 20s"
+        },
+        {
+          "item": "Goo Gun",
+          "type": "weapon_nerf",
+          "details": "Decreased goo blob health from 300 to 240"
+        },
+        {
+          "item": "93R",
+          "type": "weapon_buff",
+          "details": "Increased magazine size from 21 to 24"
+        },
+        {
+          "item": "Cerberus",
+          "type": "weapon_nerf",
+          "details": "Decreased damage per pellet from 10 to 9, reducing a full shot’s damage from 110 to 99"
+        },
+        {
+          "item": "KS-23",
+          "type": "weapon_buff",
+          "details": "Increased environmental damage from 700 to 1000, meaning it takes one less shot to fracture wall segments"
+        },
+        {
+          "item": "LH1",
+          "type": "weapon_buff",
+          "details": "Increased damage from 40 to 42"
+        },
+        {
+          "item": "M134 Minigun",
+          "type": "weapon_buff",
+          "details": "Increased environmental damage from 25 to 30, meaning the Minigun can now more reliably remove three wall segments per full magazine"
+        },
+        {
+          "item": "Sledgehammer",
+          "type": "weapon_nerf",
+          "details": "Decreased the damage of primary attacks from 115 to 100; Decreased the damage of secondary attacks from 200 to 154"
+        },
+        {
+          "item": "CB-01 Repeater",
+          "type": "weapon_rework",
+          "details": "Can now equip the Reflector Sight"
+        },
+        {
+          "item": "Compact Reflector Sight",
+          "type": "weapon_rework",
+          "details": "Rebalance to ensure this sight has the same magnification on all guns, Low (1X). This change affects the XP-54, CB-01 Repeater and R .357 which had higher zoom values"
+        },
+        {
+          "item": "Reflector Sight",
+          "type": "weapon_rework",
+          "details": "Decreased magnification from High to Medium (1.5X -> 1.25X)"
+        },
+        {
+          "item": "Adder Reflex Sight",
+          "type": "weapon_rework",
+          "details": "Rebalance to ensure this sight has the same magnification on all guns, Low (1X)."
+        },
+        {
+          "item": "Holographic Sight",
+          "type": "weapon_rework",
+          "details": "Rebalance to ensure this sight has the same magnification on all guns, Low (1X). This change affects the XP-54 and CB-01 Repeater who had higher zoom values"
+        }
       ],
       "new_content": [
-        {"type": "gadget", "item": "H+ Infuser", "class": "Light", "details": "Heals teammates when shot with precision"},
-        {"type": "gadget", "item": "Breach Drill", "class": "Medium", "details": "Burrows through surfaces, blinds enemies, then detonates"},
-        {"type": "gadget", "item": "Healing Emitter", "class": "Heavy", "details": "Deploys healing area that restores health over time"},
-        {"type": "map", "item": "NOZOMI/CITADEL", "details": "Destructible arena split by The Rift, divided between VAIIYA and CNS factions"},
-        {"type": "system", "item": "Legacy Battle Passes", "details": "Seasons 1-4 rewards unlockable"},
-        {"type": "system", "item": "Practice Range Challenges", "details": "Combat trials with reactive dummies"},
-        {"type": "system", "item": "Recruit & Rise", "details": "Veteran players invite newcomers for shared rewards"},
-        {"type": "system", "item": "Deep Shuffle", "details": "Random weapon/gadget skin selector"},
-        {"type": "system", "item": "Signature Stickers", "details": "Auto-attach to objectives when opened"}
+        {
+          "type": "gadget",
+          "item": "H+ Infuser",
+          "class": "Light",
+          "details": "Heals teammates when shot with precision"
+        },
+        {
+          "type": "gadget",
+          "item": "Breach Drill",
+          "class": "Medium",
+          "details": "Burrows through surfaces, blinds enemies, then detonates"
+        },
+        {
+          "type": "gadget",
+          "item": "Healing Emitter",
+          "class": "Heavy",
+          "details": "Deploys healing area that restores health over time"
+        },
+        {
+          "type": "map",
+          "item": "NOZOMI/CITADEL",
+          "details": "Destructible arena split by The Rift, divided between VAIIYA and CNS factions"
+        },
+        {
+          "type": "system",
+          "item": "Legacy Battle Passes",
+          "details": "Seasons 1-4 rewards unlockable"
+        },
+        {
+          "type": "system",
+          "item": "Practice Range Challenges",
+          "details": "Combat trials with reactive dummies"
+        },
+        {
+          "type": "system",
+          "item": "Recruit & Rise",
+          "details": "Veteran players invite newcomers for shared rewards"
+        },
+        {
+          "type": "system",
+          "item": "Deep Shuffle",
+          "details": "Random weapon/gadget skin selector"
+        },
+        {
+          "type": "system",
+          "item": "Signature Stickers",
+          "details": "Auto-attach to objectives when opened"
+        }
       ],
       "bug_fixes": [
         "Fixed common client crashes",
@@ -413,37 +2983,406 @@
       ]
     },
     {
+      "version": "7.0.1",
+      "season": "S7",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:7.0.1",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "7.1.0",
+      "season": "S7",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:7.1.0",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "7.3.0",
+      "season": "S7",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:7.3.0",
+      "balance_changes": [
+        {
+          "item": "H+ Infuser",
+          "type": "gadget_nerf",
+          "details": "Health given per shot decreased from 20 to 15"
+        },
+        {
+          "item": "Healing Emitter",
+          "type": "gadget_rework",
+          "details": "Cooldown now begins when the Emitter is destroyed, not on deployment; Cooldown reduced from 35 seconds to 30 seconds; Emitter can now be retrieved via the control tablet, setting its remaining cooldown to 15s; Emitter can now be retrieved via a manual interaction, setting its remaining cooldown to 3s"
+        },
+        {
+          "item": "Gateway",
+          "type": "gadget_nerf",
+          "details": "Cooldown on items that travel through the gateway before they can re-enter increased from 0.5s to 1s"
+        },
+        {
+          "item": "93R",
+          "type": "weapon_rework",
+          "details": "Equip time decreased from 0.2s to 0.15s; Unequip time decreased from 0.2s to 0.15s"
+        },
+        {
+          "item": "AKM",
+          "type": "weapon_rework",
+          "details": "Equip time increased from 0.23s to 0.3s; Unequip time decreased from 0.23s to 0.2s"
+        },
+        {
+          "item": "ARN-220",
+          "type": "weapon_rework",
+          "details": "Equip time increased from 0.2s to 0.3s"
+        },
+        {
+          "item": "CB-01 Repeater",
+          "type": "weapon_rework",
+          "details": "Equip time increased from 0.2s to 0.3s"
+        },
+        {
+          "item": "Cerberus 12GA",
+          "type": "weapon_rework",
+          "details": "Equip time increased from 0.2s to 0.3s"
+        },
+        {
+          "item": "CL-40",
+          "type": "weapon_nerf",
+          "details": "Self-damage multiplier increased from 1.25 to 1.35; Inner blast radius decreased from 60cm to 50cm"
+        },
+        {
+          "item": "FAMAS",
+          "type": "weapon_rework",
+          "details": "Equip time increased from 0.2s to 0.3s; Unequip time decreased from 0.23s to 0.2s"
+        },
+        {
+          "item": "FCAR",
+          "type": "weapon_rework",
+          "details": "Equip time increased from 0.2s to 0.3s; Unequip time decreased from 0.23s to 0.2s"
+        },
+        {
+          "item": "KS-23",
+          "type": "weapon_rework",
+          "details": "Equip time increased from 0.2s to 0.3s"
+        },
+        {
+          "item": "Lewis Gun",
+          "type": "weapon_rework",
+          "details": "Equip time increased from 0.23s to 0.35s; Unequip time decreased from 0.3s to 0.25s"
+        },
+        {
+          "item": "LH1",
+          "type": "weapon_rework",
+          "details": "Equip time increased from 0.15s to 0.3s; Unequip time increased from 0.15s to 0.2s"
+        },
+        {
+          "item": "M134 Minigun",
+          "type": "weapon_rework",
+          "details": "Unequip time increased from 0.2s to 0.25s"
+        },
+        {
+          "item": "Model 1887",
+          "type": "weapon_rework",
+          "details": "Equip time increased from 0.15s to 0.3s; Unequip time increased from 0.15s to 0.2s"
+        },
+        {
+          "item": "Pike-556",
+          "type": "weapon_rework",
+          "details": "Equip time increased from 0.2s to 0.3s"
+        },
+        {
+          "item": "SA1216",
+          "type": "weapon_rework",
+          "details": "Equip time increased from 0.15s to 0.3s; Unequip time increased from 0.15s to 0.2s"
+        },
+        {
+          "item": "SH1900",
+          "type": "weapon_rework",
+          "details": "Equip time increased from 0.15s to 0.2s; Unequip time increased from 0.15s to 0.2s"
+        },
+        {
+          "item": "ShAK-50",
+          "type": "weapon_rework",
+          "details": "Equip time increased from 0.2s to 0.3s"
+        },
+        {
+          "item": "Sledgehammer",
+          "type": "weapon_buff",
+          "details": "Height of the primary attack hit sweep increased from 15cm to 25cm"
+        },
+        {
+          "item": "XP-54",
+          "type": "weapon_rework",
+          "details": "Equip time decreased from 0.23s to 0.2s; Unequip time decreased from 0.23s to 0.2s"
+        },
+        {
+          "item": "SR-84",
+          "type": "weapon_rework",
+          "details": "Equip time increased from 0.15s to 0.3s; Unequip time increased from 0.15s to 0.2s"
+        },
+        {
+          "item": "Tracking Dart",
+          "type": "gadget_buff",
+          "details": "Now detects enemies through Smoke"
+        },
+        {
+          "item": "Sonar Grenade",
+          "type": "gadget_buff",
+          "details": "Now detects enemies through Smoke"
+        },
+        {
+          "item": "Proximity Sensor",
+          "type": "gadget_buff",
+          "details": "Now detects enemies through Smoke"
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "7.3.1",
+      "season": "S7",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:7.3.1",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "7.6.0",
+      "season": "S7",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:7.6.0",
+      "balance_changes": [
+        {
+          "item": "Defibrillator",
+          "type": "gadget_nerf",
+          "details": "Increased charge time from 0.8s to 1s"
+        },
+        {
+          "item": "Nullifier",
+          "type": "gadget_rework",
+          "details": "Bullets will now pass through Nullified players"
+        },
+        {
+          "item": "Dagger",
+          "type": "weapon_buff",
+          "details": "Increased the outer width of the hit sweeps by ~40%; Decreased the inner width of the hit sweep nearest to the camera; Increased the duration of the hit sweep from 0.07s to 0.1s"
+        },
+        {
+          "item": "Dual Blades",
+          "type": "weapon_buff",
+          "details": "Increased the hit sweep range by ~40cm; Increased the hit sweep height by ~5cm; Decreased the inner width of the hit sweep nearest to the camera"
+        },
+        {
+          "item": "KS-23",
+          "type": "weapon_rework",
+          "details": "Converted from projectile to hybrid hitscan-projectile; Shots are hitscan up to 25m; Shots are projectiles after 25m; Projectile velocity reduced from 300m/s to 280m/s"
+        },
+        {
+          "item": "Riot Shield",
+          "type": "weapon_buff",
+          "details": "Increased the hit sweep range by ~50cm; Increased the lifetime of the hit sweep from 0.04s to 0.12s; Increased the outer width of the hit sweeps by ~70%; Decreased the inner width of the hit sweep nearest to the camera; Decreased the attack duration from 0.9s to 0.81s (effectively increasing attack speed by 10%)"
+        },
+        {
+          "item": "Sledgehammer",
+          "type": "weapon_buff",
+          "details": "Increased the outer width of the primary attack’s hit sweeps by ~80%; Decreased the inner width of the hit sweep nearest to the camera"
+        },
+        {
+          "item": "Spear",
+          "type": "weapon_buff",
+          "details": "Decreased the inner width of the hit sweep nearest to the camera"
+        },
+        {
+          "item": "Sword",
+          "type": "weapon_buff",
+          "details": "Primary Attack: Increased damage from 74 to 88; Increased the attack duration from 0.55s to 0.6s; Increased the hit sweep height by ~5cm; Decreased the inner width of the hit sweep nearest to the camera; Secondary Attack: Increased damage from 105 to 120; Decreased the attack duration from 1s to 0.75s; Increased the speed of the lunge from 1500 to 1750; Increased the range of the lunge from 5.5m to 7m; Introduced rotation clamping to the secondary lunge attack (clamped to 40 degree forward angle); Reduced stacking of Evasive Dash momentum with Lunge (average \"Super Dash\" distance now 17-20m, up from 16-19m)"
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "7.9.0",
+      "season": "S7",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:7.9.0",
+      "balance_changes": [
+        {
+          "item": "Goo Grenade",
+          "type": "gadget_nerf",
+          "details": "Cooldown increased from 20s to 30s"
+        },
+        {
+          "item": "93R",
+          "type": "weapon_nerf",
+          "details": "Rate of fire decreased from 220 to 210 RPM"
+        },
+        {
+          "item": "Cerberus 12GA",
+          "type": "weapon_buff",
+          "details": "Pellet distribution radius decreased by approximately 10%; Heat applied to world objects increased from 2.5 to 7.5"
+        },
+        {
+          "item": "Model 1887",
+          "type": "weapon_buff",
+          "details": "Maximum ammo capacity increased from 6 to 7"
+        },
+        {
+          "item": "Sledgehammer",
+          "type": "weapon_buff",
+          "details": "Secondary attack damage increased from 154 to 175"
+        },
+        {
+          "item": "Sword",
+          "type": "weapon_rework",
+          "details": "Vertical component of secondary attack's rotation clamping increased from 40 degrees to 90 degrees"
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
       "version": "8.0.0",
       "season": "S8",
-      "date": "2025-09-10",
+      "date": "",
       "url": "https://www.thefinals.wiki/wiki/Update:8.0.0",
       "balance_changes": [
-        {"type": "gadget_change", "item": "Frag Grenade", "details": "Added in-world grenade indicator"},
-        {"type": "gadget_nerf", "item": "H+ Infuser", "details": "Healing reduced 15 -> 14 per shot"},
-        {"type": "gadget_disabled", "item": "Thermal Vision", "details": "Temporarily disabled due to bugs offering unintended advantages"},
-        {"type": "specialization_change", "item": "Dematerializer", "details": "Charges reduced 3 -> 2; new functionality remembers wall segments; rematerializing any segment rematerializes grouped segments; added vignette and vibration effects"},
-        {"type": "specialization_buff", "item": "Guardian Turret", "details": "Cooldown reduced 40s -> 35s; retrieval cooldown 20s -> 17.5s"},
-        {"type": "specialization_buff", "item": "Healing Beam", "details": "Healing rate increased 40 -> 46 per second"},
-        {"type": "specialization_nerf", "item": "Winch Claw", "details": "Miss cooldown 7s -> 10s; cashout/contestant hit cooldown 14s -> 18s; other objects cooldown 7s -> 14s"},
-        {"type": "weapon_nerf", "item": ".50 Akimbo", "details": "Damage falloff minimum 35m -> 32m; maximum 42.5m -> 39m"},
-        {"type": "weapon_buff", "item": "CB-01 Repeater", "details": "Damage increased 84 -> 88"},
-        {"type": "weapon_buff", "item": "Dual Blades", "details": "Sprint re-enable after 2nd attack +25%; after 3rd attack +15%"},
-        {"type": "weapon_buff", "item": "LH1", "details": "Damage increased 42 -> 44"},
-        {"type": "weapon_change", "item": "Pike-556", "details": "Base damage reduced 50 -> 48; falloff min 45m -> 40m; multiplier 0.75 -> 0.8; hip-fire dispersion increased"},
-        {"type": "weapon_nerf", "item": "Riot Shield", "details": "Attack lunge max speed 10m/s -> 7m/s; min speed 7m/s -> 5.5m/s; lunge trigger range 4m -> 2.5m"},
-        {"type": "weapon_buff", "item": "Crane Wrecking Ball", "details": "Damage increased 10 -> 75"}
+        {
+          "item": "H+ Infuser",
+          "type": "gadget_nerf",
+          "details": "Decreased healing per shot from 15 to 14"
+        },
+        {
+          "item": "Thermal Vision",
+          "type": "gadget_rework",
+          "details": "Temporarily disabled Thermal Vision"
+        },
+        {
+          "item": "Dematerializer",
+          "type": "specialization_rework",
+          "details": "Decreased the number of charges from 3 to 2; Added new functionality which now remembers exactly which wall segments were dematerialized when a charge was used. These segments are now grouped together and if any of them is rematerialized, all of those in the group will also always be rematerialized; Added a vignette to the screen that will be displayed when a wall segment is dematerialized near the player, just outside of their field of view, so that players are better aware of what is happening around them; Updated the dematerialize effect on walls when activated, adding a slight delay before the wall segment becomes fully transparent; Added a new ‘vibration’ effect to dematerialized wall segments, which will start to play just before the wall segments would automatically rematerialize"
+        },
+        {
+          "item": "Guardian Turret",
+          "type": "specialization_buff",
+          "details": "Decreased the cooldown from 40s to 35s; Decreased the cooldown when retrieving the turret from 20s to 17.5s"
+        },
+        {
+          "item": "Healing Beam",
+          "type": "specialization_buff",
+          "details": "Increased healing rate from 40 per second to 46 per second"
+        },
+        {
+          "item": "Winch Claw",
+          "type": "specialization_nerf",
+          "details": "Increased cooldown when missing a target from 7s to 10s; Increased cooldown when successfully hitting a Cashout Station or Contestant from 14s to 18s; Increased the cooldown when hitting all other object types from 7s to 14s"
+        },
+        {
+          "item": ".50 Akimbo",
+          "type": "weapon_nerf",
+          "details": "Decreased damage falloff minimum range from 35m to 32m; Decreased damage falloff max range from 42.5m to 39m"
+        },
+        {
+          "item": "CB-01 Repeater",
+          "type": "weapon_buff",
+          "details": "Increased damage from 84 to 88"
+        },
+        {
+          "item": "Dual Blades",
+          "type": "weapon_buff",
+          "details": "Increased how quickly sprinting is re-enabled after the second attack animation begins by 25%; Increased how quickly sprinting is re-enabled after the third attack animation begins by 15%"
+        },
+        {
+          "item": "LH1",
+          "type": "weapon_buff",
+          "details": "Increased damage from 42 to 44"
+        },
+        {
+          "item": "Pike-556",
+          "type": "weapon_rework",
+          "details": "Decreased damage from 50 to 48; Decreased damage falloff minimum range from 45m to 40m; Increased damage falloff multiplier from 0.75 to 0.8; Increased the size of bullet dispersion when firing from the hip, especially while crouching, making the weapon less accurate when not aiming down sights"
+        },
+        {
+          "item": "Riot Shield",
+          "type": "weapon_nerf",
+          "details": "Decreased maximum speed of an attack’s lunge to the target from 10m/s to 7m/s; Decreased minimum speed of an attack’s lunge to the target from 7m/s to 5.5m/s; Decreased the trigger range of the attack’s lunge from 4m to 2.5m"
+        },
+        {
+          "item": "Smoke Grenade",
+          "type": "gadget_rework",
+          "details": "Updated the placement and duration of the smoke’s blocking volume, which hides enemy players. This should now better match the visual effects of the smoke"
+        },
+        {
+          "item": "Sonar Grenade",
+          "type": "gadget_buff",
+          "details": "Increased hitbox size to make it easier to destroy by shooting"
+        },
+        {
+          "item": "Proximity Sensor",
+          "type": "gadget_buff",
+          "details": "Increased hitbox size to make it easier to destroy by shooting"
+        }
       ],
       "new_content": [
-        {"type": "weapon", "item": "P90", "class": "Medium"},
-        {"type": "weapon", "item": "BFR Titan", "class": "Heavy"},
-        {"type": "system", "item": "Instant Replays", "details": "Review key moments after matches"},
-        {"type": "system", "item": "Match Recap", "details": "Timeline graphs of match performance"},
-        {"type": "system", "item": "Smooth Destruction", "details": "Improved physics for suspended structures and cranes"},
-        {"type": "mode", "item": "Head2Head", "details": "Permanently added to Quick Play"},
-        {"type": "system", "item": "Career Levels to 500", "details": "Career levels expanded to 500"},
-        {"type": "system", "item": "Russian Localization", "details": "Full Russian language support"},
-        {"type": "system", "item": "Console Mouse/Keyboard", "details": "Mouse and keyboard support for consoles"},
-        {"type": "weapon_sights", "item": "Three New Sights", "details": "Iron Vantage, Quickspark, Magnifex"}
+        {
+          "type": "weapon",
+          "item": "P90",
+          "class": "Medium"
+        },
+        {
+          "type": "weapon",
+          "item": "BFR Titan",
+          "class": "Heavy"
+        },
+        {
+          "type": "system",
+          "item": "Instant Replays",
+          "details": "Review key moments after matches"
+        },
+        {
+          "type": "system",
+          "item": "Match Recap",
+          "details": "Timeline graphs of match performance"
+        },
+        {
+          "type": "system",
+          "item": "Smooth Destruction",
+          "details": "Improved physics for suspended structures and cranes"
+        },
+        {
+          "type": "mode",
+          "item": "Head2Head",
+          "details": "Permanently added to Quick Play"
+        },
+        {
+          "type": "system",
+          "item": "Career Levels to 500",
+          "details": "Career levels expanded to 500"
+        },
+        {
+          "type": "system",
+          "item": "Russian Localization",
+          "details": "Full Russian language support"
+        },
+        {
+          "type": "system",
+          "item": "Console Mouse/Keyboard",
+          "details": "Mouse and keyboard support for consoles"
+        },
+        {
+          "type": "weapon_sights",
+          "item": "Three New Sights",
+          "details": "Iron Vantage, Quickspark, Magnifex"
+        }
       ],
       "bug_fixes": [
         "Kyoto: Extensive interior simplification, new jump pads, basement reworks, zipline additions",
@@ -467,39 +3406,281 @@
       ]
     },
     {
+      "version": "8.0.1",
+      "season": "S8",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:8.0.1",
+      "balance_changes": [
+        {
+          "item": "Pike-556",
+          "type": "weapon_buff",
+          "details": "Headshot bonus corrected to x1.5 damage"
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "8.1.0",
+      "season": "S8",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:8.1.0",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "8.3.0",
+      "season": "S8",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:8.3.0",
+      "balance_changes": [
+        {
+          "item": "Breach Drill",
+          "type": "gadget_nerf",
+          "details": "Activation sequence duration decreased from 3s to 2.5s; Cooldown decreased from 25s to 20s"
+        },
+        {
+          "item": "Smoke Grenade",
+          "type": "gadget_nerf",
+          "details": "Duration decreased from 15s to 9s; Ammo decreased from 3 to 2"
+        },
+        {
+          "item": "BFR Titan",
+          "type": "weapon_nerf",
+          "details": "Damage decreased from 98 to 90"
+        },
+        {
+          "item": "Winch Claw",
+          "type": "specialization_nerf",
+          "details": "Increased visibility needed to successfully hook an enemy player"
+        },
+        {
+          "item": ".50 Akimbo",
+          "type": "weapon_nerf",
+          "details": "Bullet dispersion grew slightly faster than intended"
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "8.3.1",
+      "season": "S8",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:8.3.1",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "8.6.0",
+      "season": "S8",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:8.6.0",
+      "balance_changes": [
+        {
+          "item": "Defibrillator",
+          "type": "gadget_nerf",
+          "details": "Disabled in TDM game mode."
+        },
+        {
+          "item": "Sonar Grenade",
+          "type": "gadget_buff",
+          "details": "Tracking effects now reveal players through smoke and reveal Cloaked players who are standing still."
+        },
+        {
+          "item": "Proximity Sensor",
+          "type": "gadget_buff",
+          "details": "Tracking effects now reveal players through smoke and reveal Cloaked players who are standing still."
+        },
+        {
+          "item": "Tracking Dart",
+          "type": "gadget_buff",
+          "details": "Tracking effects now reveal players through smoke and reveal Cloaked players who are standing still."
+        },
+        {
+          "item": "Grapple Hook",
+          "type": "specialization_rework",
+          "details": "Activating the Grapple Hook will now cancel any ongoing interactions."
+        },
+        {
+          "item": "M60",
+          "type": "weapon_rework",
+          "details": "Reworked the base model for a much needed facelift."
+        },
+        {
+          "item": "Riot Shield",
+          "type": "weapon_rework",
+          "details": "Updated walk animations when the shield is up to align better with the shield’s collision. Removed hit reaction animations in 3rd person if a Contestant is hit while shielded to minimize collision mismatches."
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "8.6.1",
+      "season": "S8",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:8.6.1",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "8.9.0",
+      "season": "S8",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:8.9.0",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
       "version": "9.0.0",
       "season": "S9",
-      "date": "2025-12-10",
+      "date": "",
       "url": "https://www.thefinals.wiki/wiki/Update:9.0.0",
       "balance_changes": [
-        {"type": "weapon_buff", "item": "Dual Blades", "details": "Third attack damage increased 65 -> 100"},
-        {"type": "weapon_buff", "item": "Lewis Gun", "details": "Damage increased 22 -> 23"},
-        {"type": "weapon_buff", "item": "RPG-7", "details": "Damage increased 100 -> 110"},
-        {"type": "weapon_buff", "item": "V9S", "details": "Damage fall-off ranges extended with improved long-range multiplier"},
-        {"type": "weapon_nerf", "item": "93R", "details": "Damage decreased 26 -> 24; reduced fall-off ranges"},
-        {"type": "weapon_nerf", "item": "BFR Titan", "details": "Environmental damage reduced 130 -> 95; fire rate decreased 85 -> 82 RPM"},
-        {"type": "weapon_change", "item": "Model 1887", "details": "Tactical reload animation decreased 2.2s -> 1.5s"},
-        {"type": "weapon_change", "item": "KS-23", "details": "Bullet dispersion decreased ~30% when ADS"},
-        {"type": "weapon_change", "item": "M134 Minigun", "details": "Improved precision while crouching/ADS"},
-        {"type": "weapon_change", "item": "M60", "details": "Reduced initial recoil; increased sustained firing recoil"},
-        {"type": "gadget_buff", "item": "Breach Charge", "details": "Cooldown reduced 30s -> 20s"},
-        {"type": "gadget_buff", "item": "Gas Grenade", "details": "Cooldown reduced 30s -> 24s"},
-        {"type": "gadget_change", "item": "Glitch Grenade", "details": "Cooldown reduced 20s -> 12s; ammo decreased 2 -> 1"},
-        {"type": "gadget_buff", "item": "Pyro Grenade", "details": "Cooldown reduced 30s -> 24s"},
-        {"type": "gadget_buff", "item": "Thermal Bore", "details": "Fuse time reduced 2.5s -> 1.75s; cooldown reduced 45s -> 35s"},
-        {"type": "gadget_nerf", "item": "Gateway", "details": "Max range reduced 70m -> 50m"},
-        {"type": "gadget_nerf", "item": "Pyro Mine", "details": "Explosive damage reduced 80 -> 55"},
-        {"type": "gadget_change", "item": "Dome Shield", "details": "Now blocks Winch Claw attacks"},
-        {"type": "gadget_buff", "item": "Frag Grenade", "details": "Outer radius increased 5m -> 5.5m; damage radius increased 2.5m -> 2.75m"},
-        {"type": "gadget_change", "item": "Goo", "details": "Explosive damage multiplier increased 2.0 -> 2.25"},
-        {"type": "specialization_buff", "item": "Mesh Shield", "details": "Health increased 750 -> 850; now blocks Winch Claw"},
-        {"type": "specialization_nerf", "item": "Winch Claw", "details": "Stun duration reduced max 0.65s -> 0.5s, min 0.35s -> 0.2s; improved collision detection to prevent grabbing through walls"}
+        {
+          "item": "Breach Charge",
+          "type": "gadget_nerf",
+          "details": "Cooldown 30s -> 20s"
+        },
+        {
+          "item": "Dome Shield",
+          "type": "gadget_buff",
+          "details": "Added the ability for Dome Shields to block the Winch Claw"
+        },
+        {
+          "item": "Frag Grenade",
+          "type": "gadget_buff",
+          "details": "Outer radius 5m -> 5.5m; Max damage radius 2.5m -> 2.75m"
+        },
+        {
+          "item": "Gas Grenade",
+          "type": "gadget_nerf",
+          "details": "Cooldown 30s -> 24s"
+        },
+        {
+          "item": "Gateway",
+          "type": "gadget_nerf",
+          "details": "Max range 70m -> 50m"
+        },
+        {
+          "item": "Glitch Grenade",
+          "type": "gadget_rework",
+          "details": "Ammo count 2 -> 1; Cooldown 20s -> 12s"
+        },
+        {
+          "item": "Goo",
+          "type": "gadget_buff",
+          "details": "Explosive damage multiplier versus goo 2.0 -> 2.25"
+        },
+        {
+          "item": "Pyro Grenade",
+          "type": "gadget_nerf",
+          "details": "Cooldown 30s -> 24s"
+        },
+        {
+          "item": "Pyro Mine",
+          "type": "gadget_nerf",
+          "details": "Explosive damage 80 -> 55"
+        },
+        {
+          "item": "Thermal Bore",
+          "type": "gadget_nerf",
+          "details": "Fuse time 2.5s -> 1.75s; Cooldown 45s -> 35s; Decreased the amount of lingering smoke"
+        },
+        {
+          "item": "RPG-7",
+          "type": "weapon_buff",
+          "details": "Damage 100 -> 110"
+        },
+        {
+          "item": "Mesh Shield",
+          "type": "specialization_buff",
+          "details": "Max health 750 -> 850"
+        },
+        {
+          "item": "Winch Claw",
+          "type": "specialization_nerf",
+          "details": "Max stun duration 0.65s -> 0.5s; Minimum stun duration 0.35s -> 0.2s; Added functionality where, if the clawed victim is far away from the initial point of collision, the Winch Claw will break; Winch Claw now retracts as soon as it hits an object it can’t latch onto"
+        },
+        {
+          "item": "93R",
+          "type": "weapon_nerf",
+          "details": "Damage 26 -> 24; Damage fall-off start range 32m -> 30m; Damage fall-off end range 40m -> 37.5m; Increased the damage fall-off multiplier at max range from 40% to 50%"
+        },
+        {
+          "item": "BFR Titan",
+          "type": "weapon_nerf",
+          "details": "Environmental damage 130 -> 95; Rate of fire 85 RPM -> 82 RPM"
+        },
+        {
+          "item": "Dual Blades",
+          "type": "weapon_buff",
+          "details": "Damage of the third attack in the attack sequence 65 -> 100"
+        },
+        {
+          "item": "KS-23",
+          "type": "weapon_buff",
+          "details": "Decreased bullet dispersion across all stances when aiming down sights (ADS) by approximately 30%"
+        },
+        {
+          "item": "Lewis Gun",
+          "type": "weapon_buff",
+          "details": "Damage 22 -> 23"
+        },
+        {
+          "item": "M134 Minigun",
+          "type": "weapon_buff",
+          "details": "Decreased bullet dispersion slightly when crouching or standing still and aiming down sights (ADS)"
+        },
+        {
+          "item": "M60",
+          "type": "weapon_rework",
+          "details": "Decreased the amount of vertical recoil during the first 8 bullets of the firing sequence; Slightly increased the amount of vertical recoil after the 30th bullet in the firing sequence"
+        },
+        {
+          "item": "Model 1887",
+          "type": "weapon_buff",
+          "details": "Tactical reload intro animation duration 2.2s -> 1.5s"
+        },
+        {
+          "item": "V9S",
+          "type": "weapon_buff",
+          "details": "Damage fall-off start range 10m -> 15m; Damage fall-off end range 15m -> 25m; Increased the damage fall-off multiplier at max range from 62% to 65%"
+        }
       ],
       "new_content": [
-        {"type": "map", "item": "Fangwai City", "details": "Distinct zones drawing from multiple real-world locations in China"},
-        {"type": "mode", "item": "Point Break", "details": "Eight-player format (Attackers vs Defenders) where attackers destroy nine Grand Vaults"},
-        {"type": "system", "item": "World Tour 2.0", "details": "Unified progression tracking across all modes with Reward Coins (Gold, Platinum, Diamond, Ruby, Emerald)"},
-        {"type": "system", "item": "Sponsor Overhaul", "details": "Free swapping between sponsors; new sponsors VOLPE and OSPUZE added"}
+        {
+          "type": "map",
+          "item": "Fangwai City",
+          "details": "Distinct zones drawing from multiple real-world locations in China"
+        },
+        {
+          "type": "mode",
+          "item": "Point Break",
+          "details": "Eight-player format (Attackers vs Defenders) where attackers destroy nine Grand Vaults"
+        },
+        {
+          "type": "system",
+          "item": "World Tour 2.0",
+          "details": "Unified progression tracking across all modes with Reward Coins (Gold, Platinum, Diamond, Ruby, Emerald)"
+        },
+        {
+          "type": "system",
+          "item": "Sponsor Overhaul",
+          "details": "Free swapping between sponsors; new sponsors VOLPE and OSPUZE added"
+        }
       ],
       "bug_fixes": [
         "Fixed Thermal Bore passing through surfaces without activating",
@@ -519,6 +3700,349 @@
         "Kyoto vegetation reworked for improved performance",
         "Reduced shader redundancy during matches",
         "Xbox Series S texture streaming improved"
+      ]
+    },
+    {
+      "version": "9.1.0",
+      "season": "S9",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:9.1.0",
+      "balance_changes": [
+        {
+          "item": "V9S",
+          "type": "weapon_nerf",
+          "details": "Damage 40 -> 38"
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "9.1.1",
+      "season": "S9",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:9.1.1",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "9.4.0",
+      "season": "S9",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:9.4.0",
+      "balance_changes": [
+        {
+          "item": "CB-01 Repeater",
+          "type": "weapon_nerf",
+          "details": "Aim down sights zoom time increased from 0.2s to 0.24s; bullet dispersion increased when crouched, moving while crouched, and when standing still."
+        },
+        {
+          "item": "FAMAS",
+          "type": "weapon_rework",
+          "details": "Recoil pattern adjusted (more initial burst jump, slightly more overall recoil); bullet dispersion increased slightly; delay before recoil recovery begins decreased from 0.7s to 0.24s; recoil recovery speed decreased from 0.9 to 0.8."
+        },
+        {
+          "item": "Recurve Bow",
+          "type": "weapon_buff",
+          "details": "Rate of fire increased from 98 RPM to 103 RPM; minimum draw time decreased from 0.15s to 0.08s."
+        },
+        {
+          "item": "V9S",
+          "type": "weapon_nerf",
+          "details": "Damage fall-off end range decreased from 25m to 20m."
+        },
+        {
+          "item": "Breach Drill",
+          "type": "gadget_buff",
+          "details": "Length of the drill bit increased from 83cm to 108cm."
+        },
+        {
+          "item": "Sword",
+          "type": "weapon_buff",
+          "details": "Added a small timing buffer to charged lunges."
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "9.5.0",
+      "season": "S9",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:9.5.0",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "9.6.0",
+      "season": "S9",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:9.6.0",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "9.7.0",
+      "season": "S9",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:9.7.0",
+      "balance_changes": [
+        {
+          "item": "Dome Shield",
+          "type": "gadget_nerf",
+          "details": "Health decreased from 300 to 250"
+        },
+        {
+          "item": "Glitch Grenade",
+          "type": "gadget_rework",
+          "details": "Ammo increased from 1 to 2; Cooldown increased from 12 to 25 seconds"
+        },
+        {
+          "item": "FCAR",
+          "type": "weapon_rework",
+          "details": "Damage increased from 22 to 23; Rate of fire decreased from 540 RPM to 520 RPM"
+        },
+        {
+          "item": "M60",
+          "type": "weapon_buff",
+          "details": "Decreased dispersion when aiming down sights while standing and moving; Decreased dispersion when firing from the hip in some stances"
+        },
+        {
+          "item": "P90",
+          "type": "weapon_buff",
+          "details": "Damage falloff minimum range increased from 16m to 18m; Damage falloff max range increased from 22m to 24m"
+        },
+        {
+          "item": "Pike-556",
+          "type": "weapon_buff",
+          "details": "Damage increased from 48 to 49"
+        },
+        {
+          "item": "XP-54",
+          "type": "weapon_buff",
+          "details": "Rate of fire increased from 860 RPM to 880 RPM"
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "9.7.1",
+      "season": "S9",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:9.7.1",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "9.8.0",
+      "season": "S9",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:9.8.0",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "9.8.1",
+      "season": "S9",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:9.8.1",
+      "balance_changes": [],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "9.9.0",
+      "season": "S9",
+      "date": "",
+      "url": "https://www.thefinals.wiki/wiki/Update:9.9.0",
+      "balance_changes": [
+        {
+          "item": "BFR Titan",
+          "type": "weapon_nerf",
+          "details": "Damage 90 -> 88; Manual action duration 0.73s -> 0.745s (fire rate 82RPM -> 80.5RPM); Damage falloff minimum range 30m -> 25m; Damage falloff max range 45m -> 40m; Damage falloff multiplier 0.7 -> 0.65"
+        },
+        {
+          "item": "CB-01 Repeater",
+          "type": "weapon_nerf",
+          "details": "Damage 88 -> 84; Lever action duration 0.71s -> 0.73s (fire rate 84.5RPM -> 82RPM); Damage falloff minimum range 40m -> 35m; Damage falloff max range 45m -> 40m; Damage falloff multiplier 0.7 -> 0.64"
+        },
+        {
+          "item": "Cerberus 12GA",
+          "type": "weapon_rework",
+          "details": "Pellet count 11 -> 13; Damage per pellet 9 -> 8; Pellet pattern updated; Heat generated per pellet decreased"
+        },
+        {
+          "item": "LH1",
+          "type": "weapon_buff",
+          "details": "Camera shake reduced by approximately 50%"
+        }
+      ],
+      "new_content": [],
+      "bug_fixes": [],
+      "other_changes": []
+    },
+    {
+      "version": "1.0.0",
+      "season": "S1",
+      "date": "2023-12-07",
+      "url": "https://www.thefinals.wiki/wiki/Update:Season_1",
+      "balance_changes": [
+        {
+          "item": "Charge'N'Slam",
+          "type": "specialization_buff",
+          "details": "Ground slam damage increased to break floors more consistently"
+        },
+        {
+          "item": "Cloaking Device",
+          "type": "specialization_rework",
+          "details": "Fade-in/out durations rebalanced to make it harder to vanish mid-combat; added fade-in/out visual effect"
+        },
+        {
+          "item": "Recon Senses",
+          "type": "specialization_nerf",
+          "details": "Total fuel reduced, shortening max duration"
+        },
+        {
+          "item": "AKM",
+          "type": "weapon_nerf",
+          "details": "Recoil pattern updated, making it slightly less easy to control"
+        },
+        {
+          "item": "FCAR",
+          "type": "weapon_buff",
+          "details": "Recoil pattern updated, making it slightly easier to control"
+        },
+        {
+          "item": "Flamethrower",
+          "type": "weapon_rework",
+          "details": "Max range reduced by 60 cm; fire rate reduced to 160 RPM from 180 RPM; damage reduced to 28 from 31; impact effects adjusted to be less blinding"
+        },
+        {
+          "item": "Lewis Gun",
+          "type": "weapon_buff",
+          "details": "Recoil pattern updated, making it slightly easier to control"
+        },
+        {
+          "item": "LH1",
+          "type": "weapon_rework",
+          "details": "Bullet dispersion increased when firing from the hip; recoil pattern updated, making the weapon easier to control; fire rate reduced to 300 RPM from 400 RPM; damage increased from 41 to 45"
+        },
+        {
+          "item": "M60",
+          "type": "weapon_nerf",
+          "details": "Recoil pattern updated, making it slightly less easy to control"
+        },
+        {
+          "item": "Throwing Knives",
+          "type": "weapon_buff",
+          "details": "Added to the Light archetype"
+        },
+        {
+          "item": "V9S",
+          "type": "weapon_rework",
+          "details": "Magazine size reduced to 20 from 24; recoil pattern updated, making the weapon less easy to control; damage fall-off increased"
+        },
+        {
+          "item": "C4",
+          "type": "gadget_buff",
+          "details": "Health increased from 5 to 25"
+        },
+        {
+          "item": "Defibrillator",
+          "type": "gadget_buff",
+          "details": "Can now damage enemy players for 50 damage and enters cooldown on successful hit"
+        },
+        {
+          "item": "Glitch Grenade",
+          "type": "gadget_buff",
+          "details": "Fuse time increased from 1.1s to 1.8s"
+        },
+        {
+          "item": "Night Vision",
+          "type": "gadget_rework",
+          "details": "Removed from the game, to be reworked in a future update"
+        },
+        {
+          "item": "Sonar Grenade",
+          "type": "gadget_nerf",
+          "details": "Radius reduced from 17.5m to 10m"
+        },
+        {
+          "item": "Stun Gun",
+          "type": "gadget_rework",
+          "details": "Removed sensitivity reduction from stunned players; added glitch effect to stunned players, rendering their Specialization and Gadgets unusable for a short time"
+        },
+        {
+          "item": "Tactical Breach",
+          "type": "gadget_buff",
+          "details": "Health increased from 5 to 25"
+        },
+        {
+          "item": "Vanishing Bomb",
+          "type": "gadget_buff",
+          "details": "Added to the Light archetype"
+        }
+      ],
+      "new_content": [
+        {
+          "type": "weapon",
+          "item": "Throwing Knives",
+          "class": "Light"
+        },
+        {
+          "type": "gadget",
+          "item": "Vanishing Bomb",
+          "class": "Light"
+        },
+        {
+          "type": "map",
+          "item": "Las Vegas",
+          "details": "With Sandstorm variant featuring environmental hazards"
+        },
+        {
+          "type": "system",
+          "item": "Weapon Mastery",
+          "details": "6 mastery levels per weapon"
+        },
+        {
+          "type": "system",
+          "item": "Gadget Mastery",
+          "details": "6 mastery levels per gadget"
+        },
+        {
+          "type": "system",
+          "item": "Ability Levels",
+          "details": "5 ability levels"
+        },
+        {
+          "type": "cosmetic",
+          "item": "Battle Pass",
+          "details": "12 pages with 96 exclusive rewards, 29 free rewards, 1575 Multibucks"
+        }
+      ],
+      "bug_fixes": [
+        "Fixed infinite weapon firing/cooldown issues",
+        "Fixed Riot Shield blocking during emotes",
+        "Fixed Recon Senses triggering on enemy statues",
+        "Fixed Flamethrower ammo consumption bug"
+      ],
+      "other_changes": [
+        "Added reload/inspect animations, emoticons, gestures, pets, sounds, watches"
       ]
     }
   ]
