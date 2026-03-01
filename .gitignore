@@ -46,3 +46,8 @@ __pycache__/
 
 # Streamlit (legacy)
 .streamlit/
+
+# Reddit posts (drafts, not for public repo)
+reddit_post.md
+reddit_post_ru.md
+reddit_comment.md
