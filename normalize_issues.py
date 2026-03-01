@@ -7,6 +7,7 @@ Merges duplicate/near-duplicate issue texts by:
 """
 
 import json
+import os
 import re
 from collections import Counter
 
@@ -515,9 +516,13 @@ print(f"After:  {len(after_texts):,} unique issue texts")
 print(f"Changes made: {changes:,}")
 print(f"Texts reduced by: {len(before_texts) - len(after_texts):,} ({(1 - len(after_texts)/len(before_texts))*100:.1f}%)")
 
-# Save
-with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+# Save (atomic write: write to temp file, then rename to avoid corruption on crash)
+tmp_file = OUTPUT_FILE + ".tmp"
+with open(tmp_file, "w", encoding="utf-8") as f:
     json.dump(data, f, ensure_ascii=False)
+    f.flush()
+    os.fsync(f.fileno())
+os.replace(tmp_file, OUTPUT_FILE)
 print(f"\nSaved to {OUTPUT_FILE}")
 
 # Show top results after normalization

@@ -504,13 +504,11 @@ details .details-content { padding: 0 16px 12px; }
     <div id="re-issues" style="margin-top:16px"></div>
   </div>
 
-  <!-- About -->
-  <div class="page" id="page-about">
-    <h1>About This Dashboard</h1>
-    <h2>What is this?</h2>
-    <p>An independent, community-facing analytics dashboard built from <strong>all</strong> Steam reviews for <a href="https://store.steampowered.com/app/2073850/THE_FINALS/" target="_blank" style="color:var(--accent)">THE FINALS</a> &mdash; Embark Studios' free-to-play FPS.</p>
-    <h2>Data Source</h2>
-    <div id="about-data"></div>
+  <!-- Methodology -->
+  <div class="page" id="page-methodology">
+    <h1>Methodology</h1>
+    <p>Full transparency on how this dashboard processes and classifies review data.</p>
+
     <h2>Analysis Pipeline</h2>
     <p>A two-stage AI pipeline processes every review:</p>
     <ul style="color:var(--text-muted);font-size:15px;line-height:1.8;padding-left:20px">
@@ -519,8 +517,19 @@ details .details-content { padding: 0 16px 12px; }
       <li><strong>Post-processing:</strong> Issue texts normalized to merge duplicates (prefix/suffix synonym groups, context-dependent mapping). Patch notes parsed for correlation.</li>
     </ul>
     <p>Total AI cost: <strong>$9.30</strong> for all 247K reviews.</p>
-    <h2>Game Data Credits</h2>
-    <p>Game entity data (weapons, abilities, gadgets, maps) and patch notes sourced from <a href="https://www.thefinals.wiki/wiki/Main_Page" target="_blank" style="color:var(--accent)">THE FINALS Wiki</a>. Thank you to all wiki contributors!</p>
+
+    <h2>AI Model &amp; Parameters</h2>
+    <ul style="color:var(--text-muted);font-size:15px;line-height:1.8;padding-left:20px">
+      <li><strong>Model:</strong> <code style="background:var(--card-bg);padding:2px 6px;border-radius:4px">google/gemini-2.5-flash-lite</code> (temperature 0.1)</li>
+      <li><strong>Stage 1 (Classification):</strong> Separate prompts for positive and negative reviews (sentiment-locked). Each review classified into 1+ of 42 categories. Batch size: 200. Low-confidence: ~29%.</li>
+      <li><strong>Stage 2 (Issue Extraction):</strong> Each review analyzed for specific complaints, suggestions, and praise. Few-shot examples provided. Entity normalization against canonical game data. Batch size: 80.</li>
+      <li><strong>API:</strong> OpenAI-compatible endpoint at <a href="https://ppq.ai" target="_blank" style="color:var(--accent)">PayPerQ</a> ($0.07/M input, $0.28/M output). Total cost: $9.30.</li>
+      <li><strong>Post-processing:</strong> Synonym merging (prefix/suffix groups), context-dependent normalization. Source code available on GitHub.</li>
+    </ul>
+
+    <h2>Confidence &amp; Coverage</h2>
+    <div id="methodology-stats"></div>
+
     <h2>Limitations &amp; Caveats</h2>
     <div style="background:var(--card-bg);border-left:4px solid var(--accent);padding:12px 16px;margin-bottom:16px;border-radius:4px;font-size:14px;color:var(--text-muted)">
       <strong>Important:</strong> This dashboard analyzes Steam reviews only. Players who write reviews tend to be more vocal and more extreme in their opinions than the average player. Casual and satisfied players are heavily underrepresented. The data reflects <em>what reviewers say</em>, not necessarily <em>what all players think</em>.
@@ -536,14 +545,17 @@ details .details-content { padding: 0 16px 12px; }
       <li><strong>Season assignment</strong> uses review creation date, not update date.</li>
       <li><strong>Entity normalization</strong> may miss unusual spellings or slang.</li>
     </ul>
-    <h2>AI Methodology</h2>
-    <ul style="color:var(--text-muted);font-size:15px;line-height:1.8;padding-left:20px">
-      <li><strong>Model:</strong> <code style="background:var(--card-bg);padding:2px 6px;border-radius:4px">google/gemini-2.5-flash-lite</code> (temperature 0.1)</li>
-      <li><strong>Stage 1 (Classification):</strong> Separate prompts for positive and negative reviews (sentiment-locked). Each review classified into 1+ of 42 categories. Batch size: 200. Low-confidence: ~29%.</li>
-      <li><strong>Stage 2 (Issue Extraction):</strong> Each review analyzed for specific complaints, suggestions, and praise. Few-shot examples provided. Entity normalization against canonical game data. Batch size: 80.</li>
-      <li><strong>API:</strong> OpenAI-compatible endpoint at <a href="https://ppq.ai" target="_blank" style="color:var(--accent)">PayPerQ</a> ($0.07/M input, $0.28/M output). Total cost: $9.30.</li>
-      <li><strong>Post-processing:</strong> Synonym merging (prefix/suffix groups), context-dependent normalization. Source code available on GitHub.</li>
-    </ul>
+  </div>
+
+  <!-- About -->
+  <div class="page" id="page-about">
+    <h1>About This Dashboard</h1>
+    <h2>What is this?</h2>
+    <p>An independent, community-facing analytics dashboard built from <strong>all</strong> Steam reviews for <a href="https://store.steampowered.com/app/2073850/THE_FINALS/" target="_blank" style="color:var(--accent)">THE FINALS</a> &mdash; Embark Studios' free-to-play FPS.</p>
+    <h2>Data Source</h2>
+    <div id="about-data"></div>
+    <h2>Game Data Credits</h2>
+    <p>Game entity data (weapons, abilities, gadgets, maps) and patch notes sourced from <a href="https://www.thefinals.wiki/wiki/Main_Page" target="_blank" style="color:var(--accent)">THE FINALS Wiki</a>. Thank you to all wiki contributors!</p>
     <h2>Tech Stack</h2>
     <ul style="color:var(--text-muted);font-size:15px;line-height:1.8;padding-left:20px">
       <li><strong>Data:</strong> Python, Steam API</li>
@@ -551,6 +563,7 @@ details .details-content { padding: 0 16px 12px; }
       <li><strong>Dashboard:</strong> Static HTML + Plotly.js</li>
       <li><strong>Hosting:</strong> GitHub Pages (CDN)</li>
     </ul>
+    <p>For detailed classification methodology, see <a href="#methodology" style="color:var(--accent)">Methodology</a>.</p>
     <h2>Author</h2>
     <p style="font-size:16px"><strong>[VSRAT] ANDRUHA</strong></p>
     <h2>Community Streamers</h2>
@@ -609,6 +622,7 @@ const PAGES = [
   { id: 'word-cloud', label: 'Word Cloud' },
   { id: 'review-bombing', label: 'Review Bombing' },
   { id: 'patch-notes', label: 'Patch Notes' },
+  { id: 'methodology', label: 'Methodology' },
   { id: 'about', label: 'About' },
 ];
 
@@ -688,15 +702,6 @@ function addExportBtn(chartId) {
   chart.appendChild(btn);
   chart.addEventListener('mouseenter', () => btn.style.opacity = '1');
   chart.addEventListener('mouseleave', () => btn.style.opacity = '0');
-}
-
-function barH(cats, vals, color, opts = {}) {
-  const textVals = opts.textSuffix ? vals.map(v => '  ' + v + opts.textSuffix) : undefined;
-  return [{
-    type: 'bar', orientation: 'h', x: vals, y: cats,
-    marker: { color },
-    text: textVals, textposition: 'outside', cliponaxis: false,
-  }];
 }
 
 // =====================================================================
@@ -857,6 +862,7 @@ function renderPage(pageId) {
     case 'top-reviews': renderTopReviews(); break;
     case 'word-cloud': renderWordCloud(); break;
     case 'review-explorer': renderReviewExplorer(); break;
+    case 'methodology': renderMethodology(); break;
     case 'about': renderAbout(); break;
   }
 }
@@ -1032,7 +1038,7 @@ function renderOverview() {
   if (conf.high) {
     const highPct = pct(conf.high, ov.total);
     const lowPct = pct((conf.low || 0) + (conf.none || 0), ov.total);
-    el('overview-confidence').innerHTML = `<span style="color:var(--text-muted)" title="AI classification confidence breakdown: ${fmt(conf.high)} high, ${fmt(conf.medium || 0)} medium, ${fmt(conf.low || 0)} low, ${fmt(conf.none || 0)} unscored">&#x1F4CA; AI confidence: <strong>${highPct}%</strong> high, <strong>${lowPct}%</strong> low/unscored &mdash; <a href="#about" style="color:var(--accent)">methodology</a></span>`;
+    el('overview-confidence').innerHTML = `<span style="color:var(--text-muted)" title="AI classification confidence breakdown: ${fmt(conf.high)} high, ${fmt(conf.medium || 0)} medium, ${fmt(conf.low || 0)} low, ${fmt(conf.none || 0)} unscored">&#x1F4CA; AI confidence: <strong>${highPct}%</strong> high, <strong>${lowPct}%</strong> low/unscored &mdash; <a href="#methodology" style="color:var(--accent)">methodology</a></span>`;
   }
 
   // Trends
@@ -1411,6 +1417,7 @@ function renderSeasonCatBars(season) {
       chartEl.on('plotly_click', d => { if (d.points[0]) navigateToExplorer({ category: d.points[0].y }); });
       makeBarClickable(chartId, name => navigateToExplorer({ category: name }));
     } else {
+      Plotly.purge(chartId);
       el(chartId).innerHTML = '<p class="caption">No data for selected brackets</p>';
     }
   }
@@ -1970,7 +1977,7 @@ function showRegLangDetails(lang) {
     }], makeLayout({ height: 250, margin: { l: 0, r: 40, t: 10, b: 0 }, yaxis: { autorange: true, automargin: true, ticksuffix: '  ' }, xaxis: { range: [0, Math.max(...rnVals) * 1.15] } }), PLOT_CFG);
     el('chart-reg-neg').on('plotly_click', d => { if (d.points[0]) navigateToExplorer({ category: d.points[0].y }); });
     makeBarClickable('chart-reg-neg', name => navigateToExplorer({ category: name }));
-  } else el('chart-reg-neg').innerHTML = '';
+  } else { Plotly.purge('chart-reg-neg'); el('chart-reg-neg').innerHTML = ''; }
 
   if (ld.top_positive && Object.keys(ld.top_positive).length) {
     const e = Object.entries(ld.top_positive);
@@ -1981,7 +1988,7 @@ function showRegLangDetails(lang) {
     }], makeLayout({ height: 250, margin: { l: 0, r: 40, t: 10, b: 0 }, yaxis: { autorange: true, automargin: true, ticksuffix: '  ' }, xaxis: { range: [0, Math.max(...rpVals) * 1.15] } }), PLOT_CFG);
     el('chart-reg-pos').on('plotly_click', d => { if (d.points[0]) navigateToExplorer({ category: d.points[0].y }); });
     makeBarClickable('chart-reg-pos', name => navigateToExplorer({ category: name }));
-  } else el('chart-reg-pos').innerHTML = '';
+  } else { Plotly.purge('chart-reg-pos'); el('chart-reg-pos').innerHTML = ''; }
 
   // Deviation
   const devSection = el('reg-deviation-section');
@@ -2588,7 +2595,7 @@ function updateCI() {
     el('chart-ci-complaints').on('plotly_click', d => { if (d.points[0]) navigateToExplorer({ issue: d.points[0].y }); });
     makeBarClickable('chart-ci-complaints', name => navigateToExplorer({ issue: name }));
   } else {
-    el('chart-ci-complaints').innerHTML = '<p class="caption">No data</p>';
+    Plotly.purge('chart-ci-complaints'); el('chart-ci-complaints').innerHTML = '<p class="caption">No data</p>';
   }
 
   // Suggestions bar
@@ -2605,7 +2612,7 @@ function updateCI() {
     el('chart-ci-suggestions').on('plotly_click', d => { if (d.points[0]) navigateToExplorer({ issue: d.points[0].y }); });
     makeBarClickable('chart-ci-suggestions', name => navigateToExplorer({ issue: name }));
   } else {
-    el('chart-ci-suggestions').innerHTML = '<p class="caption">No data</p>';
+    Plotly.purge('chart-ci-suggestions'); el('chart-ci-suggestions').innerHTML = '<p class="caption">No data</p>';
   }
 
   // Praise bar
@@ -2622,7 +2629,7 @@ function updateCI() {
     el('chart-ci-praise').on('plotly_click', d => { if (d.points[0]) navigateToExplorer({ issue: d.points[0].y }); });
     makeBarClickable('chart-ci-praise', name => navigateToExplorer({ issue: name }));
   } else {
-    el('chart-ci-praise').innerHTML = '<p class="caption">No data</p>';
+    Plotly.purge('chart-ci-praise'); el('chart-ci-praise').innerHTML = '<p class="caption">No data</p>';
   }
 }
 
@@ -3431,9 +3438,6 @@ function showPatchDetails(season) {
   if (seasonComplaints.length) {
     html += `<hr><h3>Community Response (${seasonName})</h3>`;
     html += '<p class="caption">Top complaints extracted from reviews during this season:</p>';
-    const top10 = seasonComplaints.slice(0, 10);
-    const tNames = top10.map(c => c.text).reverse();
-    const tVals = top10.map(c => c.count).reverse();
     html += `<div class="chart" id="chart-pn-complaints-${season}"></div>`;
   }
 
@@ -3499,6 +3503,20 @@ function showPatchDetails(season) {
 // =====================================================================
 // About
 // =====================================================================
+function renderMethodology() {
+  const ov = DATA.overview;
+  const conf = ov.confidence || {};
+  const is = DATA.issue_stats || {};
+  let html = '<ul style="color:var(--text-muted);font-size:15px;line-height:1.8;padding-left:20px">';
+  html += `<li><strong>Classification coverage:</strong> ${fmt(ov.total - (conf.none || 0))} of ${fmt(ov.total)} reviews classified (${pct(ov.total - (conf.none || 0), ov.total)}%)</li>`;
+  if (conf.high) html += `<li><strong>AI confidence:</strong> ${fmt(conf.high)} high (${pct(conf.high, ov.total)}%), ${fmt(conf.medium || 0)} medium, ${fmt(conf.low || 0)} low, ${fmt(conf.none || 0)} unscored</li>`;
+  html += `<li><strong>High-confidence filter:</strong> Toggle in sidebar shows only high+medium confidence reviews (${pct((conf.high || 0) + (conf.medium || 0), ov.total)}% of data)</li>`;
+  if (is.total_issues) html += `<li><strong>Issues extracted:</strong> ${fmt(is.total_issues)} total (${fmt(is.total_complaints)} complaints, ${fmt(is.total_suggestions)} suggestions, ${fmt(is.total_praise)} praise)</li>`;
+  html += `<li><strong>Entity tracking:</strong> ${(DATA.entity_tracking || []).length} game entities tracked across seasons</li>`;
+  html += '</ul>';
+  el('methodology-stats').innerHTML = html;
+}
+
 function renderAbout() {
   const is = DATA.issue_stats || {};
   el('about-data').innerHTML = `

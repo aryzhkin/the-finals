@@ -36,6 +36,14 @@
     "Las Vegas Stadium", "Monaco", "NOZOMI/CITADEL", "P.E.A.C.E. Center",
     "Seoul", "Skyway Stadium", "SYS$HORIZON"
   ],
+  "carriables": [
+    "Gas Canister", "Glitch Barrel", "Goo Barrel", "Healing Barrel",
+    "Powder Canister", "Propane Canister", "Toxic Gas Barrel",
+    "Explosive Barrel", "Nuke"
+  ],
+  "removed_gadgets": [
+    "Night Vision", "Stun Gun", "Motion Sensor"
+  ],
   "aliases": {
     "sword": "Sword",
     "katana": "Sword",
@@ -67,6 +75,70 @@
     "lewis": "Lewis Gun",
     "akm": "AKM",
     "fcar": "FCAR",
-    "famas": "FAMAS"
+    "famas": "FAMAS",
+    "cerberus": "Cerberus 12GA",
+    "goo": "Goo Grenade",
+    "lockbolt launcher": "Lockbolt",
+    "r .357": "R.357",
+    "taser": "Stun Gun",
+    "stun gun": "Stun Gun",
+    "motion sensor": "Motion Sensor",
+    "night vision": "Night Vision",
+    "propane tanks": "Propane Canister",
+    "propane gas canister": "Propane Canister",
+    "toxic gas": "Gas Grenade or Gas Mine",
+    "explosive canisters": "Explosive Barrel",
+    "world tour": "context-dependent",
+    "ranked terminal attack": "Terminal Attack",
+    "kyoto 1568": "Kyoto",
+
+    "мечом": "Sword", "меч": "Sword", "катана": "Sword",
+    "снайперка": "SR-84 or XP-54", "снайпер": "SR-84 or XP-54",
+    "дробовик": "context-dependent", "дробь": "context-dependent",
+    "миниган": "M134 Minigun", "минигана": "M134 Minigun",
+    "рпг": "RPG-7",
+    "невидимка": "Cloaking Device", "невидимость": "Cloaking Device", "инвиз": "Cloaking Device",
+    "крюк": "Grappling Hook", "грапл": "Grappling Hook",
+    "дэш": "Evasive Dash", "рывок": "Evasive Dash",
+    "хилбим": "Healing Beam", "хил": "Healing Beam",
+    "дефиб": "Defibrillator", "дефибриллятор": "Defibrillator",
+    "купол": "Dome Shield", "щит": "Mesh Shield",
+    "гугана": "Goo Gun", "гу ган": "Goo Gun",
+    "с4": "C4",
+
+    "剑": "Sword",
+    "隐身": "Cloaking Device",
+    "钩爪": "Grappling Hook",
+    "治疗光束": "Healing Beam",
+    "盾": "Mesh Shield",
+    "加特林": "M134 Minigun",
+    "火箭筒": "RPG-7",
+
+    "espada": "Sword",
+    "invisibilidade": "Cloaking Device",
+    "gancho": "Grappling Hook",
+    "feixe de cura": "Healing Beam",
+    "escudo": "Mesh Shield",
+    "minigun": "M134 Minigun",
+
+    "schwert": "Sword",
+    "unsichtbarkeit": "Cloaking Device",
+    "greifhaken": "Grappling Hook",
+    "heilstrahl": "Healing Beam",
+    "schild": "Mesh Shield",
+
+    "espada_es": "Sword",
+    "invisibilidad": "Cloaking Device",
+    "garfio": "Grappling Hook",
+    "escudo_es": "Mesh Shield",
+
+    "épée": "Sword",
+    "invisibilité": "Cloaking Device",
+    "grappin": "Grappling Hook",
+    "bouclier": "Mesh Shield",
+
+    "kılıç": "Sword",
+    "görünmezlik": "Cloaking Device",
+    "kalkan": "Mesh Shield"
   }
 }

@@ -13,11 +13,14 @@ For each review, extracts structured issues with:
 import json
 import time
 import os
+from dotenv import load_dotenv
 from openai import OpenAI
 
+load_dotenv()
+
 # --- Config ---
-API_KEY = "sk-GDxOITU722xWKJHtPjIerQ"
-BASE_URL = "https://api.ppq.ai"
+API_KEY = os.environ["PPQ_API_KEY"]
+BASE_URL = os.environ.get("PPQ_BASE_URL", "https://api.ppq.ai")
 MODEL = "google/gemini-2.5-flash-lite"
 
 BATCH_SIZE = 80           # smaller batches — output is more complex than Stage 1
@@ -435,8 +438,12 @@ for i, review in enumerate(reviews):
         "issues": issues,
     })
 
-with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+tmp_file = OUTPUT_FILE + ".tmp"
+with open(tmp_file, "w", encoding="utf-8") as f:
     json.dump(output, f, ensure_ascii=False)
+    f.flush()
+    os.fsync(f.fileno())
+os.replace(tmp_file, OUTPUT_FILE)
 print(f"Saved {len(output):,} reviews to {OUTPUT_FILE}")
 
 # --- Summary stats ---

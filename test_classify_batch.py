@@ -3,10 +3,14 @@ Uses sentiment-split approach: positive and negative reviews get separate prompt
 
 import json
 import time
+import os
+from dotenv import load_dotenv
 from openai import OpenAI
 
-API_KEY = "sk-GDxOITU722xWKJHtPjIerQ"
-BASE_URL = "https://api.ppq.ai"
+load_dotenv()
+
+API_KEY = os.environ["PPQ_API_KEY"]
+BASE_URL = os.environ.get("PPQ_BASE_URL", "https://api.ppq.ai")
 MODEL = "google/gemini-2.5-flash-lite"
 
 # Load categories

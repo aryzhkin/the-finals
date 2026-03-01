@@ -7,11 +7,14 @@ their proposed category taxonomies.
 import json
 import time
 import os
+from dotenv import load_dotenv
 from openai import OpenAI
 
+load_dotenv()
+
 # --- Config ---
-API_KEY = "sk-GDxOITU722xWKJHtPjIerQ"
-BASE_URL = "https://api.ppq.ai"
+API_KEY = os.environ["PPQ_API_KEY"]
+BASE_URL = os.environ.get("PPQ_BASE_URL", "https://api.ppq.ai")
 
 MODELS = [
     "gpt-5-nano",
