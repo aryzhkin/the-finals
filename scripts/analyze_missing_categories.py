@@ -7,6 +7,7 @@ and performs keyword frequency analysis + bigram/trigram extraction.
 """
 
 import json
+import os
 import re
 import sys
 from collections import Counter
@@ -287,7 +288,8 @@ def extract_ngrams(text, n=2):
 
 def main():
     print("Loading reviews_classified.json ...")
-    with open("/home/aryzhkin/projects/the-finals/reviews_classified.json", "r", encoding="utf-8") as f:
+    data_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
+    with open(os.path.join(data_dir, "reviews_classified.json"), "r", encoding="utf-8") as f:
         data = json.load(f)
 
     print(f"Total reviews: {len(data)}")

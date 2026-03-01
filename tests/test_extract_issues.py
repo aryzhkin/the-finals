@@ -1,12 +1,14 @@
 """Test Stage 2: extract issues from 20 diverse reviews (10 neg + 10 pos)."""
 
 import json
+import os
 import time
 import random
 from openai import OpenAI
 
 # Reuse prompts from main script
-exec(open("extract_issues.py").read().split("# --- Load reviews ---")[0])
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+exec(open(os.path.join(ROOT_DIR, "scripts", "extract_issues.py")).read().split("# --- Load reviews ---")[0])
 
 # Load reviews
 with open(INPUT_FILE, encoding="utf-8") as f:

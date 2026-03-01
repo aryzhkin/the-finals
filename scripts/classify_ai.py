@@ -14,6 +14,10 @@ from openai import OpenAI
 
 load_dotenv()
 
+# --- Paths ---
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA_DIR = os.path.join(ROOT_DIR, "data")
+
 # --- Config ---
 API_KEY = os.environ["PPQ_API_KEY"]
 BASE_URL = os.environ.get("PPQ_BASE_URL", "https://api.ppq.ai")
@@ -26,10 +30,10 @@ DELAY_BETWEEN_BATCHES = 1 # seconds between successful batches
 TEMPERATURE = 0.1         # low temp for consistent classification
 MAX_TOKENS = 16000        # enough for 200 classifications
 
-REVIEWS_FILE = "reviews_all.json"
-CATEGORIES_FILE = "categories_final.json"
-OUTPUT_FILE = "reviews_ai_classified.json"
-PROGRESS_FILE = "classify_progress.json"
+REVIEWS_FILE = os.path.join(DATA_DIR, "reviews_all.json")
+CATEGORIES_FILE = os.path.join(DATA_DIR, "categories_final.json")
+OUTPUT_FILE = os.path.join(DATA_DIR, "reviews_ai_classified.json")
+PROGRESS_FILE = os.path.join(DATA_DIR, "classify_progress.json")
 
 # --- Load categories ---
 with open(CATEGORIES_FILE, encoding="utf-8") as f:

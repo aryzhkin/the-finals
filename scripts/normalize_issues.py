@@ -11,8 +11,12 @@ import os
 import re
 from collections import Counter
 
-INPUT_FILE = "reviews_issues.json"
-OUTPUT_FILE = "reviews_issues.json"  # overwrite in place
+# --- Paths ---
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA_DIR = os.path.join(ROOT_DIR, "data")
+
+INPUT_FILE = os.path.join(DATA_DIR, "reviews_issues.json")
+OUTPUT_FILE = os.path.join(DATA_DIR, "reviews_issues.json")  # overwrite in place
 
 # --- 1. PREFIX MERGES ---
 # Map variant prefixes to canonical form (case-insensitive matching)

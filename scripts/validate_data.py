@@ -7,13 +7,18 @@ Checks:
 """
 
 import json
+import os
 from collections import Counter
 
+# --- Paths ---
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA_DIR = os.path.join(ROOT_DIR, "data")
+
 # --- Files ---
-REVIEWS_FILE = "reviews_all.json"
-STAGE1_FILE = "reviews_ai_classified.json"
-STAGE2_FILE = "reviews_issues.json"
-ENTITIES_FILE = "game_entities.json"
+REVIEWS_FILE = os.path.join(DATA_DIR, "reviews_all.json")
+STAGE1_FILE = os.path.join(DATA_DIR, "reviews_ai_classified.json")
+STAGE2_FILE = os.path.join(DATA_DIR, "reviews_issues.json")
+ENTITIES_FILE = os.path.join(DATA_DIR, "game_entities.json")
 
 print("=" * 60)
 print("DATA VALIDATION REPORT")

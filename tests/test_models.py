@@ -12,6 +12,12 @@ from openai import OpenAI
 
 load_dotenv()
 
+# --- Paths ---
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA_DIR = os.path.join(ROOT_DIR, "data")
+PROMPTS_DIR = os.path.join(ROOT_DIR, "prompts")
+RESULTS_DIR = os.path.join(ROOT_DIR, "tests", "test_results")
+
 # --- Config ---
 API_KEY = os.environ["PPQ_API_KEY"]
 BASE_URL = os.environ.get("PPQ_BASE_URL", "https://api.ppq.ai")
@@ -23,10 +29,10 @@ MODELS = [
 ]
 
 # --- Load data ---
-with open("category_discovery_sample.json", encoding="utf-8") as f:
+with open(os.path.join(DATA_DIR, "category_discovery_sample.json"), encoding="utf-8") as f:
     reviews = json.load(f)
 
-with open("ai_classify_prompt.md", encoding="utf-8") as f:
+with open(os.path.join(PROMPTS_DIR, "ai_classify_prompt.md"), encoding="utf-8") as f:
     prompt_doc = f.read()
 
 # --- Build prompts ---
@@ -130,7 +136,7 @@ for model_id in MODELS:
 
         # Save full response
         safe_name = model_id.replace("/", "_")
-        with open(f"test_results/{safe_name}.md", "w", encoding="utf-8") as f:
+        with open(os.path.join(RESULTS_DIR, f"{safe_name}.md"), "w", encoding="utf-8") as f:
             f.write(f"# {model_id}\n\n")
             f.write(f"- Time: {elapsed:.1f}s\n")
             f.write(f"- Input tokens: {usage.prompt_tokens:,}\n")
@@ -145,7 +151,7 @@ for model_id in MODELS:
         elapsed = time.time() - start
         print(f"ERROR after {elapsed:.1f}s: {e}")
         safe_name = model_id.replace("/", "_")
-        with open(f"test_results/{safe_name}.md", "w", encoding="utf-8") as f:
+        with open(os.path.join(RESULTS_DIR, f"{safe_name}.md"), "w", encoding="utf-8") as f:
             f.write(f"# {model_id}\n\nERROR: {e}\n")
 
     # Small delay between models

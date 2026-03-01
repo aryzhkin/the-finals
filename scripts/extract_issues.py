@@ -18,6 +18,10 @@ from openai import OpenAI
 
 load_dotenv()
 
+# --- Paths ---
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA_DIR = os.path.join(ROOT_DIR, "data")
+
 # --- Config ---
 API_KEY = os.environ["PPQ_API_KEY"]
 BASE_URL = os.environ.get("PPQ_BASE_URL", "https://api.ppq.ai")
@@ -30,10 +34,10 @@ DELAY_BETWEEN_BATCHES = 1
 TEMPERATURE = 0.1
 MAX_TOKENS = 24000        # higher limit — each review can produce 3-5 issues
 
-INPUT_FILE = "reviews_ai_classified.json"
-ENTITIES_FILE = "game_entities.json"
-OUTPUT_FILE = "reviews_issues.json"
-PROGRESS_FILE = "extract_issues_progress.json"
+INPUT_FILE = os.path.join(DATA_DIR, "reviews_ai_classified.json")
+ENTITIES_FILE = os.path.join(DATA_DIR, "game_entities.json")
+OUTPUT_FILE = os.path.join(DATA_DIR, "reviews_issues.json")
+PROGRESS_FILE = os.path.join(DATA_DIR, "extract_issues_progress.json")
 
 # --- Load game entities ---
 with open(ENTITIES_FILE, encoding="utf-8") as f:

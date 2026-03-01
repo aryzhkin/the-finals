@@ -9,12 +9,16 @@ from openai import OpenAI
 
 load_dotenv()
 
+# --- Paths ---
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA_DIR = os.path.join(ROOT_DIR, "data")
+
 API_KEY = os.environ["PPQ_API_KEY"]
 BASE_URL = os.environ.get("PPQ_BASE_URL", "https://api.ppq.ai")
 MODEL = "google/gemini-2.5-flash-lite"
 
 # Load categories
-with open("categories_final.json", encoding="utf-8") as f:
+with open(os.path.join(DATA_DIR, "categories_final.json"), encoding="utf-8") as f:
     categories = json.load(f)
 
 neg_cat_names = set(categories["negative"].keys())
@@ -98,7 +102,7 @@ Return ONLY a valid JSON array. For each review:
 
 # Load test reviews
 print("Loading reviews...")
-with open("reviews_all.json", encoding="utf-8") as f:
+with open(os.path.join(DATA_DIR, "reviews_all.json"), encoding="utf-8") as f:
     raw = json.load(f)
 
 reviews = raw["reviews"]
@@ -268,7 +272,7 @@ for cat, count in sorted(cat_counts.items(), key=lambda x: -x[1]):
 
 # Save full results
 import os
-os.makedirs("test_results", exist_ok=True)
+os.makedirs(os.path.join(ROOT_DIR, "tests", "test_results"), exist_ok=True)
 review_data = []
 for i, r in enumerate(sample):
     hours = r.get("author", {}).get("playtime_forever", 0) / 60
@@ -276,6 +280,6 @@ for i, r in enumerate(sample):
         "idx": i, "hours": round(hours, 1),
         "voted_up": r["voted_up"], "text": r["review"][:2000],
     })
-with open("test_results/test_batch_50.json", "w", encoding="utf-8") as f:
+with open(os.path.join(ROOT_DIR, "tests", "test_results", "test_batch_50.json"), "w", encoding="utf-8") as f:
     json.dump({"reviews": review_data, "classifications": list(all_results.values())}, f, ensure_ascii=False, indent=2)
 print(f"\nFull results saved to test_results/test_batch_50.json")

@@ -6,6 +6,7 @@ and outputs aggregated results with breakdowns by month and playtime bracket.
 """
 
 import json
+import os
 import re
 import csv
 from collections import Counter, defaultdict
@@ -412,7 +413,9 @@ def get_month_key(timestamp):
     return dt.strftime("%Y-%m")
 
 
-def load_seasons(filepath="seasons.json"):
+def load_seasons(filepath=None):
+    if filepath is None:
+        filepath = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "seasons.json")
     """Load season definitions and return list of (season, start_ts, end_ts)."""
     with open(filepath, encoding="utf-8") as f:
         seasons = json.load(f)
@@ -436,10 +439,13 @@ def get_season(timestamp, seasons):
 
 def main():
     import argparse
+    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    data_dir = os.path.join(root_dir, "data")
+
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input", default="reviews_all.json",
+    parser.add_argument("--input", default=os.path.join(data_dir, "reviews_all.json"),
                         help="Input reviews JSON file")
-    parser.add_argument("--output", default="reviews_classified.json",
+    parser.add_argument("--output", default=os.path.join(data_dir, "reviews_classified.json"),
                         help="Output classified JSON file")
     args = parser.parse_args()
 
@@ -607,7 +613,7 @@ def main():
             print(f"    {i:2d}. {cat:<35s} {count:4d}  ({pct:5.1f}%)")
 
     # --- Save CSV summary ---
-    with open("review_categories_summary.csv", "w", newline="", encoding="utf-8") as f:
+    with open(os.path.join(data_dir, "review_categories_summary.csv"), "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(["sentiment", "month", "playtime_bracket", "category", "count"])
         for sentiment, reviews_list in [("negative", neg_reviews), ("positive", pos_reviews)]:

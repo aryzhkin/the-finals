@@ -1,33 +1,31 @@
-# Large data files (scraped reviews)
-reviews_all.json
-reviews_classified.json
-reviews_ai_classified.json
-reviews_issues.json
-reviews_merged.json
-reviews_recent.json
-reviews_raw.json
-reviews_by_lang/
-review_categories_summary.csv
-sample_negative.txt
-sample_positive.txt
-test_reviews_50.json
+# Large data files (in data/)
+data/reviews_all.json
+data/reviews_classified.json
+data/reviews_ai_classified.json
+data/reviews_issues.json
+data/reviews_merged.json
+data/reviews_recent.json
+data/reviews_raw.json
+data/reviews_by_lang/
+data/review_categories_summary.csv
+data/sample_negative.txt
+data/sample_positive.txt
+data/test_reviews_50.json
+data/dashboard_data.json
 
 # Logs & progress
 *.log
-classify_progress.json
-extract_issues_progress.json
+data/classify_progress.json
+data/extract_issues_progress.json
 
 # Intermediate / one-off
-category_discovery_sample.json
-test_results/
+data/category_discovery_sample.json
+tests/test_results/
 archive/
 
 # External docs & pricing
 *.mhtml
 *.csv
-
-# Root-level dashboard_data.json (old location; live copy is in docs/)
-/dashboard_data.json
 
 # Secrets
 .env
@@ -37,8 +35,8 @@ archive/
 node_modules/
 
 # Temp/cache
-patch_pages_cache.json
-patch_parse_progress.json
+data/patch_pages_cache.json
+data/patch_parse_progress.json
 
 # Python
 __pycache__/
@@ -51,3 +49,4 @@ __pycache__/
 reddit_post.md
 reddit_post_ru.md
 reddit_comment.md
+subreddit_rules.md

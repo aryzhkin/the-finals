@@ -11,6 +11,11 @@ import os
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
 
+# --- Paths ---
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA_DIR = os.path.join(ROOT_DIR, "data")
+DOCS_DIR = os.path.join(ROOT_DIR, "docs")
+
 
 # Mapping from AI Stage 1 categories to Stage 2 issue prefixes
 # Used to show related specific issues in Category Deep-Dive
@@ -84,7 +89,7 @@ def main():
     full_reviews = None  # will be loaded once if reviews_ai_classified.json exists
 
     print("Loading reviews (structural data)...")
-    with open("reviews_classified.json", encoding="utf-8") as f:
+    with open(os.path.join(DATA_DIR, "reviews_classified.json"), encoding="utf-8") as f:
         reviews = json.load(f)
     print(f"  {len(reviews)} reviews loaded")
 
@@ -93,10 +98,10 @@ def main():
         if r["language"] in ("tchinese", "schinese"):
             r["language"] = "chinese"
 
-    with open("seasons.json", encoding="utf-8") as f:
+    with open(os.path.join(DATA_DIR, "seasons.json"), encoding="utf-8") as f:
         seasons_meta = json.load(f)
 
-    with open("categories_final.json", encoding="utf-8") as f:
+    with open(os.path.join(DATA_DIR, "categories_final.json"), encoding="utf-8") as f:
         cat_defs = json.load(f)
     NEG_CATEGORIES = set(cat_defs.get("negative", {}).keys())
     POS_CATEGORIES = set(cat_defs.get("positive", {}).keys())
@@ -114,7 +119,7 @@ def main():
     issues_data = []
     if os.path.exists("reviews_issues.json"):
         print("Loading AI data (Stage 1 categories + Stage 2 issues)...")
-        with open("reviews_issues.json", encoding="utf-8") as f:
+        with open(os.path.join(DATA_DIR, "reviews_issues.json"), encoding="utf-8") as f:
             issues_data = json.load(f)
         print(f"  {len(issues_data)} reviews loaded")
 
@@ -176,7 +181,7 @@ def main():
     # Recompute playtime brackets using playtime_at_review (not playtime_forever)
     if os.path.exists("reviews_ai_classified.json"):
         print("Loading full reviews for playtime_at_review...")
-        with open("reviews_ai_classified.json", encoding="utf-8") as f:
+        with open(os.path.join(DATA_DIR, "reviews_ai_classified.json"), encoding="utf-8") as f:
             full_reviews = json.load(f)
         print(f"  {len(full_reviews)} full reviews loaded")
         recomputed = 0
@@ -212,7 +217,7 @@ def main():
     patch_notes_data = []
     if os.path.exists("patch_notes.json"):
         print("Loading patch notes...")
-        with open("patch_notes.json", encoding="utf-8") as f:
+        with open(os.path.join(DATA_DIR, "patch_notes.json"), encoding="utf-8") as f:
             pn = json.load(f)
             patch_notes_data = pn.get("patches", pn) if isinstance(pn, dict) else pn
         print(f"  {len(patch_notes_data)} patches loaded")
@@ -220,7 +225,7 @@ def main():
     # Load game entities for class mapping
     entity_classes = {}  # entity_name -> {class, type}
     if os.path.exists("game_entities.json"):
-        with open("game_entities.json", encoding="utf-8") as f:
+        with open(os.path.join(DATA_DIR, "game_entities.json"), encoding="utf-8") as f:
             ge = json.load(f)
         for etype in ("weapons", "specializations", "gadgets"):
             for cls, items in ge.get(etype, {}).items():
@@ -231,7 +236,7 @@ def main():
     # Load confidence stats
     confidence = {}
     if os.path.exists("stage1_stats.json"):
-        with open("stage1_stats.json", encoding="utf-8") as f:
+        with open(os.path.join(DATA_DIR, "stage1_stats.json"), encoding="utf-8") as f:
             stage1 = json.load(f)
             confidence = stage1.get("confidence", {})
 
@@ -1110,7 +1115,7 @@ def main():
         # Use already-loaded full reviews (from playtime_at_review step)
         if full_reviews is None:
             print("  Loading review texts for samples...")
-            with open("reviews_ai_classified.json", encoding="utf-8") as f:
+            with open(os.path.join(DATA_DIR, "reviews_ai_classified.json"), encoding="utf-8") as f:
                 full_reviews = json.load(f)
 
         # Playtime brackets (must match frontend RE_BRACKETS)
@@ -1294,7 +1299,7 @@ def main():
     if hc_data:
         dashboard["hc"] = hc_data
 
-    with open("docs/dashboard_data.json", "w", encoding="utf-8") as f:
+    with open(os.path.join(DOCS_DIR, "dashboard_data.json"), "w", encoding="utf-8") as f:
         json.dump(dashboard, f, ensure_ascii=False)
 
     size = os.path.getsize("docs/dashboard_data.json") / 1024
@@ -1302,7 +1307,7 @@ def main():
 
     # Save issue_samples as separate file (lazy-loaded by frontend)
     if issue_samples:
-        with open("docs/issue_samples.json", "w", encoding="utf-8") as f:
+        with open(os.path.join(DOCS_DIR, "issue_samples.json"), "w", encoding="utf-8") as f:
             json.dump(issue_samples, f, ensure_ascii=False)
         ssize = os.path.getsize("docs/issue_samples.json") / 1024
         print(f"Saved docs/issue_samples.json ({ssize:.0f} KB)")

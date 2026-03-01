@@ -19,6 +19,10 @@ from bs4 import BeautifulSoup
 
 load_dotenv()
 
+# --- Paths ---
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA_DIR = os.path.join(ROOT_DIR, "data")
+
 # --- Config ---
 API_KEY = os.environ["PPQ_API_KEY"]
 BASE_URL = os.environ.get("PPQ_BASE_URL", "https://api.ppq.ai")
@@ -26,9 +30,9 @@ MODEL = "google/gemini-2.5-flash-lite"
 
 WIKI_BASE = "https://www.thefinals.wiki"
 PATCHNOTES_URL = f"{WIKI_BASE}/wiki/Patchnotes"
-CACHE_FILE = "patch_pages_cache.json"
-OUTPUT_FILE = "patch_notes.json"
-PROGRESS_FILE = "patch_parse_progress.json"
+CACHE_FILE = os.path.join(DATA_DIR, "patch_pages_cache.json")
+OUTPUT_FILE = os.path.join(DATA_DIR, "patch_notes.json")
+PROGRESS_FILE = os.path.join(DATA_DIR, "patch_parse_progress.json")
 
 MAX_RETRIES = 3
 RETRY_DELAY = 5

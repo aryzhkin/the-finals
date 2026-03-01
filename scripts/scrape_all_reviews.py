@@ -172,12 +172,15 @@ def main():
                         help="Number of parallel workers (default: 10)")
     parser.add_argument("--delay", type=float, default=0.3,
                         help="Delay between requests per worker in seconds (default: 0.3)")
-    parser.add_argument("--output", default="reviews_all.json",
-                        help="Output JSON file (default: reviews_all.json)")
+    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    data_dir = os.path.join(root_dir, "data")
+
+    parser.add_argument("--output", default=os.path.join(data_dir, "reviews_all.json"),
+                        help="Output JSON file (default: data/reviews_all.json)")
 
     args = parser.parse_args()
 
-    output_dir = "reviews_by_lang"
+    output_dir = os.path.join(data_dir, "reviews_by_lang")
     os.makedirs(output_dir, exist_ok=True)
 
     print(f"Scraping ALL reviews for THE FINALS (appid {APP_ID})")
