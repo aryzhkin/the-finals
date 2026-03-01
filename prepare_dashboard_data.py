@@ -1054,6 +1054,35 @@ def main():
             for kind in ("complaints", "suggestions", "praise"):
                 for item in entity_data.get("issues", {}).get(kind, []):
                     needed_issues.add(item["text"])
+        # Issues by season (Season Health top issues)
+        for season_data_items in issues_by_season.values():
+            for kind in ("complaints", "suggestions", "praise"):
+                for item in season_data_items.get(kind, []):
+                    needed_issues.add(item["text"])
+        # Season diffs (new/gone/movers)
+        for diff in season_diffs.values():
+            for item in diff.get("new_issues", []):
+                needed_issues.add(item["text"])
+            for item in diff.get("gone_issues", []):
+                needed_issues.add(item["text"])
+            for item in diff.get("movers_up", []):
+                needed_issues.add(item["text"])
+            for item in diff.get("movers_down", []):
+                needed_issues.add(item["text"])
+        # Language-specific top issues (Regional Analysis)
+        for lang_entry in lang_top_issues.values():
+            for key, items in lang_entry.items():
+                if isinstance(items, list):
+                    for item in items:
+                        needed_issues.add(item["text"])
+        # Issues by month (Review Bombing drill-down)
+        for month_items in issues_by_month.values():
+            for item in month_items:
+                needed_issues.add(item["text"])
+        # Trending/fixed top issues (Community Insights trends)
+        for item in trends_data.get("trending", []) + trends_data.get("fixed", []):
+            for iss in item.get("top_issues", []):
+                needed_issues.add(iss["text"])
 
         # Build issue_text → [review_idx, ...] mapping + idx → season lookup
         issue_to_idxs = defaultdict(list)
