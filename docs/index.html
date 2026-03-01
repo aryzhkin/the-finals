@@ -231,6 +231,7 @@ details .details-content { padding: 0 16px 12px; }
       <div class="pill-group" id="season-pills"></div>
     </div>
     <div class="metrics" id="season-metrics"></div>
+    <div class="chart" id="chart-season-daily" style="height:200px"></div>
     <div class="controls">
       <label>Playtime:</label>
       <div class="pill-group" id="sh-pt-pills2"></div>
@@ -337,6 +338,7 @@ details .details-content { padding: 0 16px 12px; }
       <p class="caption">How this region's complaint distribution differs from the overall average. Only significant deviations (&gt;3%) are shown.</p>
       <div class="chart" id="chart-reg-deviation"></div>
     </div>
+    <div id="reg-lang-issues" style="display:none"></div>
   </div>
 
   <!-- Praise vs Complaints -->
@@ -351,6 +353,11 @@ details .details-content { padding: 0 16px 12px; }
       <label>Playtime:</label>
       <div class="pill-group" id="pvc-pt-pills"></div>
     </div>
+    <hr>
+    <h2>Approval by Playtime Cohort Across Seasons</h2>
+    <p class="caption">How each playtime bracket's sentiment evolves season-to-season.</p>
+    <div class="chart" id="chart-cohort-approval-trend"></div>
+    <hr>
     <div id="pvc-topics"></div>
     <div class="chart" id="chart-pvc-comparison"></div>
   </div>
@@ -1225,6 +1232,31 @@ function showSeasonDetails(season) {
     <div class="metric"><div class="label">Negative Reviews</div><div class="value text-neg">${fmt(sh.negative)}</div></div>
   `;
 
+  // Intra-season daily approval mini-chart (7-day moving average)
+  const dt = DATA.daily_timeline || {};
+  const sDays = Object.keys(dt).filter(d => dt[d].season === season).sort();
+  if (sDays.length >= 3) {
+    const rawApp = sDays.map(d => { const t = dt[d].positive + dt[d].negative; return t ? dt[d].positive / t * 100 : null; });
+    // 7-day moving average
+    const win = Math.min(7, sDays.length);
+    const ma = rawApp.map((_, i) => {
+      const start = Math.max(0, i - win + 1);
+      const slice = rawApp.slice(start, i + 1).filter(v => v !== null);
+      return slice.length ? Math.round(slice.reduce((a, b) => a + b) / slice.length * 10) / 10 : null;
+    });
+    Plotly.newPlot('chart-season-daily', [
+      { type: 'scatter', x: sDays, y: rawApp, mode: 'markers', name: 'Daily', marker: { size: 3, color: 'rgba(150,150,150,0.4)' } },
+      { type: 'scatter', x: sDays, y: ma, mode: 'lines', name: '7-day avg', line: { color: BLUE, width: 2 } },
+    ], makeLayout({
+      height: 200, margin: { l: 40, r: 10, t: 5, b: 25 },
+      xaxis: { tickformat: '%b %d' }, yaxis: { title: 'Approval %', range: [0, 100] },
+      legend: { orientation: 'h', y: 1.15 }, showlegend: true,
+    }), PLOT_CFG);
+    el('chart-season-daily').style.display = '';
+  } else {
+    el('chart-season-daily').style.display = 'none';
+  }
+
   // Top complaints/praise (with playtime filter support)
   renderSeasonCatBars(season);
 
@@ -1936,6 +1968,38 @@ function showRegLangDetails(lang) {
   } else {
     devSection.style.display = 'none';
   }
+
+  // Language-specific top issues drill-down
+  const langIssuesDiv = el('reg-lang-issues');
+  const lti = (DATA.lang_top_issues || {})[lang];
+  if (lti && lti.top && lti.top.length) {
+    let html = `<hr><h2>Top Complaints — ${escHtml(lang)}</h2>`;
+    html += '<div class="grid-2" style="gap:24px">';
+    // Overall top issues
+    html += '<div><h3>Overall</h3><ol style="padding-left:20px;font-size:13px">';
+    lti.top.forEach(iss => {
+      html += `<li style="margin-bottom:4px;cursor:pointer" data-nav-issue="${escHtml(iss.text)}"><u>${escHtml(iss.text)}</u> <span class="caption">(${fmt(iss.count)})</span></li>`;
+    });
+    html += '</ol></div>';
+    // Per-category breakdowns (top 3 categories with most issues)
+    const catKeys = Object.keys(lti).filter(k => k !== 'top').sort((a, b) => lti[b][0].count - lti[a][0].count);
+    if (catKeys.length) {
+      html += '<div>';
+      catKeys.slice(0, 4).forEach(cat => {
+        html += `<h3 style="font-size:14px;cursor:pointer" data-nav-category="${escHtml(cat)}"><u>${escHtml(cat)}</u></h3><ul style="padding-left:18px;font-size:13px;margin-bottom:12px">`;
+        lti[cat].forEach(iss => {
+          html += `<li style="cursor:pointer" data-nav-issue="${escHtml(iss.text)}"><u>${escHtml(iss.text)}</u> <span class="caption">(${fmt(iss.count)})</span></li>`;
+        });
+        html += '</ul>';
+      });
+      html += '</div>';
+    }
+    html += '</div>';
+    langIssuesDiv.innerHTML = html;
+    langIssuesDiv.style.display = '';
+  } else {
+    langIssuesDiv.style.display = 'none';
+  }
 }
 
 // =====================================================================
@@ -1980,6 +2044,30 @@ function renderPraiseVsComplaints() {
     };
     ptBox.appendChild(pill);
   });
+
+  // Cohort approval trend (line chart: approval % by bracket across seasons)
+  const cohort = DATA.cohort_data || {};
+  const ptBrackets = DATA.playtime_order || [];
+  const cohortColors = ['#636EFA', '#EF553B', '#00CC96', '#AB63FA', '#FFA15A', '#19D3F3', '#FF6692'];
+  const cohortTraces = ptBrackets.map((brKey, idx) => {
+    const shortName = brKey.split(' (')[0];
+    const vals = REAL_SEASONS.map(s => {
+      const cd = (cohort[s] || {})[brKey];
+      return cd && cd.total >= 20 ? cd.approval : null;
+    });
+    return {
+      type: 'scatter', mode: 'lines+markers', name: brKey,
+      x: REAL_SEASONS, y: vals, connectgaps: true,
+      line: { width: 2, color: cohortColors[idx % cohortColors.length] },
+      marker: { size: 6 },
+      hovertemplate: `${shortName}: %{y:.1f}% (%{x})<extra></extra>`,
+    };
+  });
+  Plotly.newPlot('chart-cohort-approval-trend', cohortTraces, makeLayout({
+    height: 400, margin: { l: 50, r: 10, t: 10, b: 30 },
+    yaxis: { title: 'Approval %', range: [0, 100] },
+    legend: { orientation: 'h', yanchor: 'bottom', y: 1.02 },
+  }), PLOT_CFG);
 
   updatePVC();
 }

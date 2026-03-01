@@ -722,6 +722,9 @@ def main():
         # Per-month issue counts (for temporal drill-down)
         month_issues = defaultdict(Counter)
 
+        # Language × category → top complaints (for language drill-down)
+        lang_cat_issues = defaultdict(lambda: defaultdict(Counter))
+
         # Entity tracking: entity -> season -> {complaint, suggestion, praise}
         ent_season = defaultdict(lambda: defaultdict(lambda: Counter()))
         # Entity issues: entity -> type -> Counter(issue_text)
@@ -745,6 +748,8 @@ def main():
             if full_reviews and i < len(full_reviews):
                 votes_up = int(full_reviews[i].get("votes_up", 0))
 
+            lang = r.get("language", "")
+
             for iss in issues:
                 text = iss.get("text", "")
                 itype = iss.get("type", "")
@@ -755,6 +760,10 @@ def main():
                     weighted_complaints[text] += votes_up
                     season_issues[season]["complaints"][text] += 1
                     month_issues[month][text] += 1
+                    if lang:
+                        lang_cat_issues[lang]["_all"][text] += 1
+                        for cat in r.get("ai_categories", []):
+                            lang_cat_issues[lang][cat][text] += 1
                 elif itype == "suggestion":
                     all_suggestions[text] += 1
                     weighted_suggestions[text] += votes_up
@@ -797,6 +806,24 @@ def main():
             top = counter.most_common(10)
             if top:
                 issues_by_month[month] = [{"text": t, "count": c} for t, c in top]
+
+        # Per-language top issues (top 10 overall + top 5 per category)
+        lang_top_issues = {}
+        for lang, cats in lang_cat_issues.items():
+            all_counter = cats.get("_all", Counter())
+            if all_counter.most_common(1) and all_counter.most_common(1)[0][1] < 5:
+                continue
+            entry = {
+                "top": [{"text": t, "count": c} for t, c in all_counter.most_common(10)],
+            }
+            # Top 5 issues per top negative categories for this language
+            for cat, counter in cats.items():
+                if cat == "_all":
+                    continue
+                top5 = counter.most_common(5)
+                if top5 and top5[0][1] >= 3:
+                    entry[cat] = [{"text": t, "count": c} for t, c in top5]
+            lang_top_issues[lang] = entry
 
         # Season-to-season issue diffs
         season_diffs = {}
@@ -1183,6 +1210,7 @@ def main():
         "regional_deviation": regional_deviation,
         "category_correlations": category_correlations,
         "issues_by_month": issues_by_month if issues_data else {},
+        "lang_top_issues": lang_top_issues if issues_data else {},
         # Stage 2 data
         "top_issues": top_issues,
         "issues_by_season": issues_by_season,
