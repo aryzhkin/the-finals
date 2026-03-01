@@ -565,7 +565,7 @@ def main():
             continue
         lang_neg_total = d["negative"] or 1
         deviations = {}
-        for cat in list(neg_cats.keys())[:10]:  # top 10 global categories
+        for cat, _ in neg_cats.most_common(10):  # top 10 global categories
             lang_pct = d["neg_cats"].get(cat, 0) / lang_neg_total * 100
             global_pct = global_neg_pcts.get(cat, 0)
             diff = lang_pct - global_pct
@@ -843,7 +843,14 @@ def main():
             season_num = season_code.replace("S", "")
             season_name = "Season " + season_num  # e.g. "Season 3"
             prev_num = int(season_num) - 1 if season_num.isdigit() else None
-            prev_name = "Season " + str(prev_num) if prev_num and prev_num >= 0 else None
+            if prev_num is not None and prev_num >= 0:
+                # Match actual season name (e.g. "Season 0 (Beta)")
+                prev_name = next(
+                    (s["season"] for s in seasons_meta if s["season"].startswith("Season " + str(prev_num))),
+                    "Season " + str(prev_num)
+                )
+            else:
+                prev_name = None
 
             for change in patch.get("balance_changes", []):
                 entity_key = find_entity(change.get("item", ""))

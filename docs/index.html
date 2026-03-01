@@ -1121,10 +1121,6 @@ function showSeasonDetails(season) {
 
   // Top complaints/praise (with playtime filter support)
   renderSeasonCatBars(season);
-  el('chart-season-neg').on('plotly_click', d => { if (d.points[0]) navigateToExplorer({ category: d.points[0].y }); });
-  makeBarClickable('chart-season-neg', name => navigateToExplorer({ category: name }));
-  el('chart-season-pos').on('plotly_click', d => { if (d.points[0]) navigateToExplorer({ category: d.points[0].y }); });
-  makeBarClickable('chart-season-pos', name => navigateToExplorer({ category: name }));
 
   // Build shared playtime pills (for bar charts + issues)
   const ptBox2 = el('sh-pt-pills2');
@@ -1132,7 +1128,7 @@ function showSeasonDetails(season) {
   const shAllPill = document.createElement('span');
   shAllPill.className = 'pill' + (shPtFilter.size === 0 ? ' active' : '');
   shAllPill.textContent = 'All Players';
-  shAllPill.onclick = () => { shPtFilter.clear(); ptBox2.querySelectorAll('.pill').forEach(p => p.classList.remove('active')); shAllPill.classList.add('active'); renderSeasonCatBars(season); renderSeasonTopIssues(season); makeBarClickable('chart-season-neg', name => navigateToExplorer({ category: name })); makeBarClickable('chart-season-pos', name => navigateToExplorer({ category: name })); };
+  shAllPill.onclick = () => { shPtFilter.clear(); ptBox2.querySelectorAll('.pill').forEach(p => p.classList.remove('active')); shAllPill.classList.add('active'); renderSeasonCatBars(season); renderSeasonTopIssues(season); };
   ptBox2.appendChild(shAllPill);
   RE_BRACKETS.forEach(br => {
     const pill = document.createElement('span');
@@ -1143,8 +1139,6 @@ function showSeasonDetails(season) {
       shPtFilter.has(br.label) ? shPtFilter.delete(br.label) : shPtFilter.add(br.label);
       shAllPill.classList.toggle('active', shPtFilter.size === 0);
       renderSeasonCatBars(season); renderSeasonTopIssues(season);
-      makeBarClickable('chart-season-neg', name => navigateToExplorer({ category: name }));
-      makeBarClickable('chart-season-pos', name => navigateToExplorer({ category: name }));
     };
     ptBox2.appendChild(pill);
   });
@@ -1244,6 +1238,10 @@ function renderSeasonCatBars(season) {
         x: vals, y: entries.map(e => e[0]).reverse(),
         marker: { color }, text: vals.map(v => '  ' + v), textposition: 'outside', cliponaxis: false,
       }], makeLayout({ height: 350, margin: { l: 0, r: 40, t: 10, b: 0 }, yaxis: { autorange: true, automargin: true, ticksuffix: '  ' }, xaxis: { range: [0, Math.max(...vals) * 1.15] } }), PLOT_CFG);
+      const chartEl = el(chartId);
+      if (chartEl.removeAllListeners) chartEl.removeAllListeners('plotly_click');
+      chartEl.on('plotly_click', d => { if (d.points[0]) navigateToExplorer({ category: d.points[0].y }); });
+      makeBarClickable(chartId, name => navigateToExplorer({ category: name }));
     } else {
       el(chartId).innerHTML = '<p class="caption">No data for selected brackets</p>';
     }
@@ -1368,8 +1366,9 @@ function renderPlayerJourney() {
     el('chart-pj-cohort').on('plotly_click', d => {
       const pt = d.points[0];
       if (!pt) return;
-      const seasonFull = cohortSeasons[pt.x];
-      const bracket = brackets[pt.y];
+      const seasonFull = cohortSeasons.find(s => s.replace('Season ', 'S') === pt.x);
+      const bracketIdx = yLabels.indexOf(pt.y);
+      const bracket = bracketIdx >= 0 ? brackets[bracketIdx] : null;
       const cell = (cohort[seasonFull] || {})[bracket];
       if (!cell) return;
       const topNeg = cell.top_neg || {};
@@ -1893,7 +1892,7 @@ function updatePVC() {
     // Use playtime_data for real review totals per bracket
     const pd = DATA.playtime_data || {};
     (DATA.playtime_order || []).forEach(br => {
-      const label = (br.match(/\(([^)]+)\)/) || [])[1] || '';
+      const label = br.split(' (')[0];
       if (pvcPtFilter.has(label)) {
         negTotal += (pd[br] || {}).negative || 0;
         posTotal += (pd[br] || {}).positive || 0;
