@@ -211,6 +211,12 @@ details .details-content { padding: 0 16px 12px; }
     <hr>
     <h2>Review Volume Over Time</h2>
     <div class="chart" id="chart-monthly-timeline"></div>
+    <div id="overview-correlations" style="display:none">
+      <hr>
+      <h2>Category Correlations</h2>
+      <p class="caption">Categories that frequently appear together in negative reviews. High co-occurrence suggests linked problems.</p>
+      <div id="ov-corr-table"></div>
+    </div>
   </div>
 
   <!-- Season Health -->
@@ -295,6 +301,7 @@ details .details-content { padding: 0 16px 12px; }
       </div>
     </div>
     <div class="chart" id="chart-rb-volume"></div>
+    <div id="rb-drill-down" style="margin-bottom:8px"></div>
     <h2 id="rb-ratio-title">Daily Negative Ratio</h2>
     <div class="chart" id="chart-rb-ratio"></div>
     <h2>Worst Days <span class="caption">(highest negative ratio, min 20 reviews)</span></h2>
@@ -1095,6 +1102,19 @@ function renderOverview() {
     layoutExtra.yaxis2 = { title: 'Avg Players', overlaying: 'y', side: 'right', showgrid: false, rangemode: 'tozero' };
   }
   Plotly.newPlot('chart-monthly-timeline', traces, makeLayout(layoutExtra), PLOT_CFG);
+
+  // Cross-category correlations
+  const corrs = DATA.category_correlations || [];
+  if (corrs.length) {
+    el('overview-correlations').style.display = '';
+    let tbl = '<table style="width:100%;font-size:13px;border-collapse:collapse"><thead><tr><th style="text-align:left;padding:6px 8px;border-bottom:2px solid var(--border)">Category A</th><th style="text-align:left;padding:6px 8px;border-bottom:2px solid var(--border)">Category B</th><th style="text-align:right;padding:6px 8px;border-bottom:2px solid var(--border)">Co-occurrences</th><th style="text-align:right;padding:6px 8px;border-bottom:2px solid var(--border)">% of A</th><th style="text-align:right;padding:6px 8px;border-bottom:2px solid var(--border)">% of B</th></tr></thead><tbody>';
+    corrs.forEach(c => {
+      tbl += `<tr><td style="padding:5px 8px;border-bottom:1px solid var(--border);cursor:pointer" data-nav-category="${escHtml(c.cat1)}"><u>${escHtml(c.cat1)}</u></td><td style="padding:5px 8px;border-bottom:1px solid var(--border);cursor:pointer" data-nav-category="${escHtml(c.cat2)}"><u>${escHtml(c.cat2)}</u></td><td style="text-align:right;padding:5px 8px;border-bottom:1px solid var(--border)">${fmt(c.count)}</td><td style="text-align:right;padding:5px 8px;border-bottom:1px solid var(--border)">${c.pct1}%</td><td style="text-align:right;padding:5px 8px;border-bottom:1px solid var(--border)">${c.pct2}%</td></tr>`;
+    });
+    tbl += '</tbody></table>';
+    tbl += '<p class="caption" style="margin-top:8px">% of A = share of Category A reviews that also mention Category B, and vice versa. Only pairs with 500+ co-occurrences shown.</p>';
+    el('ov-corr-table').innerHTML = tbl;
+  }
 }
 
 // =====================================================================
@@ -1755,6 +1775,32 @@ function updateRBCharts() {
     { type: 'bar', x: plotDates, y: plotPos, name: 'Positive', marker: { color: POS }, opacity: 0.6 },
     { type: 'bar', x: plotDates, y: plotNeg, name: 'Negative', marker: { color: NEG }, opacity: 0.8 },
   ], makeLayout({ barmode: 'stack', height: 420, margin: { l: 50, r: 0, t: 30, b: 30 }, legend: { orientation: 'h', yanchor: 'bottom', y: 1.02 }, shapes: [...shapes, ...bombShapes], annotations, dragmode: 'zoom' }), PLOT_CFG);
+
+  // Click on volume bar → show top complaints for that period
+  el('chart-rb-volume').on('plotly_click', d => {
+    const pt = d.points[0];
+    if (!pt) return;
+    const ibm = DATA.issues_by_month || {};
+    let month;
+    if (rbGranularity === 'weekly') {
+      // Weekly: clicked date is the Monday of that week — use its month
+      month = pt.x.slice(0, 7);
+    } else {
+      month = pt.x.slice(0, 7);
+    }
+    const issues = ibm[month];
+    const detailEl = el('rb-drill-down');
+    if (!issues || !issues.length) {
+      detailEl.innerHTML = `<p class="caption">No issue data for ${month}</p>`;
+      return;
+    }
+    let html = `<h3 style="margin:12px 0 8px">Top complaints — ${month}</h3><ul style="margin:0;padding-left:20px">`;
+    issues.slice(0, 8).forEach(iss => {
+      html += `<li style="font-size:13px;cursor:pointer;margin:2px 0" data-nav-issue="${escHtml(iss.text)}"><u>${escHtml(iss.text)}</u> (${fmt(iss.count)})</li>`;
+    });
+    html += '</ul>';
+    detailEl.innerHTML = html;
+  });
 
   // Neg % ratio with threshold line + bombing zones
   const traces2 = [

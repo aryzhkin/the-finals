@@ -667,6 +667,25 @@ def main():
             regional_deviation[lang] = deviations
 
     # -----------------------------------------------------------------------
+    # 12b. Cross-category correlation (co-occurrence in negative reviews)
+    # -----------------------------------------------------------------------
+    from itertools import combinations
+    cat_cooccur = Counter()
+    for r in neg:
+        cats = sorted(set(r.get("categories", [])))
+        if len(cats) >= 2:
+            for pair in combinations(cats, 2):
+                cat_cooccur[pair] += 1
+    # Keep only strong links (>= 500 co-occurrences)
+    category_correlations = [
+        {"cat1": p[0], "cat2": p[1], "count": c,
+         "pct1": round(c / neg_cats[p[0]] * 100, 1) if neg_cats[p[0]] else 0,
+         "pct2": round(c / neg_cats[p[1]] * 100, 1) if neg_cats[p[1]] else 0}
+        for p, c in cat_cooccur.most_common()
+        if c >= 500
+    ]
+
+    # -----------------------------------------------------------------------
     # 13. Stage 2: AI-extracted issues (complaints, suggestions, praise)
     # -----------------------------------------------------------------------
     top_issues = {}
@@ -698,6 +717,8 @@ def main():
         season_issues = defaultdict(lambda: {
             "complaints": Counter(), "suggestions": Counter(), "praise": Counter()
         })
+        # Per-month issue counts (for temporal drill-down)
+        month_issues = defaultdict(Counter)
 
         # Entity tracking: entity -> season -> {complaint, suggestion, praise}
         ent_season = defaultdict(lambda: defaultdict(lambda: Counter()))
@@ -715,6 +736,8 @@ def main():
                 continue
             reviews_with_issues += 1
             season = get_season(r["timestamp"])
+            month = datetime.fromtimestamp(
+                r["timestamp"], tz=timezone.utc).strftime("%Y-%m")
             # Get votes_up from full reviews (1:1 indexed)
             votes_up = 0
             if full_reviews and i < len(full_reviews):
@@ -729,6 +752,7 @@ def main():
                     all_complaints[text] += 1
                     weighted_complaints[text] += votes_up
                     season_issues[season]["complaints"][text] += 1
+                    month_issues[month][text] += 1
                 elif itype == "suggestion":
                     all_suggestions[text] += 1
                     weighted_suggestions[text] += votes_up
@@ -764,6 +788,13 @@ def main():
                 "praise": [{"text": t, "count": c}
                            for t, c in counters["praise"].most_common(15)],
             }
+
+        # Issues by month (top 10 complaints per month, for temporal drill-down)
+        issues_by_month = {}
+        for month, counter in month_issues.items():
+            top = counter.most_common(10)
+            if top:
+                issues_by_month[month] = [{"text": t, "count": c} for t, c in top]
 
         # Season-to-season issue diffs
         season_diffs = {}
@@ -1148,6 +1179,8 @@ def main():
         "trends": trends_data,
         "season_diffs": season_diffs if issues_data else {},
         "regional_deviation": regional_deviation,
+        "category_correlations": category_correlations,
+        "issues_by_month": issues_by_month if issues_data else {},
         # Stage 2 data
         "top_issues": top_issues,
         "issues_by_season": issues_by_season,
