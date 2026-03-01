@@ -96,6 +96,11 @@ def main():
     with open("seasons.json", encoding="utf-8") as f:
         seasons_meta = json.load(f)
 
+    with open("categories_final.json", encoding="utf-8") as f:
+        cat_defs = json.load(f)
+    NEG_CATEGORIES = set(cat_defs.get("negative", {}).keys())
+    POS_CATEGORIES = set(cat_defs.get("positive", {}).keys())
+
     # Precompute season timestamps for consistent boundary logic
     seasons_ts = []
     for s in seasons_meta:
@@ -140,10 +145,13 @@ def main():
         # Backfill unclassified reviews from Stage 2 issues
         # If Stage 1 returned no categories but Stage 2 extracted issues,
         # infer categories from issue prefixes via reverse CATEGORY_ISSUE_PREFIXES
-        prefix_to_cat = {}
+        # Split by sentiment to avoid assigning positive categories to negative reviews
+        prefix_to_neg_cat = {}
+        prefix_to_pos_cat = {}
         for cat, prefixes in CATEGORY_ISSUE_PREFIXES.items():
+            target = prefix_to_neg_cat if cat in NEG_CATEGORIES else prefix_to_pos_cat
             for prefix in prefixes:
-                prefix_to_cat[prefix] = cat
+                target[prefix] = cat
         backfilled = 0
         for i, r in enumerate(reviews):
             if r["categories"] or i >= len(issues_data):
@@ -152,11 +160,12 @@ def main():
             if not issues:
                 continue
             inferred = set()
+            prefix_map = prefix_to_pos_cat if r["sentiment"] == "positive" else prefix_to_neg_cat
             for iss in issues:
                 text = iss.get("text", "")
                 prefix = text.split(": ")[0] if ": " in text else ""
-                if prefix in prefix_to_cat:
-                    inferred.add(prefix_to_cat[prefix])
+                if prefix in prefix_map:
+                    inferred.add(prefix_map[prefix])
             if inferred:
                 r["categories"] = list(inferred)
                 backfilled += 1
@@ -766,10 +775,12 @@ def main():
         print(f"  {len(top_entities)} entities tracked across seasons")
 
         # Build related issues per AI category (for Category Deep-Dive)
-        all_issues_combined = all_complaints + all_suggestions + all_praise
+        # Use sentiment-appropriate issues: complaints+suggestions for neg, praise for pos
+        neg_issues_combined = all_complaints + all_suggestions
         for cat, prefixes in CATEGORY_ISSUE_PREFIXES.items():
+            source = neg_issues_combined if cat in NEG_CATEGORIES else all_praise
             related = []
-            for text, count in all_issues_combined.most_common():
+            for text, count in source.most_common():
                 issue_prefix = text.split(": ")[0] if ": " in text else ""
                 if issue_prefix in prefixes:
                     related.append({"text": text, "count": count})

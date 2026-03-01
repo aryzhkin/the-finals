@@ -112,10 +112,15 @@ details .details-content { padding: 0 16px 12px; }
 /* Loading */
 #loading { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 9999; font-size: 18px; }
 
-/* Mobile */
+/* Mobile menu */
+.mobile-menu-btn { display: none; }
+.mobile-overlay { display: none; }
 @media (max-width: 768px) {
+  .mobile-menu-btn { display: flex; align-items: center; justify-content: center; position: fixed; top: 8px; left: 8px; z-index: 200; background: var(--sidebar-bg); border: 1px solid var(--border); color: var(--text); font-size: 22px; width: 40px; height: 40px; border-radius: 8px; cursor: pointer; }
   .sidebar { display: none; }
-  .main { margin-left: 0; padding: 12px; }
+  .sidebar.mobile-open { display: flex; position: fixed; top: 0; left: 0; bottom: 0; width: 280px; z-index: 150; box-shadow: 4px 0 24px rgba(0,0,0,0.5); }
+  .mobile-overlay.active { display: block; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 140; }
+  .main { margin-left: 0; padding: 52px 12px 12px; }
   .grid-2, .grid-3, .grid-23 { grid-template-columns: 1fr; }
   .metrics { flex-direction: column; }
   .chart { min-height: 250px; }
@@ -138,6 +143,9 @@ details .details-content { padding: 0 16px 12px; }
 <body>
 
 <div id="loading">Loading dashboard data...</div>
+
+<button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Menu">&#9776;</button>
+<div class="mobile-overlay" id="mobile-overlay"></div>
 
 <!-- Sidebar -->
 <nav class="sidebar">
@@ -525,8 +533,9 @@ async function getIssueSamples() {
   if (ISSUE_SAMPLES) return ISSUE_SAMPLES;
   try {
     const resp = await fetch('issue_samples.json');
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
     ISSUE_SAMPLES = await resp.json();
-  } catch(e) { ISSUE_SAMPLES = {}; }
+  } catch(e) { console.error('Failed to load issue samples:', e); ISSUE_SAMPLES = {}; }
   return ISSUE_SAMPLES;
 }
 const POS = '#2ecc71', NEG = '#e74c3c', ORANGE = '#e67e22', BLUE = '#3498db';
@@ -2396,6 +2405,9 @@ function matchesBracket(hours, bracket) {
 
 async function renderReviewExplorer() {
   const ci = DATA.category_issues || {};
+  if (!ISSUE_SAMPLES) {
+    el('re-issues').innerHTML = '<p style="text-align:center;padding:24px;color:var(--text-muted)">Loading review samples...</p>';
+  }
   const samples = await getIssueSamples();
   const issueCount = Object.keys(samples).length;
   const totalSamples = Object.values(samples).reduce((s, arr) => s + arr.length, 0);
@@ -3262,6 +3274,7 @@ function renderAbout() {
 async function init() {
   try {
     const resp = await fetch('dashboard_data.json');
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
     DATA = await resp.json();
   } catch(e) {
     el('loading').textContent = 'Failed to load data: ' + e.message;
@@ -3290,6 +3303,16 @@ async function init() {
       prompt('Copy this link:', window.location.href);
     });
   };
+
+  // Mobile menu
+  const menuBtn = document.getElementById('mobile-menu-btn');
+  const mobileOverlay = document.getElementById('mobile-overlay');
+  const sidebar = document.querySelector('.sidebar');
+  menuBtn.onclick = () => { sidebar.classList.toggle('mobile-open'); mobileOverlay.classList.toggle('active'); };
+  mobileOverlay.onclick = () => { sidebar.classList.remove('mobile-open'); mobileOverlay.classList.remove('active'); };
+  sidebar.addEventListener('click', e => {
+    if (e.target.classList.contains('nav-btn')) { sidebar.classList.remove('mobile-open'); mobileOverlay.classList.remove('active'); }
+  });
 
   // Init nav
   initNav();
