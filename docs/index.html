@@ -411,6 +411,7 @@ details .details-content { padding: 0 16px 12px; }
     <div id="ci-pt-hint"></div>
     <div class="controls">
       <label><input type="checkbox" id="ci-weight-toggle"> Weight by helpfulness votes</label>
+      <span class="caption" style="margin-left:8px">Sorts issues by total upvotes instead of mention count &mdash; surfaces issues that resonate most with the community</span>
     </div>
     <h2>Top Pain Points</h2>
     <div class="chart" id="chart-ci-complaints"></div>
@@ -488,14 +489,18 @@ details .details-content { padding: 0 16px 12px; }
   <div class="page" id="page-review-explorer">
     <h1>Review Explorer</h1>
     <p>Browse real player reviews by category and specific issue. Click any bar on other pages to jump here.</p>
-    <details style="margin-top:4px"><summary class="caption" style="cursor:pointer">How samples are selected</summary>
-    <div class="caption" style="margin-top:4px" id="re-methodology"></div>
+    <details style="margin:12px 0"><summary class="caption" style="cursor:pointer">How samples are selected</summary>
+    <div class="caption" style="margin-top:8px;padding-left:8px" id="re-methodology"></div>
     </details>
     <div class="controls">
       <label>Category:</label>
       <select id="re-category" style="padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--card-bg);color:var(--text);font-size:14px;min-width:250px">
         <option value="">Select a category...</option>
       </select>
+    </div>
+    <div class="controls" style="margin-top:8px">
+      <label>Season:</label>
+      <div class="pill-group" id="re-season-pills"></div>
     </div>
     <div class="controls" style="margin-top:8px">
       <label>Playtime:</label>
@@ -512,7 +517,7 @@ details .details-content { padding: 0 16px 12px; }
     <h2>Analysis Pipeline</h2>
     <p>A two-stage AI pipeline processes every review:</p>
     <ul style="color:var(--text-muted);font-size:15px;line-height:1.8;padding-left:20px">
-      <li><strong>Stage 1 &mdash; Category Classification:</strong> Each review is classified into 42 categories (30 negative, 12 positive) using AI. Covers all 29 languages. 245,636 of 247,453 reviews classified (99.3%). Cost: $3.30</li>
+      <li><strong>Stage 1 &mdash; Category Classification:</strong> Each review is classified into 42 categories (30 negative, 12 positive) using AI. Covers all 29 languages. 197,004 reviews (80%) assigned &ge;1 category; remaining 20% are short, empty, or off-topic reviews with no classifiable content. Cost: $3.30</li>
       <li><strong>Stage 2 &mdash; Issue Extraction:</strong> Specific complaints, suggestions, and praise extracted from each review with game entity normalization. 440,481 issues extracted (avg 1.78 per review). Cost: $6.00</li>
       <li><strong>Post-processing:</strong> Issue texts normalized to merge duplicates (prefix/suffix synonym groups, context-dependent mapping). Patch notes parsed for correlation.</li>
     </ul>
@@ -540,10 +545,10 @@ details .details-content { padding: 0 16px 12px; }
       <li><strong>Correlation &#x2260; causation:</strong> Complaint changes after patches may reflect seasonal trends, player count shifts, or meta changes rather than patch effects.</li>
       <li><strong>Language &#x2260; region:</strong> The Language Analysis page groups by review language, not player location. A Russian-speaking player may be in EU.</li>
       <li><strong>AI is imperfect:</strong> Sarcasm, context, and nuance can be missed. There is no manual verification of individual classifications.</li>
-      <li><strong>~0.7% unclassified:</strong> Very short or empty reviews that AI could not categorize.</li>
+      <li><strong>~20% uncategorized:</strong> Short, empty, or off-topic reviews yielded no category assignments. An additional ~0.7% had no AI response at all.</li>
       <li><strong>Issue extraction coverage:</strong> 86% of reviews yielded extractable issues.</li>
       <li><strong>Season assignment</strong> uses review creation date, not update date.</li>
-      <li><strong>Entity normalization</strong> may miss unusual spellings or slang.</li>
+      <li><strong>Entity normalization</strong> may miss unusual spellings or slang. The canonical entity list includes aliases in 7 languages (English, Russian, Chinese, Portuguese, German, Spanish, French, Turkish), but coverage varies by language.</li>
     </ul>
   </div>
 
@@ -567,7 +572,7 @@ details .details-content { padding: 0 16px 12px; }
     <h2>Author</h2>
     <p style="font-size:16px"><strong>[VSRAT] ANDRUHA</strong></p>
     <h2>Community Streamers</h2>
-    <p style="color:var(--text-muted);font-size:15px">THE FINALS content creators:</p>
+    <p style="color:var(--text-muted);font-size:15px">Check out these cool streamers:</p>
     <ul style="color:var(--text-muted);font-size:15px;line-height:1.8;padding-left:20px">
       <li><a href="https://www.twitch.tv/4missalina4/" target="_blank" style="color:var(--accent)">4missalina4</a></li>
       <li><a href="https://www.twitch.tv/anastasiagogo" target="_blank" style="color:var(--accent)">anastasiagogo</a></li>
@@ -1019,7 +1024,7 @@ function renderOverview() {
     <div class="metric"><div class="label">Total Reviews</div><div class="value">${fmt(ov.total)}</div></div>
     <div class="metric"><div class="label">Positive</div><div class="value text-pos">${fmt(ov.positive)} (${posPct}%)</div></div>
     <div class="metric"><div class="label">Negative</div><div class="value text-neg">${fmt(ov.negative)} (${negPct}%)</div></div>
-    <div class="metric"><div class="label">Last 90 Days</div><div class="value ${r90class}">${r90app}% <span style="font-size:12px;opacity:0.7">(${fmt(r90total)} reviews)</span></div></div>
+    <div class="metric"><div class="label">Last 90 Days <span style="font-size:11px;opacity:0.6">(since ${cutoffStr})</span></div><div class="value ${r90class}">${r90app}% <span style="font-size:12px;opacity:0.7">(${fmt(r90total)} reviews)</span></div></div>
   `;
 
   // Season delta
@@ -1070,10 +1075,10 @@ function renderOverview() {
     const fixedAll = trends.fixed || [];
     let html = `<div><h3>Trending Complaints <span class="caption">(${ps} \u2192 ${cs})</span></h3>`;
     html += renderTrendBlock(trendingAll.slice(0, 5), 'text-neg');
-    if (trendingAll.length > 5) html += `<details style="margin-top:4px"><summary class="caption" style="cursor:pointer">Show all ${trendingAll.length}...</summary>` + renderTrendBlock(trendingAll.slice(5), 'text-neg') + '</details>';
+    if (trendingAll.length > 5) html += `<details style="margin-top:12px"><summary class="caption" style="cursor:pointer">Show all ${trendingAll.length}...</summary><div style="margin-top:8px">` + renderTrendBlock(trendingAll.slice(5), 'text-neg') + '</div></details>';
     html += `</div><div><h3>Improving <span class="caption">(${ps} \u2192 ${cs})</span></h3>`;
     html += renderTrendBlock(fixedAll.slice(0, 5), 'text-pos');
-    if (fixedAll.length > 5) html += `<details style="margin-top:4px"><summary class="caption" style="cursor:pointer">Show all ${fixedAll.length}...</summary>` + renderTrendBlock(fixedAll.slice(5), 'text-pos') + '</details>';
+    if (fixedAll.length > 5) html += `<details style="margin-top:12px"><summary class="caption" style="cursor:pointer">Show all ${fixedAll.length}...</summary><div style="margin-top:8px">` + renderTrendBlock(fixedAll.slice(5), 'text-pos') + '</div></details>';
     html += '</div>';
     el('overview-trends').innerHTML = html;
     el('overview-trends-caption').textContent = '';
@@ -1498,7 +1503,7 @@ function renderPlayerJourney() {
   Plotly.newPlot('chart-pj-volume', [
     { type: 'bar', x: brLabels, y: posC, name: 'Positive', marker: { color: POS }, text: posC.map(fmt), textposition: 'inside' },
     { type: 'bar', x: brLabels, y: negC, name: 'Negative', marker: { color: NEG }, text: negC.map(fmt), textposition: 'inside' },
-  ], makeLayout({ barmode: 'stack', height: 320, margin: { l: 50, r: 0, t: 10, b: 60 }, legend: { orientation: 'h', yanchor: 'bottom', y: 1.02 } }), PLOT_CFG);
+  ], makeLayout({ barmode: 'stack', height: 320, margin: { l: 50, r: 30, t: 10, b: 80 }, xaxis: { tickangle: -20 }, legend: { orientation: 'h', yanchor: 'bottom', y: 1.02 } }), PLOT_CFG);
 
   // Heatmaps
   renderHeatmap('chart-pj-heat-neg', DATA.cat_playtime_neg, brackets, pt, 'negative', 'Reds');
@@ -2639,6 +2644,7 @@ function updateCI() {
 let reCurrentCategory = '';
 let reCurrentIssue = '';
 let rePlaytimeFilter = new Set(); // empty = all
+let reSeasonFilter = new Set(); // empty = all seasons
 
 const RE_BRACKETS = [
   { label: 'Newcomer', short: '0-10h', min: 0, max: 10 },
@@ -2697,6 +2703,33 @@ async function renderReviewExplorer() {
     reCurrentIssue = '';
     renderREIssues();
   };
+
+  // Season pills (multi-select)
+  const seasonPillBox = el('re-season-pills');
+  seasonPillBox.innerHTML = '';
+  const sAllPill = document.createElement('span');
+  sAllPill.className = 'pill' + (reSeasonFilter.size === 0 ? ' active' : '');
+  sAllPill.textContent = 'All';
+  sAllPill.onclick = () => {
+    reSeasonFilter.clear();
+    seasonPillBox.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+    sAllPill.classList.add('active');
+    renderREIssues();
+  };
+  seasonPillBox.appendChild(sAllPill);
+  REAL_SEASONS.forEach(s => {
+    const pill = document.createElement('span');
+    pill.className = 'pill' + (reSeasonFilter.has(s) ? ' active' : '');
+    pill.textContent = s.replace('Season ', 'S');
+    pill.title = s;
+    pill.onclick = () => {
+      if (reSeasonFilter.has(s)) reSeasonFilter.delete(s); else reSeasonFilter.add(s);
+      sAllPill.classList.toggle('active', reSeasonFilter.size === 0);
+      pill.classList.toggle('active');
+      renderREIssues();
+    };
+    seasonPillBox.appendChild(pill);
+  });
 
   // Playtime pills (multi-select) — clear and rebuild
   const pillContainer = el('re-playtime-pills');
@@ -2818,18 +2851,24 @@ async function renderREIssues() {
 function renderREReviews(issueText) {
   const allSamples = (ISSUE_SAMPLES || {})[issueText];
   if (!allSamples || !allSamples.length) return '<p class="caption">No review samples available.</p>';
-  // Filter by playtime if active
-  const samples = rePlaytimeFilter.size === 0
-    ? allSamples
-    : allSamples.filter(s => RE_BRACKETS.some(br => rePlaytimeFilter.has(br.label) && matchesBracket(s.hours, br)));
-  if (!samples.length) return '<p class="caption">No reviews matching selected playtime filter.</p>';
+  // Filter by playtime and season
+  let samples = allSamples;
+  if (rePlaytimeFilter.size > 0) {
+    samples = samples.filter(s => RE_BRACKETS.some(br => rePlaytimeFilter.has(br.label) && matchesBracket(s.hours, br)));
+  }
+  if (reSeasonFilter.size > 0) {
+    samples = samples.filter(s => s.season && reSeasonFilter.has(s.season));
+  }
+  if (!samples.length) return '<p class="caption">No reviews matching selected filters.</p>';
   let html = '';
   samples.forEach(s => {
     const icon = s.up ? '\u{1F44D}' : '\u{1F44E}';
+    const sentLabel = s.up ? '<span class="text-pos">Positive</span>' : '<span class="text-neg">Negative</span>';
     const bracket = RE_BRACKETS.find(br => matchesBracket(s.hours, br));
     const bracketLabel = bracket ? bracket.label : '';
-    html += `<div class="review-card">`;
-    html += `<div class="review-header">${icon} ${s.hours}h played (${bracketLabel}) | ${escHtml(s.lang)}</div>`;
+    const dateStr = s.ts ? new Date(s.ts * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '';
+    html += `<div class="review-card" style="border-left:3px solid ${s.up ? POS : NEG}">`;
+    html += `<div class="review-header">${icon} ${sentLabel} | ${s.hours}h (${bracketLabel}) | ${escHtml(s.lang)}${dateStr ? ' | ' + dateStr : ''}${s.season ? ' | ' + escHtml(s.season) : ''}</div>`;
     html += `<div class="review-text">${escHtml(cleanText(s.text))}</div>`;
     html += `</div>`;
   });
@@ -3508,7 +3547,8 @@ function renderMethodology() {
   const conf = ov.confidence || {};
   const is = DATA.issue_stats || {};
   let html = '<ul style="color:var(--text-muted);font-size:15px;line-height:1.8;padding-left:20px">';
-  html += `<li><strong>Classification coverage:</strong> ${fmt(ov.total - (conf.none || 0))} of ${fmt(ov.total)} reviews classified (${pct(ov.total - (conf.none || 0), ov.total)}%)</li>`;
+  const classified = ov.classified || (ov.total - (ov.unclassified || 0));
+  html += `<li><strong>Classification coverage:</strong> ${fmt(classified)} of ${fmt(ov.total)} reviews assigned &ge;1 category (${pct(classified, ov.total)}%)</li>`;
   if (conf.high) html += `<li><strong>AI confidence:</strong> ${fmt(conf.high)} high (${pct(conf.high, ov.total)}%), ${fmt(conf.medium || 0)} medium, ${fmt(conf.low || 0)} low, ${fmt(conf.none || 0)} unscored</li>`;
   html += `<li><strong>High-confidence filter:</strong> Toggle in sidebar shows only high+medium confidence reviews (${pct((conf.high || 0) + (conf.medium || 0), ov.total)}% of data)</li>`;
   if (is.total_issues) html += `<li><strong>Issues extracted:</strong> ${fmt(is.total_issues)} total (${fmt(is.total_complaints)} complaints, ${fmt(is.total_suggestions)} suggestions, ${fmt(is.total_praise)} praise)</li>`;

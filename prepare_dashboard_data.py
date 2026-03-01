@@ -230,10 +230,13 @@ def main():
     pos = [r for r in reviews if r["sentiment"] == "positive"]
     neg = [r for r in reviews if r["sentiment"] == "negative"]
 
+    classified = sum(1 for r in reviews if r.get("categories"))
     overview = {
         "total": len(reviews),
         "positive": len(pos),
         "negative": len(neg),
+        "classified": classified,
+        "unclassified": len(reviews) - classified,
         "languages": len(set(r["language"] for r in reviews)),
         "updated": updated_count,
         "confidence": confidence,
@@ -572,12 +575,19 @@ def main():
                 "pos_pct": round(s_pos_count / s_pos_total * 100, 1) if s_pos_total else 0,
             }
         # Top 3 example reviews (by votes_up) for each side
+        # Filter out ASCII art / spam (low ratio of alphabetic characters)
+        def _is_readable(r):
+            t = r.get("text", "")
+            if len(t) < 20:
+                return False
+            alpha = sum(1 for c in t if c.isalpha())
+            return alpha / len(t) > 0.35
         neg_examples = sorted(
-            [r for r in neg if cats["neg"] in r["categories"]],
+            [r for r in neg if cats["neg"] in r["categories"] and _is_readable(r)],
             key=lambda r: r["votes_up"], reverse=True,
         )[:3]
         pos_examples = sorted(
-            [r for r in pos if cats["pos"] in r["categories"]],
+            [r for r in pos if cats["pos"] in r["categories"] and _is_readable(r)],
             key=lambda r: r["votes_up"], reverse=True,
         )[:3]
         def _review_summary(r):
@@ -1174,6 +1184,8 @@ def main():
                         "hours": hours,
                         "up": str(rev.get("voted_up", "True")) == "True",
                         "lang": lang,
+                        "ts": rev.get("timestamp_created", 0),
+                        "season": idx_to_season.get(idx, "Off-season"),
                     })
 
             if samples:
